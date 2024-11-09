@@ -6,8 +6,8 @@ import LNS.Lemma52
 
 open LNS
 
-
-lemma Theorem53_Ep (fix : FixedPoint) {i r Δ : ℝ} (hi : i ≤ 0) (hr1 : 0 ≤ r) (hr2 : r ≤ Δ) :  |Ep_fix fix i r| ≤ (Ep 0 Δ) + (2+Δ)*fix.ε :=by
+lemma Theorem53_Ep (fix : FixedPoint) {i r Δ : ℝ} (hi : i ≤ 0) (hr1 : 0 ≤ r) (hr2 : r ≤ Δ) :
+    |Ep_fix fix i r| ≤ (Ep 0 Δ) + (2 + Δ) * fix.ε := by
   set s1 := (Φp i -  fix.rnd (Φp i))
   set s2 := r*(fix.rnd (deriv Φp i) - deriv Φp i)
   set s3 := (fix.rnd (r * fix.rnd (deriv Φp i)) - r * fix.rnd (deriv Φp i))
@@ -32,7 +32,8 @@ lemma Theorem53_Ep (fix : FixedPoint) {i r Δ : ℝ} (hi : i ≤ 0) (hr1 : 0 ≤
   have i01: |Ep i r|≤ Ep 0 Δ :=by exact Lemma51 hi hr1 hr2
   linarith
 
-lemma Theorem53_Em (fix : FixedPoint) {i r Δ : ℝ} (hi : i ≤ -1) (hr1 : 0 ≤ r) (hr2 : r ≤ Δ) : |Em_fix fix i r| ≤ (Em (-1:ℝ) Δ) + (2+Δ)*fix.ε :=by
+lemma Theorem53_Em (fix : FixedPoint) {i r Δ : ℝ} (hi : i ≤ -1) (hr1 : 0 ≤ r) (hr2 : r ≤ Δ) :
+    |Em_fix fix i r| ≤ (Em (-1 : ℝ) Δ) + (2 + Δ) * fix.ε := by
   set s1 := (Φm i -  fix.rnd (Φm i))
   set s2 := r*(fix.rnd (deriv Φm i) - deriv Φm i)
   set s3 := (fix.rnd (r * fix.rnd (deriv Φm i)) - r * fix.rnd (deriv Φm i))

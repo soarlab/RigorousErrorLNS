@@ -12,6 +12,18 @@ open LNS
 open Real
 open Real Filter Topology
 
+private def Qm_Range (Δ r : ℝ) := Qm_hi Δ r  - Qm_lo Δ r
+
+private def Qm_lo_YX (Y X: ℝ) := U X/U Y
+
+private def Qm_hi_YX (Y X : ℝ) := Vm X/Vm Y
+
+private def Qm_Range_YX (Y X : ℝ) := Qm_hi_YX Y X - Qm_lo_YX Y X
+
+private def Max_Xm (Y:ℝ) := Bm Y / Am Y
+
+private def dQm_Range_YX (Y X : ℝ)  := (X-1)/ (Y*X*X*(2*X-1)*U Y* Vm Y) *(-Am Y * X + Bm Y)
+
 
 lemma Vm_pos : X > 1 →  Vm X > 0 :=by
   have i1: ∀ x ∈ Set.Ici (1:ℝ) , 2*x - 1 ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intros; linarith

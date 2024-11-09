@@ -32,9 +32,9 @@ attribute [fun_prop] ContinuousOn.div
 attribute [simp] rpow_pos_of_pos
 attribute [simp] log_pos
 
-def fp (a : ℝ) := a * exp (-a) + exp (-a) - 1
+private def fp (a : ℝ) := a * exp (-a) + exp (-a) - 1
 
-def gp a := exp (-a) + a - 1
+private def gp a := exp (-a) + a - 1
 
 def Fp b a := - (a + 1) * log (a + 1) + (a + 1) * log (a + b) - log b
 
@@ -60,7 +60,7 @@ lemma one_minus_two_pow_ne_zero2 :  ∀ x < (0:ℝ),  ¬ 1 - (2:ℝ) ^ x = 0 :=b
   linarith
 
 @[simp]
-lemma one_monus_two_pow_ne_zero :  ∀ x ∈ Set.Iio (0:ℝ),  1 - (2:ℝ) ^ x ≠ 0 :=by
+lemma one_minus_two_pow_ne_zero :  ∀ x ∈ Set.Iio (0:ℝ),  1 - (2:ℝ) ^ x ≠ 0 :=by
   simp only [Set.mem_Iio, ne_eq] ;  exact one_minus_two_pow_ne_zero2
 
 
@@ -163,9 +163,9 @@ lemma deriv_EqOn3 {f1 f2: ℝ → ℝ} (h: Set.EqOn f1 f2 (Set.Ioo (a:ℝ) (b:�
 /- Derivatives and differentiability of Φ -/
 
 
-lemma differentiable_Φp : Differentiable ℝ Φp :=by
+lemma differentiable_Φp : Differentiable ℝ Φp := by
   unfold Φp logb;
-  diff_fun fun x ↦ log (1 + 2 ^ x) / log 2
+  fun_prop (disch:=simp)
 
 lemma deriv_Φp : deriv Φp = fun (x : ℝ) => (2 : ℝ) ^ x / (1 + (2 : ℝ) ^ x) := by
   unfold Φp logb
@@ -185,11 +185,11 @@ lemma deriv2_Φp_pos :  deriv (deriv Φp) x > 0:= by
 
 lemma differentiable_Φm : DifferentiableOn ℝ Φm (Set.Iio (0:ℝ)):=by
   unfold Φm logb;
-  have i:= one_monus_two_pow_ne_zero
+  have i:= one_minus_two_pow_ne_zero
   have i2:= two_ne_zero
   fun_prop (disch:=assumption)
 
-lemma deriv_Φm : Set.EqOn (deriv Φm)  (fun x=> -(2 : ℝ) ^ x / (1 - (2 : ℝ) ^ x)) (Set.Iio (0:ℝ)) := by
+lemma deriv_Φm : Set.EqOn (deriv Φm) (fun x=> -(2 : ℝ) ^ x / (1 - (2 : ℝ) ^ x)) (Set.Iio (0:ℝ)) := by
   unfold Φm logb
   get_deriv (fun x ↦ log (1 - 2 ^ x) / log 2) within (Set.Iio (0:ℝ))
   simp only [Set.mem_Iio, List.Forall, toFun, ne_eq, log_eq_zero, OfNat.ofNat_ne_zero,
@@ -201,7 +201,6 @@ lemma deriv_Φm : Set.EqOn (deriv Φm)  (fun x=> -(2 : ℝ) ^ x / (1 - (2 : ℝ)
   simp only [Set.EqOn, Set.mem_Iio, deriv_div_const]
   intro x hx
   simp only [h.right x hx]; field_simp; ring_nf
-
 
 lemma deriv2_Φm:  Set.EqOn (deriv (deriv Φm)) (fun x => -(log 2 *(2 : ℝ) ^ x ) / (1 - (2 : ℝ) ^ x)^2) (Set.Iio (0:ℝ)) := by
   unfold Set.EqOn
@@ -215,17 +214,13 @@ lemma deriv2_Φm:  Set.EqOn (deriv (deriv Φm)) (fun x => -(log 2 *(2 : ℝ) ^ x
   simp only [h.right x hx]; field_simp; ring_nf
 
 
-
 /- Derivatives and differentiability of E -/
-
-
-
 
 lemma deriv_Ep_r : deriv (Ep i) = fun (r : ℝ) => ((2:ℝ)^i - (2:ℝ)^(i-r)) / ((1+(2:ℝ)^i) * (1+(2:ℝ)^(i-r)) ) := by
   unfold Ep; rw[deriv_Φp]; simp only [Φp, logb]
   deriv_EQ fun r ↦ log (1 + 2 ^ (i - r)) / log 2 - log (1 + 2 ^ i) / log 2 + r * (2 ^ i / (1 + 2 ^ i))
 
-lemma deriv_Em_r (hi: i ∈  (Set.Iio 0) )
+lemma deriv_Em_r (hi: i ∈ (Set.Iio 0) )
     : Set.EqOn (deriv (Em i)) (fun (r : ℝ) => ((2:ℝ)^i - (2:ℝ)^(i-r)) / ((1-(2:ℝ)^i) * (1-(2:ℝ)^(i-r)) )) (Set.Ioi 0):=by
   unfold Em Set.EqOn
   intro r hr
@@ -242,9 +237,9 @@ lemma deriv_Em_r (hi: i ∈  (Set.Iio 0) )
   have ie:= one_minus_two_pow_ne_zero3 hi hr
   field_simp; simp only [aux_eq2]; field_simp; ring_nf
 
-lemma differentiable_Ep_r : Differentiable ℝ (Ep i) :=by
+lemma differentiable_Ep_r : Differentiable ℝ (Ep i) := by
   unfold Ep; rw[deriv_Φp]; simp only [Φp, logb]
-  fun_prop  (disch:=simp)
+  fun_prop (disch:=simp)
 
 lemma differentiable_Em_r (hi: i ∈  (Set.Iio 0) ): DifferentiableOn ℝ (Em i) (Set.Ioi 0):=by
   unfold Em
@@ -265,7 +260,6 @@ lemma continuous_Em_r (hi: i ∈  (Set.Iio 0) ): ContinuousOn (Em i) (Set.Ici 0)
     OfNat.ofNat_ne_zero, not_false_eq_true, sub_pos, true_or, implies_true]
   fun_prop (disch:=assumption)
 
-
 lemma deriv_Em_r_pos (hi: i ∈  (Set.Iio 0) ) (hr: r ∈  (Set.Ioi 0) ):  deriv (Em i) r > 0 := by
   simp only [deriv_Em_r hi hr, gt_iff_lt]
   simp only [Set.mem_Iio, Set.mem_Ioi] at hi hr
@@ -274,14 +268,6 @@ lemma deriv_Em_r_pos (hi: i ∈  (Set.Iio 0) ) (hr: r ∈  (Set.Ioi 0) ):  deriv
   have i3:  (2:ℝ) ^ i > 2 ^ (i - r) :=by apply rpow_lt_rpow_of_exponent_lt; simp only [Nat.one_lt_ofNat]; linarith
   apply div_pos; linarith; apply mul_pos; linarith; linarith
 
-lemma Ep_r_monotone: MonotoneOn (Ep i) (Set.Ici 0) :=by
-  apply monotoneOn_of_deriv_nonneg_Ici0
-  apply Differentiable.differentiableOn differentiable_Ep_r
-  intro r hr; simp only [deriv_Ep_r, ge_iff_le]
-  have i3:  (2:ℝ) ^ i ≥  2 ^ (i - r) :=by apply rpow_le_rpow_of_exponent_le; simp only [Nat.one_le_ofNat]; linarith
-  have i3: (2:ℝ) ^ i -  2 ^ (i - r) ≥ 0 :=by linarith
-  positivity
-
 lemma Ep_r_strictMonotone: StrictMonoOn (Ep i) (Set.Ici 0) :=by
   apply strictMonoOn_of_deriv_pos_Ici0
   apply DifferentiableOn.continuousOn (Differentiable.differentiableOn differentiable_Ep_r)
@@ -289,6 +275,9 @@ lemma Ep_r_strictMonotone: StrictMonoOn (Ep i) (Set.Ici 0) :=by
   have i3:  (2:ℝ) ^ i >  2 ^ (i - r) :=by apply rpow_lt_rpow_of_exponent_lt; simp only [Nat.one_lt_ofNat]; linarith
   have i3: (2:ℝ) ^ i -  2 ^ (i - r) > 0 :=by linarith
   positivity
+
+lemma Ep_r_monotone: MonotoneOn (Ep i) (Set.Ici 0) :=
+  StrictMonoOn.monotoneOn Ep_r_strictMonotone
 
 lemma Em_r_strictMonotone (hi: i ∈  (Set.Iio 0) ): StrictMonoOn (Em i) (Set.Ici 0) :=by
   apply strictMonoOn_of_deriv_pos_Ici0 (continuous_Em_r hi)
@@ -327,16 +316,9 @@ lemma Em_r_pos (hi: i ∈  (Set.Iio 0) ): r > 0 → (Em i) r > 0 := by
 
 lemma differentiable_Ep_i: Differentiable ℝ (Ep_i r) :=by
   unfold Ep_i Ep; rw[deriv_Φp]; simp only [Φp, logb, fp, gp]
-  get_deriv fun i ↦ log (1 + 2 ^ (i - r)) / log 2 - log (1 + 2 ^ i) / log 2 + r * (2 ^ i / (1 + 2 ^ i))
-  simp only [List.Forall, toFun, ne_eq, log_eq_zero, OfNat.ofNat_ne_zero, OfNat.ofNat_ne_one,
-    numineq, or_self, not_false_eq_true, id_eq, one_plus_two_pow_ne_zero, gt_iff_lt, Nat.ofNat_pos,
-    and_self, implies_true]
-  simp only [toFun, zero_mul, sub_zero, one_mul, zero_add, zero_div, mul_zero, Nat.cast_ofNat,
-    rpow_two] at h
-  exact h.left
+  fun_prop (disch := simp)
 
 lemma differentiable_Em_i (hr: r ∈  (Set.Ici 0) ): DifferentiableOn ℝ (Em_i r) (Set.Iio 0):=by
-  unfold Em_i Em
   have : ∀ i ∈ (Set.Iio 0), (fun i ↦ -Φm (i - r) + Φm i - r * deriv Φm i) i =
             (fun i ↦ -Φm (i - r) + Φm i - r * (-(2 : ℝ) ^ i / (1 - (2 : ℝ) ^ i))) i :=by
     intro i hi ; simp only [sub_right_inj, mul_eq_mul_left_iff]
@@ -405,7 +387,6 @@ lemma deriv_Ep_r_strictmono: StrictMonoOn (deriv (Ep r)) (Set.Ici 0) :=by
     field_simp; ring_nf
   rw[this]; norm_num
 
-
 lemma deriv_Em_r_strictmono (hi: i ∈ Set.Iio (0:ℝ) ): StrictMonoOn (deriv (Em i)) (Set.Ioi (0:ℝ)) :=by
   apply StrictMonoOn.congr _ (Set.EqOn.symm (deriv_Em_r hi))
   apply strictMonoOn_of_deriv_pos (convex_Ioi 0)
@@ -436,7 +417,6 @@ lemma deriv_Em_r_strictmono (hi: i ∈ Set.Iio (0:ℝ) ): StrictMonoOn (deriv (E
     field_simp; ring_nf
   rw[this]; positivity
 
-
 lemma differentiable_fp : Differentiable ℝ fp  :=by
   unfold fp; fun_prop
 
@@ -447,7 +427,7 @@ lemma deriv_fp : deriv fp = fun a:ℝ  => -a * exp (-a) :=by
   simp_all only [toFun, differentiable_const, Differentiable.sub_iff_left, one_mul, mul_neg,
     mul_one, add_neg_cancel_comm, sub_zero, neg_mul]
 
-lemma fp_nonpos : x ≥ 0 →  fp x ≤ 0 :=by
+lemma fp_nonpos : x ≥ 0 → fp x ≤ 0 :=by
   apply nonpos_of_deriv_nonpos_Ici0
   apply Differentiable.differentiableOn differentiable_fp
   simp only [fp, neg_zero, exp_zero, mul_one, zero_add, sub_self]
@@ -456,20 +436,20 @@ lemma fp_nonpos : x ≥ 0 →  fp x ≤ 0 :=by
   apply mul_nonneg hx
   apply exp_nonneg
 
-def N a (i:ℝ)  := 2^i * fp a + gp a
+private def N a (i:ℝ)  := 2^i * fp a + gp a
 
-def h a := N a 0
+private def h a := N a 0
 
 lemma differentiable_h : Differentiable ℝ h  :=by
   unfold h N gp fp
   fun_prop
 
-lemma deriv_h : deriv h = fun x => - fp x :=by
+lemma deriv_h : deriv h = fun x => -fp x :=by
   unfold h N fp gp
   deriv_EQ fun a ↦ 2 ^ 0 * (a * rexp (-a) + rexp (-a) - 1) + (rexp (-a) + a - 1)
   ring_nf
 
-lemma h_nonneg : a ≥ 0 → h a ≥ 0  :=by
+lemma h_nonneg : a ≥ 0 → h a ≥ 0 := by
   apply nonneg_of_deriv_nonneg_Ici0
   apply Differentiable.differentiableOn differentiable_h
   simp only [h, N, pow_zero, fp, neg_zero, exp_zero, mul_one, zero_add, sub_self, mul_zero, gp, add_zero]
@@ -508,8 +488,6 @@ lemma Ep_i_monotone (hr: 0 ≤ r) : MonotoneOn (Ep_i r) (Set.Iic 0) :=by
   apply monotoneOn_of_deriv_nonneg_Iic0
   apply Differentiable.differentiableOn differentiable_Ep_i
   intro i hi; exact deriv_Ep_i_nonneg hi hr
-
-
 
 lemma differentiable_gp : Differentiable ℝ gp  :=by
   unfold gp
@@ -568,17 +546,9 @@ lemma aux_eq4 (hi: i<0) (hr: r>0): log (1 - 2 ^ (i:ℝ) / 2 ^ r) = log (2^r - 2^
   linarith; linarith
 
 
-def Qp_Range (Δ r : ℝ) := Qp_hi Δ r  - Qp_lo Δ r
-
 def U (X:ℝ) := 1/X + log X - 1
 
 def V (X:ℝ) := 2 * log (X+1) - log X - 2 * log 2
-
-def Qp_hi_YX (Y X: ℝ) := U X/U Y
-
-def Qp_lo_YX (Y X : ℝ) := V X/V Y
-
-def Qp_Range_YX (Y X : ℝ) := Qp_hi_YX Y X - Qp_lo_YX Y X
 
 def A (Y:ℝ) := -2*Y*(log (Y+1) - log Y - log 2) - Y + 1
 
@@ -586,29 +556,14 @@ def B (Y:ℝ) := Y*(2* log (Y+1) - log Y - 2 * log 2)
 
 def C (Y:ℝ) := -2*Y/(Y+1) +2*log Y - 2*log (Y+1) + 2*log 2 + 1
 
-def Max_X (Y:ℝ) := B Y / A Y
-
-def dQp_Range_YX (Y X : ℝ)  := (Y *(X-1))/ (X*X*(X+1)*(B Y + A Y)* B Y)  *(-A Y * X + B Y)
-
-def Qm_Range (Δ r : ℝ) := Qm_hi Δ r  - Qm_lo Δ r
 
 def Vm (X:ℝ) := 2*log X - log (2*X-1)
-
-def Qm_lo_YX (Y X: ℝ) := U X/U Y
-
-def Qm_hi_YX (Y X : ℝ) := Vm X/Vm Y
-
-def Qm_Range_YX (Y X : ℝ) := Qm_hi_YX Y X - Qm_lo_YX Y X
 
 def Am (Y:ℝ) := 2*Y*log Y - 2*Y*log (2*Y-1) + 2*Y  -2
 
 def Bm (Y:ℝ) := Y*(Vm Y)
 
 def Cm (Y:ℝ) := 2*log Y - 2*log (2*Y-1) + 2 - 2/Y
-
-def Max_Xm (Y:ℝ) := Bm Y / Am Y
-
-def dQm_Range_YX (Y X : ℝ)  := (X-1)/ (Y*X*X*(2*X-1)*U Y* Vm Y) *(-Am Y * X + Bm Y)
 
 
 lemma U_pos : X > 1 →  U X > 0 :=by

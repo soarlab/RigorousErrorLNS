@@ -9,6 +9,17 @@ open LNS
 open Real
 open Real Filter Topology
 
+private def Qp_Range (Δ r : ℝ) := Qp_hi Δ r  - Qp_lo Δ r
+
+private def Qp_hi_YX (Y X: ℝ) := U X/U Y
+
+private def Qp_lo_YX (Y X : ℝ) := V X/V Y
+
+private def Qp_Range_YX (Y X : ℝ) := Qp_hi_YX Y X - Qp_lo_YX Y X
+
+private def Max_X (Y:ℝ) := B Y / A Y
+
+private def dQp_Range_YX (Y X : ℝ)  := (Y *(X-1))/ (X*X*(X+1)*(B Y + A Y)* B Y)  *(-A Y * X + B Y)
 
 
 lemma V_pos : X > 1 →  V X > 0 :=by

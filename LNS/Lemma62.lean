@@ -6,15 +6,11 @@ open LNS
 
 open Real
 
+noncomputable section
 
+private def Gp a b := (Fp b a)/ ((deriv (Fp b)) a)
 
-
-noncomputable def Gp a b := (Fp b a)/ ((deriv (Fp b)) a)
-
-noncomputable def K a b := a * a * log (a + b) - a * a * log (a + 1) - a * b + a + b * log b + b * log (a + 1) - b * log (a + b)
-
-
-
+private def K a b := a * a * log (a + b) - a * a * log (a + 1) - a * b + a + b * log b + b * log (a + 1) - b * log (a + b)
 
 lemma deriv_K (ha: a ∈ (Set.Ioo 0 1)): Set.EqOn (deriv (K a))
       (fun b=> (a*a)/(a+b) - a - b/(a+b) + log b + log (a+1) - log (a+b) + (1:ℝ)) (Set.Ici 1) :=by
@@ -152,7 +148,7 @@ lemma deriv_Fp_div_pos (ha: a ∈ (Set.Ioo 0 1)) (hb: b > 1) (hc: c > b) : deriv
 
 
 
-lemma Lemma62 (hr1 : 0 < r) (hr2 : r < Δ):  StrictAntiOn (fun i => Qp Δ i r) (Set.Iic 0):= by
+lemma Lemma62 (hr1 : 0 < r) (hr2 : r < Δ): StrictAntiOn (fun i => Qp Δ i r) (Set.Iic 0):= by
   have i1: ∀ x ∈ Set.Iio (0:ℝ), (2:ℝ)  ^ x ∈ Set.Ioo 0 1 :=by
     intro x hx
     simp only [Set.mem_Ioo, Nat.ofNat_pos, rpow_pos_of_pos, true_and]

@@ -7,14 +7,11 @@ open LNS
 
 open Real
 
+noncomputable section
 
+private def Gm a b := (Fm b a)/ ((deriv (Fm b)) a)
 
-
-noncomputable def Gm a b := (Fm b a)/ ((deriv (Fm b)) a)
-
-noncomputable def Km a b := - a * a * log (1-a) + a * a * log (b-a) + a * b - a + b * log (1-a) + b * log b - b * log (b-a)
-
-
+private def Km a b := - a * a * log (1-a) + a * a * log (b-a) + a * b - a + b * log (1-a) + b * log b - b * log (b-a)
 
 lemma deriv_Km (ha: a ∈ (Set.Ioo 0 1)): Set.EqOn (deriv (Km a))
       (fun b=> (a*a)/(b-a) + a - b/(b-a) + log b + log (1-a) - log (b-a) + (1:ℝ)) (Set.Ici 1) :=by
@@ -149,8 +146,6 @@ lemma deriv_Fm_div_pos (ha: a ∈ (Set.Ioo 0 1)) (hb: b > 1) (hc: c > b) : deriv
   apply differentiable_Fm_a ha hb
   apply differentiable_Fm_a ha (by simp only [Set.mem_Ioi]; linarith)
   apply ne_of_gt (Fm_pos ha (by simp only [Set.mem_Ioi]; linarith))
-
-
 
 
 lemma Lemma65 (hr1 : 0 < r) (hr2 : r < Δ):  StrictMonoOn (fun i => Qm Δ i r) (Set.Iic (-1:ℝ)):= by

@@ -8,11 +8,9 @@ open LNS
 open Real
 open Real Filter Topology
 
-
-
 private def F (x:ℝ) (t:ℝ) :=  Φm (x-t)  -  Φm x
 
-noncomputable def Fx t x := F x t
+private def Fx t x := F x t
 
 lemma F_t_StrictMono  (hx: x ≤ (-1:ℝ)) : StrictMonoOn (F x) (Set.Ici (0:ℝ)) :=by
   unfold F
@@ -99,6 +97,3 @@ lemma Lemma71 (hx: x ≤ (-1:ℝ)) (hxs: xs ≤ (-1:ℝ)) (hd: |x-xs| ≤ m) : |
   have i2: Φm x - Φm xs = F xs (xs -x):=by simp only [F, sub_sub_cancel]
   rw[i1, i2]; rw[abs_of_nonpos (by linarith)] at hd
   apply max_of_F hxs (by linarith) (by linarith)
-
-
-

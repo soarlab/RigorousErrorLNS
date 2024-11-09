@@ -15,7 +15,7 @@ opaque Φe : ℝ → ℝ
 
 opaque EΦ  : ℝ
 
-axiom hΦe : ∀ x , |Φe x - Φm x| ≤ EΦ
+axiom hΦe : ∀ x, |Φe x - Φm x| ≤ EΦ
 
 lemma hΦen :  |Φm x - Φe x| ≤ EΦ := by
   have : |Φe x - Φm x| = |Φm x - Φe x| :=by apply abs_sub_comm

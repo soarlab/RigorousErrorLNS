@@ -9,11 +9,9 @@ noncomputable section
 open LNS
 open Real
 
+private def Wm c Δ r t := (Em c r - Em c (r-t)) / (Em c Δ)
 
-
-def Wm c Δ r t := (Em c r - Em c (r-t)) / (Em c Δ)
-
-def Wtm c Δ t r := Wm c Δ r t
+private def Wtm c Δ t r := Wm c Δ r t
 
 
 lemma monoWm1 (hc: c ≤ -1) (h1: r ≥ ΔP) (hr: r >  0)  (htp: t ≤ ΔP)
