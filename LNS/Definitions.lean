@@ -30,6 +30,10 @@ def Ep (i r : ℝ) := Φp (i - r) - Φp i + r * deriv Φp i
 
 def Em (i r : ℝ) := -Φm (i - r) + Φm i - r * deriv Φm i
 
+def Ep_i (r: ℝ):= fun i => Ep i r
+
+def Em_i (r: ℝ):= fun i => Em i r
+
 def Qp (Δ i r : ℝ) := Ep i r / Ep i Δ
 
 def Qp_lo (Δ r : ℝ) := Qp Δ 0 r

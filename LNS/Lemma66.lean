@@ -265,7 +265,7 @@ lemma lemma66sub  (hΔ  : r < Δ) (hr : 0 < r) : Qm_Range Δ r ≤ Qm_Range Δ (
     have iA := @Am_pos (2 ^ Δ) i1;
     have iB := @Bm_pos (2 ^ Δ) i1;
     unfold Rm_opt Max_Xm; simp only;
-    rw[Real.rpow_logb]; simp only [Nat.ofNat_pos];
+    rw[Real.rpow_logb, Am, Bm, Vm]; simp only [Nat.ofNat_pos];
     simp only [ne_eq, OfNat.ofNat_ne_one, not_false_eq_true]
     positivity
   rw[this]

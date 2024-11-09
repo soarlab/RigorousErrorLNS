@@ -4,14 +4,10 @@ import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 import LNS.Common
 import LNS.Tactic
+import LNS.Definitions
 set_option maxHeartbeats 10000000
 
-
-
-/- Definitions of Φ⁺(x) and E(i, r) -/
-
 noncomputable section
-
 
 namespace LNS
 
@@ -35,65 +31,14 @@ attribute [fun_prop] ContinuousOn.div
 
 attribute [simp] rpow_pos_of_pos
 attribute [simp] log_pos
-/- Φ⁺ from Introduction -/
 
-def Φp (x : ℝ) := logb 2 (1 + (2 : ℝ) ^ x)
+def fp (a : ℝ) := a * exp (-a) + exp (-a) - 1
 
-def Φm (x : ℝ) := logb 2 (1 - (2 : ℝ) ^ x)
-
-/- Iₓ and Rₓ correspond to iₓ and rₓ from Eq (1) -/
-
-def Iₓ (Δ x : ℝ) := ⌈x / Δ⌉ * Δ
-
-def Rₓ (Δ x : ℝ) := Iₓ Δ x - x
-
-/- Φₜ is the first order Taylor approximation of Φ⁺ from Eq (1) -/
-
-def ΦTp (Δ x : ℝ) := Φp (Iₓ Δ x) - Rₓ Δ x * deriv Φp (Iₓ Δ x)
-
-/- E i r is the error of the first order Taylor approximation
-   defined for all real i and r -/
-
-def Ep (i r : ℝ) := Φp (i - r) - Φp i + r * deriv Φp i
-
-def Em (i r : ℝ) := -Φm (i - r) + Φm i - r * deriv Φm i
-
-def Ep_i (r: ℝ):= fun i => Ep i r
-
-def Em_i (r: ℝ):= fun i => Em i r
-
-noncomputable def fp (a : ℝ) := a * exp (-a) + exp (-a) - 1
-
-noncomputable def gp a := exp (-a) + a - 1
-
-def Qp (Δ i r : ℝ) := Ep i r / Ep i Δ
-
-def Qm (Δ i r : ℝ) := Em i r / Em i Δ
+def gp a := exp (-a) + a - 1
 
 def Fp b a := - (a + 1) * log (a + 1) + (a + 1) * log (a + b) - log b
 
 def Fm b a :=  (1 - a) * log (1 - a) - (1 - a) * log (b - a) + log b
-
-/-
-  Fixed-point rounding
--/
-
-opaque rnd : ℝ → ℝ
-
-opaque ε  : ℝ
-
-axiom hrnd : ∀ x , |x - rnd x| ≤ ε
-
-axiom rnd_mono: Monotone rnd
-
-axiom rnd_1:  rnd (1:ℝ) = (1:ℝ)
-
-axiom rnd_0:  rnd (0:ℝ) = (0:ℝ)
-
-
-noncomputable def Ep_fix (i r : ℝ) := Φp (i - r) - rnd (Φp i) + rnd (r * rnd (deriv Φp i) )
-
-noncomputable def Em_fix (i r : ℝ) := Φm (i - r) - rnd (Φm i) + rnd (r * rnd (deriv Φm i) )
 
 /-
   INEQUALITIES FOR FUN_PROP
@@ -623,11 +568,6 @@ lemma aux_eq4 (hi: i<0) (hr: r>0): log (1 - 2 ^ (i:ℝ) / 2 ^ r) = log (2^r - 2^
   linarith; linarith
 
 
-def Qp_lo (Δ r : ℝ) := Qp Δ 0 r
-
-def Qp_hi (Δ r : ℝ) := (2 ^ (-r) + r * log 2 - 1) / (2 ^ (-Δ) + Δ * log 2 - 1)
-
-
 def Qp_Range (Δ r : ℝ) := Qp_hi Δ r  - Qp_lo Δ r
 
 def U (X:ℝ) := 1/X + log X - 1
@@ -644,22 +584,11 @@ def A (Y:ℝ) := -2*Y*(log (Y+1) - log Y - log 2) - Y + 1
 
 def B (Y:ℝ) := Y*(2* log (Y+1) - log Y - 2 * log 2)
 
-def Rp_opt (Δ : ℝ) :=
-  let X := 2 ^ Δ
-  logb 2 (B X / A X)
-
 def C (Y:ℝ) := -2*Y/(Y+1) +2*log Y - 2*log (Y+1) + 2*log 2 + 1
 
 def Max_X (Y:ℝ) := B Y / A Y
 
 def dQp_Range_YX (Y X : ℝ)  := (Y *(X-1))/ (X*X*(X+1)*(B Y + A Y)* B Y)  *(-A Y * X + B Y)
-
-
-
-def Qm_hi (Δ r : ℝ) := Qm Δ (-1) r
-
-def Qm_lo (Δ r : ℝ) := (2 ^ (-r) + r * log 2 - 1) / (2 ^ (-Δ) + Δ * log 2 - 1)
-
 
 def Qm_Range (Δ r : ℝ) := Qm_hi Δ r  - Qm_lo Δ r
 
@@ -674,10 +603,6 @@ def Qm_Range_YX (Y X : ℝ) := Qm_hi_YX Y X - Qm_lo_YX Y X
 def Am (Y:ℝ) := 2*Y*log Y - 2*Y*log (2*Y-1) + 2*Y  -2
 
 def Bm (Y:ℝ) := Y*(Vm Y)
-
-def Rm_opt (Δ : ℝ) :=
-  let X := 2 ^ Δ
-  logb 2 (Bm X / Am X)
 
 def Cm (Y:ℝ) := 2*log Y - 2*log (2*Y-1) + 2 - 2/Y
 

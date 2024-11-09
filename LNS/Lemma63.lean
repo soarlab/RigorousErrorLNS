@@ -253,7 +253,7 @@ lemma lemma63sub  (hΔ  : r < Δ) (hr : 0 < r) : Qp_Range Δ r ≤ Qp_Range Δ (
     have iA := @A_pos (2 ^ Δ) i1;
     have iB := @B_pos (2 ^ Δ) i1;
     unfold Rp_opt Max_X; simp only;
-    rw[Real.rpow_logb]; simp only [Nat.ofNat_pos];
+    rw[Real.rpow_logb, B, A]; simp only [Nat.ofNat_pos];
     simp only [ne_eq, OfNat.ofNat_ne_one, not_false_eq_true]
     positivity
   rw[this]

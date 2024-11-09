@@ -9,7 +9,7 @@ open LNS
 open Real
 open Real Filter Topology
 
-
+variable (fix : FixedPoint)
 
 opaque Φe : ℝ → ℝ
 
@@ -22,10 +22,9 @@ lemma hΦen :  |Φm x - Φe x| ≤ EΦ := by
   rw[← this]
   apply hΦe
 
-lemma hrndn :  |rnd x - x| ≤ ε := by
-  have : |rnd x - x| = |x - rnd x| :=by apply abs_sub_comm
-  rw[this]
-  apply hrnd
+lemma hrndn : |fix.rnd x - x| ≤ fix.ε := by
+  rw [abs_sub_comm]
+  exact fix.hrnd x
 
 /-Case 2-/
 
@@ -37,9 +36,9 @@ def k (x:ℝ) (Δa:ℝ):= x - Φm (rb2 x Δa)  + Φm (ra2 x Δa)
 
 def Pest2 (x:ℝ) (Δa:ℝ) := Φm (rb2 x Δa) + Φm (k x Δa)
 
-def krnd (x:ℝ) (Δa:ℝ) := x - rnd (Φm (rb2 x Δa) )  + rnd (Φm (ra2 x Δa) )
+def krnd (x:ℝ) (Δa:ℝ) := x - fix.rnd (Φm (rb2 x Δa) )  + fix.rnd (Φm (ra2 x Δa) )
 
-def Prnd2 (x:ℝ) (Δa:ℝ) := rnd (Φm (rb2 x Δa) ) + Φe (krnd x Δa)
+def Prnd2 (x:ℝ) (Δa:ℝ) := fix.rnd (Φm (rb2 x Δa) ) + Φe (krnd fix x Δa)
 
 lemma rb2_lt_x (ha:Δa >0): rb2 x Δa < x:=by
   unfold rb2
@@ -97,28 +96,28 @@ lemma cotrans2 (hx: x<0) (ha:Δa >0) : Φm x = Pest2 x Δa :=by
   rw[e]; ring_nf
 
 
-lemma bound_case2 (hx: x<0) (ha:Δa >0) (hk: k x Δa ≤ -1) (hkr: krnd  x Δa ≤ -1) :
-      |Φm x - Prnd2 x Δa| ≤ ε +  Φm (-1-2*ε) - Φm (-1) + EΦ :=by
+lemma bound_case2 (hx: x<0) (ha:Δa >0) (hk: k x Δa ≤ -1) (hkr: krnd fix x Δa ≤ -1) :
+      |Φm x - Prnd2 fix x Δa| ≤ fix.ε +  Φm (-1-2*fix.ε) - Φm (-1) + EΦ :=by
   have e: Φm x = Pest2 x Δa := cotrans2 hx ha
   rw[e]
-  set s1:= Φm (rb2 x Δa) - rnd (Φm (rb2 x Δa) )
-  set s2:= Φm (k x Δa) - Φm (krnd x Δa)
-  set s3:= Φm (krnd x Δa) - Φe (krnd x Δa)
-  have e: Pest2 x Δa - Prnd2 x Δa = s1 + s2 + s3  :=by unfold Pest2 Prnd2; ring_nf
+  set s1:= Φm (rb2 x Δa) - fix.rnd (Φm (rb2 x Δa) )
+  set s2:= Φm (k x Δa) - Φm (krnd fix x Δa)
+  set s3:= Φm (krnd fix x Δa) - Φe (krnd fix x Δa)
+  have e: Pest2 x Δa - Prnd2 fix x Δa = s1 + s2 + s3  :=by unfold Pest2 Prnd2; ring_nf
   rw[e];
   have i01: |s1 + s2 + s3| ≤ |s1 + s2| + |s3|:= by apply abs_add
   have i02: |s1 + s2| ≤ |s1| + |s2|:= by apply abs_add
-  have i1 : |s1| ≤ ε := by apply hrnd
+  have i1 : |s1| ≤ fix.ε := by apply fix.hrnd
   have i3 : |s3| ≤ EΦ := by apply hΦen;
-  have i2 : |s2| ≤ Φm (-1-2*ε) - Φm (-1) :=by
+  have i2 : |s2| ≤ Φm (-1-2*fix.ε) - Φm (-1) :=by
     apply Lemma71 hk hkr
-    set a1:= rnd (Φm (rb2 x Δa) ) - Φm (rb2 x Δa)
-    set a2:= Φm (ra2 x Δa) - rnd (Φm (ra2 x Δa) )
-    have e: k x Δa - krnd x Δa = a1 + a2:= by unfold k krnd; ring_nf;
+    set a1:= fix.rnd (Φm (rb2 x Δa) ) - Φm (rb2 x Δa)
+    set a2:= Φm (ra2 x Δa) - fix.rnd (Φm (ra2 x Δa) )
+    have e: k x Δa - krnd fix x Δa = a1 + a2:= by unfold k krnd; ring_nf;
     rw[e]
     have i0: |a1 + a2| ≤ |a1| + |a2|:= by apply abs_add
-    have i1 : |a1| ≤ ε := by apply hrndn;
-    have i2 : |a2| ≤ ε := by apply hrnd
+    have i1 : |a1| ≤ fix.ε := by apply hrndn;
+    have i2 : |a2| ≤ fix.ε := by apply fix.hrnd
     linarith
   linarith
 
@@ -140,11 +139,11 @@ def k2 (x:ℝ) (Δa:ℝ) (Δb:ℝ) := x + Φm (rb x Δa Δb) + Φm (k1 x Δa Δb
 
 def Pest3 (x:ℝ) (Δa:ℝ) (Δb:ℝ) := Φm (rc x Δb) +  Φm (k2 x Δa Δb)
 
-def k1rnd (x:ℝ) (Δa:ℝ) (Δb:ℝ) := rab x Δb  - rnd (Φm (rb x Δa Δb))  + rnd (Φm (ra x Δa Δb))
+def k1rnd (x:ℝ) (Δa:ℝ) (Δb:ℝ) := rab x Δb  - fix.rnd (Φm (rb x Δa Δb))  + fix.rnd (Φm (ra x Δa Δb))
 
-def k2rnd (x:ℝ) (Δa:ℝ) (Δb:ℝ) := x + rnd (Φm (rb x Δa Δb)) + Φe (k1rnd x Δa Δb) - rnd (Φm (rc x Δb))
+def k2rnd (x:ℝ) (Δa:ℝ) (Δb:ℝ) := x + fix.rnd (Φm (rb x Δa Δb)) + Φe (k1rnd fix x Δa Δb) - fix.rnd (Φm (rc x Δb))
 
-def Prnd3 (x:ℝ) (Δa:ℝ) (Δb:ℝ) := rnd (Φm (rc x Δb)) +  Φe (k2rnd x Δa Δb)
+def Prnd3 (x:ℝ) (Δa:ℝ) (Δb:ℝ) := fix.rnd (Φm (rc x Δb)) +  Φe (k2rnd fix x Δa Δb)
 
 lemma cotrans3 (hx: x<0) (ha:Δa >0) (hb:Δb >0): Φm x = Pest3 x Δa Δb :=by
   have e1: Φm x  = Pest2 x Δb := cotrans2 hx hb
@@ -160,46 +159,46 @@ lemma cotrans3 (hx: x<0) (ha:Δa >0) (hb:Δb >0): Φm x = Pest3 x Δa Δb :=by
   rw[e]
 
 
-def Ek2 := 2*ε +  Φm (-1-2*ε) - Φm (-1) + EΦ
+def Ek2 := 2*fix.ε +  Φm (-1-2*fix.ε) - Φm (-1) + EΦ
 
 lemma bound_case3 (hx: x<0) (ha:Δa >0) (hb:Δb >0)
-    (hk1: k1 x Δa Δb ≤ -1) (hk1r: k1rnd x Δa Δb ≤ -1)
-    (hk2: k2 x Δa Δb ≤ -1) (hk2r: k2rnd x Δa Δb ≤ -1):
-    |Φm x - Prnd3  x Δa Δb| ≤ ε +  Φm (-1- Ek2) - Φm (-1) + EΦ :=by
+    (hk1: k1 x Δa Δb ≤ -1) (hk1r: k1rnd fix x Δa Δb ≤ -1)
+    (hk2: k2 x Δa Δb ≤ -1) (hk2r: k2rnd fix x Δa Δb ≤ -1):
+    |Φm x - Prnd3 fix x Δa Δb| ≤ fix.ε +  Φm (-1- Ek2 fix) - Φm (-1) + EΦ :=by
   have e: Φm x = Pest3 x Δa Δb := cotrans3 hx ha hb
   rw[e]
-  set s1:= Φm (rc x Δb) - rnd (Φm (rc x Δb) )
-  set s2:= Φm (k2 x Δa Δb) - Φm (k2rnd x Δa Δb)
-  set s3:= Φm (k2rnd x Δa Δb) - Φe (k2rnd x Δa Δb)
-  have e: Pest3 x Δa Δb - Prnd3 x Δa Δb = s1 + s2 + s3  :=by unfold Pest3 Prnd3; ring_nf
+  set s1:= Φm (rc x Δb) - fix.rnd (Φm (rc x Δb) )
+  set s2:= Φm (k2 x Δa Δb) - Φm (k2rnd fix x Δa Δb)
+  set s3:= Φm (k2rnd fix x Δa Δb) - Φe (k2rnd fix x Δa Δb)
+  have e: Pest3 x Δa Δb - Prnd3 fix x Δa Δb = s1 + s2 + s3  :=by unfold Pest3 Prnd3; ring_nf
   rw[e];
   have i01: |s1 + s2 + s3| ≤ |s1 + s2| + |s3|:= by apply abs_add
   have i02: |s1 + s2| ≤ |s1| + |s2|:= by apply abs_add
-  have i1 : |s1| ≤ ε := by apply hrnd
+  have i1 : |s1| ≤ fix.ε := by apply fix.hrnd
   have i3 : |s3| ≤ EΦ := by apply hΦen;
-  have i2 : |s2| ≤  Φm (-1- Ek2) - Φm (-1) :=by
+  have i2 : |s2| ≤  Φm (-1- Ek2 fix) - Φm (-1) :=by
     apply Lemma71 hk2 hk2r
-    set a1:=  Φm (rb x Δa Δb) - rnd ( Φm (rb x Δa Δb))
-    set a2:=  rnd (Φm (rc x Δb)) - Φm (rc x Δb)
-    set a3:=   Φm (k1 x Δa Δb) - Φm (k1rnd x Δa Δb)
-    set a4:=  Φm (k1rnd x Δa Δb) - Φe (k1rnd x Δa Δb)
-    have e: k2 x Δa Δb - k2rnd x Δa Δb = a1 + a2 + a3 + a4 := by unfold k2 k2rnd; ring_nf;
+    set a1:=  Φm (rb x Δa Δb) - fix.rnd (Φm (rb x Δa Δb))
+    set a2:=  fix.rnd (Φm (rc x Δb)) - Φm (rc x Δb)
+    set a3:=   Φm (k1 x Δa Δb) - Φm (k1rnd fix x Δa Δb)
+    set a4:=  Φm (k1rnd fix x Δa Δb) - Φe (k1rnd fix x Δa Δb)
+    have e: k2 x Δa Δb - k2rnd fix x Δa Δb = a1 + a2 + a3 + a4 := by unfold k2 k2rnd; ring_nf;
     rw[e]
     have i00: |a1 + a2 + a3 + a4| ≤ |a1 + a2 + a3| + |a4|:= by apply abs_add
     have i01: |a1 + a2 + a3| ≤ |a1 + a2| + |a3|:= by apply abs_add
     have i02: |a1 + a2| ≤ |a1| + |a2|:= by apply abs_add
-    have i1 : |a1| ≤ ε := by apply hrnd
-    have i2 : |a2| ≤ ε := by apply hrndn;
+    have i1 : |a1| ≤ fix.ε := by apply fix.hrnd
+    have i2 : |a2| ≤ fix.ε := by apply hrndn;
     have i4 : |a4| ≤ EΦ := by apply hΦen;
-    have i3 : |a3| ≤  Φm (-1-2*ε) - Φm (-1) :=by
+    have i3 : |a3| ≤  Φm (-1-2*fix.ε) - Φm (-1) :=by
       apply Lemma71 hk1 hk1r
-      set b1:= rnd (Φm (rb x Δa Δb)) - Φm (rb x Δa Δb)
-      set b2:= Φm (ra x Δa Δb) - rnd (Φm (ra x Δa Δb))
-      have e: k1 x Δa Δb - k1rnd x Δa Δb = b1 + b2 := by unfold k1 k1rnd; ring_nf;
+      set b1:= fix.rnd (Φm (rb x Δa Δb)) - Φm (rb x Δa Δb)
+      set b2:= Φm (ra x Δa Δb) - fix.rnd (Φm (ra x Δa Δb))
+      have e: k1 x Δa Δb - k1rnd fix x Δa Δb = b1 + b2 := by unfold k1 k1rnd; ring_nf;
       rw[e]
       have i0: |b1 + b2| ≤ |b1| + |b2|:= by apply abs_add
-      have i1 : |b1| ≤ ε := by apply hrndn;
-      have i2 : |b2| ≤ ε := by apply hrnd
+      have i1 : |b1| ≤ fix.ε := by apply hrndn;
+      have i2 : |b2| ≤ fix.ε := by apply fix.hrnd
       linarith
     unfold Ek2; linarith
   linarith
