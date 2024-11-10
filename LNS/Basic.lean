@@ -535,13 +535,13 @@ lemma aux_eq3: log (1 + 2 ^ (i:ℝ) / 2 ^ r) = log (2^i + 2^r) - r * log 2 :=by
   rw[this, log_div, log_rpow]; simp only [Nat.ofNat_pos];
   linarith; linarith
 
-lemma aux_eq4 (hi: i<0) (hr: r>0): log (1 - 2 ^ (i:ℝ) / 2 ^ r) = log (2^r - 2^i) - r * log 2 :=by
+lemma aux_eq4 (hi: i < 0) (hr: r ≥ 0): log (1 - 2 ^ (i:ℝ) / 2 ^ r) = log (2^r - 2^i) - r * log 2 := by
   have : (2:ℝ) ^ i > 0 :=by norm_num
   have : (2:ℝ) ^ r > 0 :=by norm_num
   have: 1 - (2:ℝ)  ^ (i:ℝ) / 2 ^ r =  (2^r - 2^i)  / 2 ^ r :=by field_simp;
   rw[this, log_div, log_rpow]; simp only [Nat.ofNat_pos];
   have : (2:ℝ) ^ i < 1 :=by apply rpow_lt_one_of_one_lt_of_neg (by simp only [Nat.one_lt_ofNat]) hi
-  have : (2:ℝ) ^ r > 1 :=by apply one_lt_rpow (by simp only [Nat.one_lt_ofNat]) hr
+  have : (2:ℝ) ^ r ≥ 1 :=by apply one_le_rpow (by norm_num) hr
   linarith; linarith
 
 
@@ -697,9 +697,9 @@ lemma Qp_of_Fp  (hΔ : 0 < Δ): Qp Δ i r  = ((fun a => Fp (2^r) a / Fp (2^Δ) a
   simp only [aux_eq2, aux_eq3, Nat.ofNat_pos, log_rpow];
   ring_nf
 
-lemma deriv_Fm_a  (hb: b ∈ (Set.Ici 1)) : Set.EqOn (deriv (Fm b)) (fun a => (1-a)/(b-a) - 1 - log (1-a) + log (b-a)) (Set.Ioo 0 1):=by
+lemma deriv_Fm_a (hb : b ≥ 1) :
+    Set.EqOn (deriv (Fm b)) (fun a => (1-a)/(b-a) - 1 - log (1-a) + log (b-a)) (Set.Ioo 0 1) := by
   unfold Fm
-  simp only [Set.mem_Ici] at hb
   get_deriv (fun a ↦ (1 - a) * log (1 - a) - (1 - a) * log (b - a) + log b) within (Set.Ioo 0 1)
   simp only [Set.mem_Ioc, List.Forall, toFun, ne_eq, id_eq, and_imp]
   intro x hx ; simp only [Set.mem_Ioo] at hx
@@ -711,7 +711,7 @@ lemma deriv_Fm_a  (hb: b ∈ (Set.Ici 1)) : Set.EqOn (deriv (Fm b)) (fun a => (1
   have : b - a ≠ 0 := by simp only [Set.mem_Ioo] at ha; linarith
   field_simp; ring_nf
 
-lemma differentiable_Fm_a (ha: a ∈ (Set.Ioo 0 1)) (hb: b ∈ (Set.Ioi 1)) : DifferentiableAt ℝ (Fm b) a:=by
+lemma differentiable_Fm_a (ha : a ∈ Set.Ioo 0 1) (hb : b ≥ 1) : DifferentiableAt ℝ (Fm b) a := by
   unfold Fm
   simp only [Set.mem_Ioo, Set.mem_Ioi] at ha hb
   get_deriv (fun a ↦ (1 - a) * log (1 - a) - (1 - a) * log (b - a) + log b) within (Set.Ioo 0 1)
@@ -721,19 +721,18 @@ lemma differentiable_Fm_a (ha: a ∈ (Set.Ioo 0 1)) (hb: b ∈ (Set.Ioi 1)) : Di
   apply DifferentiableOn.differentiableAt h.left
   apply Ioo_mem_nhds ha.left ha.right
 
-lemma deriv_Fm_b (ha: a ∈ (Set.Ioo 0 1)) (hb: b ∈ (Set.Ioi 1)) : (deriv (fun b ↦ Fm b a)) b = a*(b-1)/(b*(b-a)) :=by
+lemma deriv_Fm_b (ha : a ∈ Set.Ioo 0 1) (hb : b ≥ 1) : (deriv (fun b ↦ Fm b a)) b = a*(b-1)/(b*(b-a)) :=by
   unfold Fm
-  simp only [Set.mem_Ioo, Set.mem_Ioi] at ha hb
-  get_deriv (fun b ↦ (1 - a) * log (1 - a) - (1 - a) * log (b - a) + log b) within (Set.Ioi 1)
-  simp only [Set.mem_Ioi, List.Forall, toFun, ne_eq, id_eq]
+  simp only [Set.mem_Ioo] at ha hb
+  get_deriv (fun b ↦ (1 - a) * log (1 - a) - (1 - a) * log (b - a) + log b) within (Set.Ici 1)
+  simp only [Set.mem_Ici, List.Forall, toFun, ne_eq, id_eq]
   intro x hx; split_ands <;> linarith
   simp only [toFun] at h
   rw[h.right b hb]
   have : b - a ≠ 0 := by linarith
   field_simp; ring_nf
 
-
-lemma differentiable_Fm_b (ha: a ∈ (Set.Ioo 0 1)) (hb: b ∈ (Set.Ioi 1)) : DifferentiableAt ℝ (fun b ↦ Fm b a) b:=by
+lemma differentiable_Fm_b (ha : a ∈ Set.Ioo 0 1) (hb : b ≥ 1) : DifferentiableAt ℝ (fun b ↦ Fm b a) b := by
   unfold Fm
   simp only [Set.mem_Ioo, Set.mem_Ioi] at ha hb
   get_deriv (fun b ↦ (1 - a) * log (1 - a) - (1 - a) * log (b - a) + log b) at b
@@ -742,11 +741,12 @@ lemma differentiable_Fm_b (ha: a ∈ (Set.Ioo 0 1)) (hb: b ∈ (Set.Ioi 1)) : Di
   simp only [toFun] at h
   exact HasDerivAt.differentiableAt h
 
-lemma deriv_Fm_a_b (ha: a ∈ (Set.Ioo 0 1)) (hb: b ∈ (Set.Ioi 1)) : deriv (fun b ↦ deriv (Fm b) a) b = (b-1)/(b-a)^2 :=by
-  have e: Set.EqOn (fun b ↦ deriv (Fm b) a) (fun b => (1-a)/(b-a) - 1 - log (1-a) + log (b-a))  (Set.Ioi 1) :=by
+lemma deriv_Fm_a_b (ha : a ∈ Set.Ioo 0 1) (hb : b > 1) :
+     deriv (fun b ↦ deriv (Fm b) a) b = (b-1)/(b-a)^2 := by
+  have e: Set.EqOn (fun b ↦ deriv (Fm b) a) (fun b => (1-a)/(b-a) - 1 - log (1-a) + log (b-a)) (Set.Ioi 1) :=by
     unfold Set.EqOn; intro x hx; simp only
-    rw[deriv_Fm_a _ ha];
-    simp_all only [Set.mem_Ioo, Set.mem_Ioi, Set.mem_Ici]; linarith
+    rw[deriv_Fm_a _ ha]
+    exact le_of_lt hx
   rw[deriv_EqOn_Ioi e hb]
   get_deriv (fun b ↦ (1 - a) / (b - a) - 1 - log (1 - a) + log (b - a)) within (Set.Ioi 1)
   simp only [Set.mem_Ioi, List.Forall, toFun, ne_eq, id_eq]
@@ -759,8 +759,8 @@ lemma deriv_Fm_a_b (ha: a ∈ (Set.Ioo 0 1)) (hb: b ∈ (Set.Ioi 1)) : deriv (fu
   have : b - a ≠ 0 := by  linarith
   field_simp; ring_nf
 
-lemma differentiable_Fm_a_b (ha: a ∈ (Set.Ioo 0 1)) (hb: b ∈ (Set.Ioi 1))
-    : DifferentiableAt ℝ  (fun b ↦ deriv (Fm b) a) b:=by
+lemma differentiable_Fm_a_b (ha : a ∈ Set.Ioo 0 1) (hb : b > 1) :
+    DifferentiableAt ℝ (fun b ↦ deriv (Fm b) a) b := by
   have e: Set.EqOn (fun b ↦ deriv (Fm b) a) (fun b => (1-a)/(b-a) - 1 - log (1-a) + log (b-a))  (Set.Ioi 1) :=by
     unfold Set.EqOn; intro x hx; simp only
     rw[deriv_Fm_a _ ha]
@@ -773,7 +773,7 @@ lemma differentiable_Fm_a_b (ha: a ∈ (Set.Ioo 0 1)) (hb: b ∈ (Set.Ioi 1))
   apply DifferentiableOn.differentiableAt (DifferentiableOn.congr h.left e)
   apply Ioi_mem_nhds hb
 
-lemma deriv_Fm_a_pos (ha: a ∈ (Set.Ioo 0 1)) (hb: b ∈ (Set.Ioi 1)):  deriv (Fm b) a > 0:=by
+lemma deriv_Fm_a_pos (ha : a ∈ Set.Ioo 0 1) (hb : b > 1) : deriv (Fm b) a > 0 := by
   have e1: deriv (Fm b) a = (fun b ↦ deriv (Fm b) a) b :=by simp only
   simp only [Set.mem_Ioo, Set.mem_Ioi] at ha hb
   have : 1 - a ≠ 0 := by  linarith
@@ -796,7 +796,7 @@ lemma deriv_Fm_a_pos (ha: a ∈ (Set.Ioo 0 1)) (hb: b ∈ (Set.Ioi 1)):  deriv (
     positivity
   apply this (by simp only [Set.mem_Ici, le_refl]) (by simp only [Set.mem_Ici];linarith) hb
 
-lemma Fm_pos (ha: a ∈ (Set.Ioo 0 1)) (hb: b ∈ (Set.Ioi 1)) : (Fm b) a > 0 :=by
+lemma Fm_pos (ha : a ∈ Set.Ioo 0 1) (hb : b > 1) : (Fm b) a > 0 := by
   have e1: (Fm b) a = (fun b ↦ (Fm b) a) b :=by simp only
   have e2: (fun b ↦  (Fm b) a) 1 = 0 :=by simp only [Fm, neg_add_rev, log_one, sub_zero]; ring_nf
   rw[e1, ← e2]
@@ -807,9 +807,9 @@ lemma Fm_pos (ha: a ∈ (Set.Ioo 0 1)) (hb: b ∈ (Set.Ioi 1)) : (Fm b) a > 0 :=
     have : ∀ x ∈ Set.Ici 1, x - a ≠ 0:=by intro x hx; simp only [Set.mem_Ici] at hx; linarith
     have : ∀ x ∈ Set.Ici (1:ℝ) , x ≠ 0:=by intro x hx; simp only [Set.mem_Ici] at hx; linarith
     fun_prop (disch := assumption)
-    intro x hx;
+    intro x hx
     simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi] at hx
-    rw[deriv_Fm_b ha hx]
+    rw[deriv_Fm_b ha (le_of_lt hx)]
     have : x - 1 > 0 :=by linarith
     have : x - a > 0 :=by linarith
     have : a > 0 :=by linarith
@@ -817,7 +817,8 @@ lemma Fm_pos (ha: a ∈ (Set.Ioo 0 1)) (hb: b ∈ (Set.Ioi 1)) : (Fm b) a > 0 :=
   apply this (by simp only [Set.mem_Ici, le_refl]) (by simp only [Set.mem_Ici];linarith) hb
 
 
-lemma Qm_of_Fm  (hi: i ∈ Set.Iio 0) (hr: r > 0) (hΔ  : 0 < Δ): Qm Δ i r  = ((fun a => Fm (2^r) a / Fm (2^Δ) a) ∘ (fun i=> 2^i)) i :=by
+lemma Qm_of_Fm (hi : i ∈ Set.Iio 0) (hr : r ≥ 0) (hΔ : 0 < Δ) :
+    Qm Δ i r = ((fun a => Fm (2^r) a / Fm (2^Δ) a) ∘ (fun i=> 2^i)) i := by
   unfold Qm; simp only [Function.comp_apply]
   have : 1 - (2:ℝ)^i > 0 :=by
     simp only [gt_iff_lt, sub_pos]
@@ -829,7 +830,7 @@ lemma Qm_of_Fm  (hi: i ∈ Set.Iio 0) (hr: r > 0) (hΔ  : 0 < Δ): Qm Δ i r  = 
   field_simp
   simp only [Set.mem_Iio] at hi
   unfold Fm Em ; simp only [deriv_Φm hi, neg_add_rev, Φm, logb]
-  simp only [aux_eq2, aux_eq4 hi hr, aux_eq4 hi hΔ, Nat.ofNat_pos, log_rpow];
+  simp only [aux_eq2, aux_eq4 hi hr, aux_eq4 hi (le_of_lt hΔ), Nat.ofNat_pos, log_rpow];
   field_simp; ring_nf
 
 
