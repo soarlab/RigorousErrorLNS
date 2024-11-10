@@ -19,12 +19,6 @@ def Iₓ (Δ x : ℝ) := ⌈x / Δ⌉ * Δ
 
 def Rₓ (Δ x : ℝ) := Iₓ Δ x - x
 
-/- Φₜ is the first order Taylor approximation of Φ⁺ from Eq (1) -/
-
-def ΦTp (Δ x : ℝ) := Φp (Iₓ Δ x) - Rₓ Δ x * deriv Φp (Iₓ Δ x)
-
-def ΦTm (Δ x : ℝ) := Φm (Iₓ Δ x) - Rₓ Δ x * deriv Φm (Iₓ Δ x)
-
 /- E i r is the error of the first order Taylor approximation
    defined for all real i and r -/
 
@@ -88,14 +82,18 @@ def ΦTm_fix (Δ x : ℝ) := fix.rnd (Φm (Iₓ Δ x)) - fix.rnd (Rₓ Δ x * fi
 
 def EECp (Δ ΔP c i r  : ℝ) :=
   fix.rnd (Φp i) - fix.rnd (r * fix.rnd (deriv Φp i) )
-                 + fix.rnd (fix.rnd (Ep i Δ) * fix.rnd (Qp Δ c (Int.floor (r / ΔP) * ΔP)))
+                 + fix.rnd (fix.rnd (Ep i Δ) * fix.rnd (Qp Δ c (⌊r / ΔP⌋ * ΔP)))
 
-def EECfixp (Δ ΔP c i r  : ℝ):= |Φp (i - r) - EECp fix Δ ΔP c i r|
+def EECp_fix (Δ ΔP c i r  : ℝ):= Φp (i - r) - EECp fix Δ ΔP c i r
 
 def EECm (Δ ΔP c i r  : ℝ) :=
   fix.rnd (Φm i) - fix.rnd (r * fix.rnd (deriv Φm i) )
-                 - fix.rnd (fix.rnd (Em i Δ) * fix.rnd (Qm Δ c (Int.floor (r / ΔP) * ΔP)))
+                 - fix.rnd (fix.rnd (Em i Δ) * fix.rnd (Qm Δ c (⌊r / ΔP⌋ * ΔP)))
 
-def EECfixm (Δ ΔP c i r  : ℝ):= |Φm (i - r) - EECm fix Δ ΔP c i r|
+def EECm_fix (Δ ΔP c i r  : ℝ):= Φm (i - r) - EECm fix Δ ΔP c i r
+
+def ΦECp_fix (Δ ΔP c x : ℝ) := EECp fix Δ ΔP c (Iₓ Δ x) (Rₓ Δ x)
+
+def ΦECm_fix (Δ ΔP c x : ℝ) := EECm fix Δ ΔP c (Iₓ Δ x) (Rₓ Δ x)
 
 end FixedPoint
