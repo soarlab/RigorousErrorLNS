@@ -23,6 +23,8 @@ def Rₓ (Δ x : ℝ) := Iₓ Δ x - x
 
 def ΦTp (Δ x : ℝ) := Φp (Iₓ Δ x) - Rₓ Δ x * deriv Φp (Iₓ Δ x)
 
+def ΦTm (Δ x : ℝ) := Φm (Iₓ Δ x) - Rₓ Δ x * deriv Φm (Iₓ Δ x)
+
 /- E i r is the error of the first order Taylor approximation
    defined for all real i and r -/
 
@@ -78,6 +80,11 @@ variable (fix : FixedPoint)
 def Ep_fix (i r : ℝ) := Φp (i - r) - fix.rnd (Φp i) + fix.rnd (r * fix.rnd (deriv Φp i))
 
 def Em_fix (i r : ℝ) := Φm (i - r) - fix.rnd (Φm i) + fix.rnd (r * fix.rnd (deriv Φm i))
+
+def ΦTp_fix (Δ x : ℝ) := fix.rnd (Φp (Iₓ Δ x)) - fix.rnd (Rₓ Δ x * fix.rnd (deriv Φp (Iₓ Δ x)))
+
+def ΦTm_fix (Δ x : ℝ) := fix.rnd (Φm (Iₓ Δ x)) - fix.rnd (Rₓ Δ x * fix.rnd (deriv Φm (Iₓ Δ x)))
+
 
 def EECp (Δ ΔP c i r  : ℝ) :=
   fix.rnd (Φp i) - fix.rnd (r * fix.rnd (deriv Φp i) )

@@ -6,7 +6,7 @@ import LNS.Lemma52
 
 open LNS
 
-lemma Theorem53_Ep (fix : FixedPoint) {i r Δ : ℝ} (hi : i ≤ 0) (hr1 : 0 ≤ r) (hr2 : r ≤ Δ) :
+theorem Theorem53_Ep (fix : FixedPoint) {i r Δ : ℝ} (hi : i ≤ 0) (hr1 : 0 ≤ r) (hr2 : r ≤ Δ) :
     |Ep_fix fix i r| ≤ (Ep 0 Δ) + (2 + Δ) * fix.ε := by
   set s1 := (Φp i -  fix.rnd (Φp i))
   set s2 := r*(fix.rnd (deriv Φp i) - deriv Φp i)
@@ -32,8 +32,8 @@ lemma Theorem53_Ep (fix : FixedPoint) {i r Δ : ℝ} (hi : i ≤ 0) (hr1 : 0 ≤
   have i01: |Ep i r|≤ Ep 0 Δ :=by exact Lemma51 hi hr1 hr2
   linarith
 
-lemma Theorem53_Em (fix : FixedPoint) {i r Δ : ℝ} (hi : i ≤ -1) (hr1 : 0 ≤ r) (hr2 : r ≤ Δ) :
-    |Em_fix fix i r| ≤ (Em (-1 : ℝ) Δ) + (2 + Δ) * fix.ε := by
+theorem Theorem53_Em (fix : FixedPoint) {i₀ i r Δ : ℝ} (hi₀ : i₀ < 0) (hi : i ≤ i₀) (hr1 : 0 ≤ r) (hr2 : r ≤ Δ) :
+    |Em_fix fix i r| ≤ (Em i₀ Δ) + (2 + Δ) * fix.ε := by
   set s1 := (Φm i -  fix.rnd (Φm i))
   set s2 := r*(fix.rnd (deriv Φm i) - deriv Φm i)
   set s3 := (fix.rnd (r * fix.rnd (deriv Φm i)) - r * fix.rnd (deriv Φm i))
@@ -56,5 +56,27 @@ lemma Theorem53_Em (fix : FixedPoint) {i r Δ : ℝ} (hi : i ≤ -1) (hr1 : 0 �
     have i03: |-Em i r + s1|  ≤ |-Em i r| + |s1| :=by  apply abs_add
     have i04: |-Em i r| =|Em i r|:=by apply abs_neg
     linarith
-  have i01: |Em i r|≤ Em (-1:ℝ) Δ :=by exact Lemma52 hi hr1 hr2
+  have i01: |Em i r|≤ Em i₀ Δ :=by exact Lemma52 hi₀ hi hr1 hr2
   linarith
+
+
+theorem Theorem53_ΦTp (fix : FixedPoint) {x Δ : ℝ} (hd : 0 < Δ) (hx : x ≤ 0) :
+    |Φp x - ΦTp_fix fix Δ x| ≤ (Ep 0 Δ) + (2 + Δ) * fix.ε := by
+  have eq: Φp x - ΦTp_fix fix Δ x = Ep_fix fix (Iₓ Δ x) (Rₓ Δ x) := by
+    unfold ΦTp_fix Ep_fix; rw [i_sub_r_eq_x]; ring_nf
+  rw [eq]; apply Theorem53_Ep
+  · rw [← x_neg_iff_ix_neg] <;> assumption
+  · exact rx_nonneg hd x
+  · apply le_of_lt
+    exact rx_lt_delta hd x
+
+theorem Theorem53_ΦTm (fix : FixedPoint) {x Δ : ℝ} (hd : 0 < Δ) (hx₀ : x₀ ≤ -Δ) (hx : x ≤ x₀) :
+    |Φm x - ΦTm_fix fix Δ x| ≤ (Em (Iₓ Δ x₀) Δ) + (2 + Δ) * fix.ε := by
+  have eq: Φm x - ΦTm_fix fix Δ x = Em_fix fix (Iₓ Δ x) (Rₓ Δ x) := by
+    unfold ΦTm_fix Em_fix; rw [i_sub_r_eq_x]; ring_nf
+  rw [eq]; apply Theorem53_Em
+  · exact ix_lt_zero hd hx₀
+  · exact ix_monotone hd hx
+  · exact rx_nonneg hd x
+  · apply le_of_lt
+    exact rx_lt_delta hd x

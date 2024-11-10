@@ -105,8 +105,11 @@ lemma err_eq_zero : Ep i 0 = 0 := by simp only [Ep, sub_zero, sub_self, zero_mul
 lemma i_sub_r_eq_x (Δ x : ℝ) : Iₓ Δ x - Rₓ Δ x = x := by
   simp only [Iₓ, Rₓ, sub_sub_cancel]
 
-lemma Φₜ_error : Φp x - ΦTp Δ x = Ep (Iₓ Δ x) (Rₓ Δ x) := by
+lemma ΦTp_error : Φp x - ΦTp Δ x = Ep (Iₓ Δ x) (Rₓ Δ x) := by
   simp only [ΦTp, Ep, i_sub_r_eq_x]; ring_nf
+
+lemma ΦTm_error : ΦTm Δ x - Φm x = Em (Iₓ Δ x) (Rₓ Δ x) := by
+  simp only [ΦTm, Em, i_sub_r_eq_x]; ring_nf
 
 lemma x_le_ix {Δ} (hd : 0 < Δ) x : x ≤ Iₓ Δ x :=
   (div_le_iff hd).mp $ Int.le_ceil $ x / Δ
@@ -133,9 +136,23 @@ lemma rx_eq_fract {Δ x : ℝ} (hd : Δ ≠ 0) (ix : Iₓ Δ x ≠ x) :
 lemma rx_nonneg {Δ} (hd : 0 < Δ) x : 0 ≤ Rₓ Δ x :=
   Int.ceil_div_mul_sub_nonneg hd
 
-
 lemma rx_lt_delta {Δ} (hd : 0 < Δ) x : Rₓ Δ x < Δ :=
   Int.ceil_div_mul_sub_lt hd
+
+lemma ix_lt_zero (hd : 0 < Δ) (hx : x ≤ -Δ) : Iₓ Δ x < 0 := by
+  unfold Iₓ
+  apply mul_neg_of_neg_of_pos _ hd
+  simp only [Int.cast_lt_zero]
+  apply lt_of_le_of_lt _ (by norm_num : -1 < 0)
+  simp only [Int.ceil_le, Int.reduceNeg, Int.cast_neg, Int.cast_one]
+  rw [div_le_iff hd, neg_mul, one_mul]
+  exact hx
+
+lemma ix_monotone (hd : 0 < Δ) : Monotone (Iₓ Δ) := by
+  unfold Iₓ; intro a b hab; simp only
+  rw [mul_le_mul_right hd, Int.cast_le]
+  apply Int.ceil_le_ceil
+  exact (div_le_div_right hd).mpr hab
 
 @[simp]
 lemma numineq : ¬ (2:ℝ) = -1 :=by linarith
