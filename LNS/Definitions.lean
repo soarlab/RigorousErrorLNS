@@ -86,7 +86,7 @@ def EECp (Δ ΔP c i r  : ℝ) :=
 
 def EECp_fix (Δ ΔP c i r  : ℝ):= Φp (i - r) - EECp fix Δ ΔP c i r
 
-def EECm (Δ ΔP c i r  : ℝ) :=
+def EECm (Δ ΔP c i r : ℝ) :=
   fix.rnd (Φm i) - fix.rnd (r * fix.rnd (deriv Φm i) )
                  - fix.rnd (fix.rnd (Em i Δ) * fix.rnd (Qm Δ c (⌊r / ΔP⌋ * ΔP)))
 
