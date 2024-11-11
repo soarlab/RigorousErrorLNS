@@ -190,7 +190,7 @@ lemma deriv_Qp_Range_YX (hY: Y > 1) : Set.EqOn (deriv (Qp_Range_YX Y)) (dQp_Rang
   field_simp;
   unfold A B; ring
 
-lemma max_Qp_Range_YX (h1: X > 1) (h2: X < Y): Qp_Range_YX Y X ≤ Qp_Range_YX Y (Max_X Y) :=by
+lemma max_Qp_Range_YX (h1: X ≥ 1) (h2: X < Y): Qp_Range_YX Y X ≤ Qp_Range_YX Y (Max_X Y) :=by
   have : ∀ x ∈ Set.Ici (1:ℝ) , x + 1 ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intros; linarith
   have : ∀ x ∈ Set.Ici (1:ℝ) , x ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intros; linarith
   have hY: Y > 1 :=by linarith
@@ -237,14 +237,14 @@ lemma max_Qp_Range_YX (h1: X > 1) (h2: X < Y): Qp_Range_YX Y X ≤ Qp_Range_YX Y
   simp only [Set.mem_Icc] ; constructor <;> linarith
   linarith
 
-lemma Qp_Range_YX_eq_Qp_range (hΔ : 0 < Δ) (hr: 0 < r) :  Qp_Range Δ r =  Qp_Range_YX (2^Δ) (2^r) :=by
+lemma Qp_Range_YX_eq_Qp_range (hΔ : 0 < Δ) (hr: 0 ≤ r) :  Qp_Range Δ r =  Qp_Range_YX (2^Δ) (2^r) :=by
   unfold Qp_Range Qp_Range_YX
   have hΔ0: Δ > 0 := by linarith
-  have e1: ∀ x > (0:ℝ), (2:ℝ)^(-x) = 1/2^x :=by intro x _; rw[rpow_neg]; ring_nf; simp only [Nat.ofNat_nonneg]
-  have e2: ∀ x > (0:ℝ), log ((2:ℝ)^x) = x * log 2 :=by intro x _; rw[log_rpow]; simp only [Nat.ofNat_pos]
-  have eh : Qp_hi Δ r = Qp_hi_YX (2 ^ Δ) (2 ^ r) :=by
+  have e1: ∀ x ≥ (0:ℝ), (2:ℝ)^(-x) = 1/2^x :=by intro x _; rw[rpow_neg]; ring_nf; simp only [Nat.ofNat_nonneg]
+  have e2: ∀ x ≥ (0:ℝ), log ((2:ℝ)^x) = x * log 2 :=by intro x _; rw[log_rpow]; simp only [Nat.ofNat_pos]
+  have eh : Qp_hi Δ r = Qp_hi_YX (2 ^ Δ) (2 ^ r) := by
     unfold Qp_hi Qp_hi_YX U
-    simp only [e1 r hr, e1 Δ hΔ0, e2 r hr, e2 Δ hΔ0]
+    simp only [e1 r hr, e1 Δ (le_of_lt hΔ0), e2 r hr, e2 Δ (le_of_lt hΔ0)]
   have el : Qp_lo Δ r = Qp_lo_YX (2 ^ Δ) (2 ^ r) :=by
     unfold Qp_lo Qp_lo_YX V
     simp only [Qp_of_Fp hΔ, Fp, neg_add_rev, Function.comp_apply, rpow_zero,
@@ -254,12 +254,12 @@ lemma Qp_Range_YX_eq_Qp_range (hΔ : 0 < Δ) (hr: 0 < r) :  Qp_Range Δ r =  Qp_
     rw[e1,e2]
   rw[el,eh]
 
-lemma lemma63sub  (hΔ  : r < Δ) (hr : 0 < r) : Qp_Range Δ r ≤ Qp_Range Δ (Rp_opt Δ) := by
+lemma lemma63sub  (hΔ  : r < Δ) (hr : 0 ≤ r) : Qp_Range Δ r ≤ Qp_Range Δ (Rp_opt Δ) := by
   have hΔ0: 0 < Δ := by linarith
-  have i1: (2:ℝ)  ^ Δ > 1 :=by apply one_lt_rpow (by simp only [Nat.one_lt_ofNat]) hΔ0
-  have i2: (2:ℝ)  ^ r > 1 :=by apply one_lt_rpow (by simp only [Nat.one_lt_ofNat]) hr
+  have i1: (2:ℝ) ^ Δ > 1 :=by apply one_lt_rpow (by simp only [Nat.one_lt_ofNat]) hΔ0
+  have i2: (2:ℝ) ^ r ≥ 1 :=by apply one_le_rpow (by simp only [Nat.one_le_ofNat]) hr
   have hRp_opt0: 0 < Rp_opt Δ:= logb_pos (by simp only [Nat.one_lt_ofNat]) (Max_X_gt_one i1)
-  rw [Qp_Range_YX_eq_Qp_range hΔ0 hr, Qp_Range_YX_eq_Qp_range hΔ0 hRp_opt0]
+  rw [Qp_Range_YX_eq_Qp_range hΔ0 hr, Qp_Range_YX_eq_Qp_range hΔ0 (le_of_lt hRp_opt0)]
   have : 2 ^ Rp_opt Δ = Max_X (2 ^ Δ) :=by
     have iA := @A_pos (2 ^ Δ) i1;
     have iB := @B_pos (2 ^ Δ) i1;
@@ -272,28 +272,28 @@ lemma lemma63sub  (hΔ  : r < Δ) (hr : 0 < r) : Qp_Range Δ r ≤ Qp_Range Δ (
   apply rpow_lt_rpow_of_exponent_lt (by simp only [Nat.one_lt_ofNat]) hΔ
 
 
-lemma q_lower_bound (hi : i ≤ 0) (hr1 : 0 < r) (hr2 : r < Δ) : Qp_lo Δ r ≤ Qp Δ i r :=
-  StrictAntiOn.antitoneOn (Lemma62 hr1 hr2) hi Set.right_mem_Iic hi
+lemma q_lower_bound (hi : i ≤ 0) (hr1 : 0 ≤ r) (hr2 : r < Δ) : Qp_lo Δ r ≤ Qp Δ i r :=
+  Lemma62 hr1 hr2 hi Set.right_mem_Iic hi
 
-lemma q_upper_bound (hi : i ≤ 0) (hr : 0 < r) (hΔ : r < Δ) : Qp Δ i r ≤ Qp_hi Δ r := by
+lemma q_upper_bound (hi : i ≤ 0) (hr : 0 ≤ r) (hΔ : r < Δ) : Qp Δ i r ≤ Qp_hi Δ r := by
   apply ge_of_tendsto (Lemma61 hr (by linarith))
   simp only [eventually_atBot]
-  use i; intro b hb;
-  apply StrictAntiOn.antitoneOn (Lemma62 hr hΔ) (by simp only [Set.mem_Iic]; linarith) (by simp only [Set.mem_Iic]; linarith) hb
+  use i; intro b hb
+  apply Lemma62 hr hΔ (by simp only [Set.mem_Iic]; linarith) (by simp only [Set.mem_Iic]; linarith) hb
 
 
-lemma lemma63 (hi : i ≤ 0) (hc : c ≤ 0) (hr : 0 < r) (hΔ : r < Δ) :
+lemma lemma63 (hi : i ≤ 0) (hc : c ≤ 0) (hr : 0 ≤ r) (hΔ : r < Δ) :
     |Qp Δ i r - Qp Δ c r| ≤ Qp_hi Δ (Rp_opt Δ) - Qp_lo Δ (Rp_opt Δ) := by
   have i1:  Qp_hi Δ r - Qp_lo Δ r ≤ Qp_hi Δ (Rp_opt Δ) - Qp_lo Δ (Rp_opt Δ):=by apply lemma63sub hΔ hr
   have case1:  Qp Δ i r - Qp Δ c r ≥ 0 → |Qp Δ i r - Qp Δ c r| ≤ Qp_hi Δ (Rp_opt Δ) - Qp_lo Δ (Rp_opt Δ) :=by
     intro i0
     have i2: Qp Δ i r ≤ Qp_hi Δ r := by apply q_upper_bound; linarith; assumption; assumption;
     have i3: Qp_lo Δ r ≤ Qp Δ c r := by apply q_lower_bound; assumption; assumption; assumption;
-    have e0:   |Qp Δ i r - Qp Δ c r| = Qp Δ i r - Qp Δ c r :=by apply abs_of_nonneg; linarith
+    have e0: |Qp Δ i r - Qp Δ c r| = Qp Δ i r - Qp Δ c r := by apply abs_of_nonneg; linarith
     linarith
   apply by_cases case1; simp;
   intro i0
   have i2: Qp Δ c r ≤ Qp_hi Δ r := by apply q_upper_bound; linarith; assumption; assumption;
   have i3: Qp_lo Δ r ≤ Qp Δ i r := by apply q_lower_bound; assumption; assumption; assumption;
-  have e0:   |Qp Δ i r - Qp Δ c r| = -(Qp Δ i r - Qp Δ c r) :=by apply abs_of_neg; linarith
+  have e0:   |Qp Δ i r - Qp Δ c r| = -(Qp Δ i r - Qp Δ c r) := by apply abs_of_neg; linarith
   linarith
