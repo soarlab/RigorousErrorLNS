@@ -44,7 +44,7 @@ def Rp_opt (Δ : ℝ) :=
 
 def Qm (Δ i r : ℝ) := Em i r / Em i Δ
 
-def Qm_hi (Δ r : ℝ) := Qm Δ (-1) r
+def Qm_hi (Δ i r : ℝ) := Qm Δ i r
 
 def Qm_lo (Δ r : ℝ) := (2 ^ (-r) + r * log 2 - 1) / (2 ^ (-Δ) + Δ * log 2 - 1)
 

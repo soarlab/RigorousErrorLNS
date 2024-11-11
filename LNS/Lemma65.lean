@@ -9,9 +9,9 @@ open Real
 
 noncomputable section
 
-private def Gm a b := (Fm b a)/ ((deriv (Fm b)) a)
+private def Gm a b := Fm b a / deriv (Fm b) a
 
-private def Km a b := - a * a * log (1-a) + a * a * log (b-a) + a * b - a + b * log (1-a) + b * log b - b * log (b-a)
+private def Km a b := -a * a * log (1-a) + a * a * log (b-a) + a * b - a + b * log (1-a) + b * log b - b * log (b-a)
 
 lemma deriv_Km (ha: a ∈ (Set.Ioo 0 1)): Set.EqOn (deriv (Km a))
       (fun b=> (a*a)/(b-a) + a - b/(b-a) + log b + log (1-a) - log (b-a) + (1:ℝ)) (Set.Ici 1) :=by
@@ -33,7 +33,7 @@ lemma deriv2_Km (ha: a ∈ (Set.Ioo 0 1)):  Set.EqOn (deriv (deriv (Km a)))
       (fun b=> (a*a)/(b-a) + a - b/(b-a) + log b + log (1-a) - log (b-a) + (1:ℝ)) (Set.Ioi 1):=by
     apply Set.EqOn.mono _ (deriv_Km ha)
     simp only [Set.Ioi_subset_Ici_iff, le_refl]
-  intro b hb; rw[deriv_EqOn2 e hb]
+  intro b hb; rw[deriv_EqOn_Ioi e hb]
   get_deriv (fun b=> (a*a)/(b-a) + a - b/(b-a) + log b + log (1-a) - log (b-a) + (1:ℝ)) within (Set.Ioi 1)
   simp only [Set.mem_Ioi, List.Forall, toFun, ne_eq, id_eq, and_self_left]
   simp only [Set.mem_Ioo, Set.mem_Ioi] at ha hb
@@ -102,7 +102,7 @@ lemma deriv_Gm_b_pos (ha: a ∈ (Set.Ioo 0 1)) (hb: b ∈ (Set.Ioi 1))
   rw[deriv_div];
   have : deriv (Fm b) a ^ 2 > 0 :=by apply pow_pos (deriv_Fm_a_pos ha hb)
   apply div_pos
-  rw[deriv_Fm_a_b ha hb, deriv_Fm_b ha hb, deriv_Fm_a (by simp only [Set.mem_Ici]; linarith) ha]
+  rw[deriv_Fm_a_b ha hb, deriv_Fm_b ha (le_of_lt hb), deriv_Fm_a (le_of_lt hb) ha]
   unfold Fm
   simp only
   simp only [Set.mem_Ioo, Set.mem_Ioi] at ha hb
@@ -117,7 +117,7 @@ lemma deriv_Gm_b_pos (ha: a ∈ (Set.Ioo 0 1)) (hb: b ∈ (Set.Ioi 1))
   positivity
   apply Km_neg ha hb
   apply pow_pos (deriv_Fm_a_pos ha hb)
-  exact differentiable_Fm_b ha hb
+  exact differentiable_Fm_b ha (le_of_lt hb)
   exact differentiable_Fm_a_b ha hb
   apply ne_of_gt (deriv_Fm_a_pos ha hb)
 
@@ -127,7 +127,7 @@ lemma Mono_Gm_b (ha: a ∈ (Set.Ioo 0 1)) : StrictMonoOn (Gm a) (Set.Ioi 1):=by
   apply ContinuousOn.div
   apply ContinuousAt.continuousOn
   intro b hb
-  apply DifferentiableAt.continuousAt (differentiable_Fm_b ha hb)
+  apply DifferentiableAt.continuousAt (differentiable_Fm_b ha (le_of_lt hb))
   apply ContinuousAt.continuousOn
   intro b hb
   apply DifferentiableAt.continuousAt (differentiable_Fm_a_b ha hb)
@@ -138,43 +138,45 @@ lemma deriv_Fm_div_pos (ha: a ∈ (Set.Ioo 0 1)) (hb: b > 1) (hc: c > b) : deriv
   have ie : Gm a b < Gm a c :=by apply Mono_Gm_b ha hb (by simp only [Set.mem_Ioi];linarith) hc
   unfold Gm at ie
   have i1: deriv (Fm b) a > 0 := by apply deriv_Fm_a_pos ha hb
-  have i2: deriv (Fm c) a > 0 := by apply deriv_Fm_a_pos ha; simp only [Set.mem_Ioi]; linarith
+  have i2: deriv (Fm c) a > 0 := by apply deriv_Fm_a_pos ha; linarith
   simp only [div_lt_div_iff i1 i2] at ie
   rw[deriv_div]
   apply div_pos; linarith
-  apply pow_pos (Fm_pos ha (by simp only [Set.mem_Ioi]; linarith))
-  apply differentiable_Fm_a ha hb
-  apply differentiable_Fm_a ha (by simp only [Set.mem_Ioi]; linarith)
-  apply ne_of_gt (Fm_pos ha (by simp only [Set.mem_Ioi]; linarith))
+  apply pow_pos (Fm_pos ha (by linarith))
+  apply differentiable_Fm_a ha (le_of_lt hb)
+  apply differentiable_Fm_a ha (by linarith)
+  apply ne_of_gt (Fm_pos ha (by linarith))
 
 
-lemma Lemma65 (hr1 : 0 < r) (hr2 : r < Δ):  StrictMonoOn (fun i => Qm Δ i r) (Set.Iic (-1:ℝ)):= by
-  have i1: ∀ x ∈ Set.Iio (0:ℝ), (2:ℝ)  ^ x ∈ Set.Ioo 0 1 :=by
+lemma Lemma65_strictMono (hr1 : 0 < r) (hr2 : r < Δ) :
+    StrictMonoOn (fun i => Qm Δ i r) (Set.Iio 0) := by
+  have i1: ∀ x ∈ Set.Iio (0:ℝ), (2:ℝ) ^ x ∈ Set.Ioo 0 1 :=by
     intro x hx
     simp only [Set.mem_Ioo, Nat.ofNat_pos, rpow_pos_of_pos, true_and]
     apply rpow_lt_one_of_one_lt_of_neg (by simp only [Nat.one_lt_ofNat]) hx
-  have i2: ∀ x ∈ Set.Ioi (0:ℝ), (2:ℝ)  ^ x ∈ Set.Ioi 1 :=by
+  have i2: ∀ x ∈ Set.Ioi (0:ℝ), (2:ℝ) ^ x ∈ Set.Ioi 1 :=by
     intro x hx
     apply one_lt_rpow (by simp only [Nat.one_lt_ofNat]) hx
-  apply strictMonoOn_of_deriv_pos (convex_Iic (-1:ℝ))
-  have: ContinuousOn (fun i ↦ Qm Δ i r) (Set.Iic (-1:ℝ)) :=by
-    have: ∀ t > 0, DifferentiableOn ℝ (Em_i t) (Set.Iic (-1:ℝ)):= by
+  apply strictMonoOn_of_deriv_pos (convex_Iio 0)
+  have: ContinuousOn (fun i ↦ Qm Δ i r) (Set.Iio 0) :=by
+    have: ∀ t > 0, DifferentiableOn ℝ (Em_i t) (Set.Iio 0):= by
       intro t ht
       apply DifferentiableOn.mono (@differentiable_Em_i t (by simp only [Set.mem_Ici]; linarith))
-      rw[Set.Iic_subset_Iio]; simp only [Left.neg_neg_iff, zero_lt_one]
+      exact subset_refl _
     unfold Qm; apply ContinuousOn.div;
     apply DifferentiableOn.continuousOn (this r hr1)
     apply DifferentiableOn.continuousOn (this Δ (by linarith))
     intro x hx; simp only [Set.mem_Iic] at hx
-    apply ne_of_gt (Em_r_pos (by simp only [Set.mem_Iio]; linarith) (by linarith))
+    apply ne_of_gt (Em_r_pos _ (by linarith))
+    simp only [Set.mem_Iio] at hx; linarith
   exact this
-  intro x hx; simp only [Set.nonempty_Ioi, interior_Iic'] at hx
-  have : Set.EqOn (fun i ↦ Qm Δ i r) ((fun a => Fm (2^r) a / Fm (2^Δ) a) ∘ (fun i=> 2^i)) (Set.Iio (-1:ℝ)):=by
+  intro x hx; simp only [interior_Iio, Set.mem_Iio] at hx
+  have : Set.EqOn (fun i ↦ Qm Δ i r) ((fun a => Fm (2^r) a / Fm (2^Δ) a) ∘ (fun i=> 2^i)) (Set.Iio 0) := by
     intro i hi; simp only [Function.comp_apply]; rw[Qm_of_Fm]; simp only [Function.comp_apply]
-    simp only [Set.mem_Iio]; simp only [Set.mem_Iio] at hi; linarith; assumption; linarith
-  rw[deriv_EqOn this hx, deriv.comp]
+    simp only [Set.mem_Iio]; simp only [Set.mem_Iio] at hi; linarith; linarith; linarith
+  rw[deriv_EqOn_Iio this hx, deriv.comp]
   apply mul_pos
-  any_goals have hx: x ∈ Set.Iio 0 :=by simp only [Set.mem_Iio] ; simp only [Set.mem_Iio] at hx; linarith
+  any_goals have hx: x ∈ Set.Iio 0 :=by simp only [Set.mem_Iio] ;  linarith
   apply deriv_Fm_div_pos (i1 x hx) (i2 r hr1)
   apply rpow_lt_rpow_of_exponent_lt (by simp only [Nat.one_lt_ofNat]) hr2
   get_deriv (fun i ↦ 2 ^ i)
@@ -182,7 +184,17 @@ lemma Lemma65 (hr1 : 0 < r) (hr2 : r < Δ):  StrictMonoOn (fun i => Qm Δ i r) (
   simp only [toFun, zero_mul, one_mul, zero_add] at h
   simp only [h, Nat.ofNat_pos, rpow_pos_of_pos, mul_pos_iff_of_pos_left, Nat.one_lt_ofNat, log_pos]
   apply DifferentiableAt.div
-  apply differentiable_Fm_a (i1 x hx) (i2 r hr1);
-  apply differentiable_Fm_a (i1 x hx) (i2 Δ (by simp only [Set.mem_Ioi]; linarith));
+  apply differentiable_Fm_a (i1 x hx) (le_of_lt (i2 r hr1));
+  apply differentiable_Fm_a (i1 x hx) (le_of_lt (i2 Δ (by simp only [Set.mem_Ioi]; linarith)))
   apply ne_of_gt (Fm_pos (i1 x hx) (i2 Δ (by simp only [Set.mem_Ioi]; linarith)))
   apply DifferentiableAt.rpow <;> simp
+
+lemma Lemma65 (hr1 : 0 ≤ r) (hr2 : r < Δ) :
+    MonotoneOn (fun i => Qm Δ i r) (Set.Iio 0) := by
+  cases le_iff_lt_or_eq.mp hr1 with
+  | inl hr =>
+    apply StrictMonoOn.monotoneOn
+    exact Lemma65_strictMono hr hr2
+  | inr hr =>
+    simp only [← hr, Qm, Em_eq_zero, zero_div]
+    exact antitoneOn_const
