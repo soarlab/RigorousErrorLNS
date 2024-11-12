@@ -133,7 +133,7 @@ lemma bound_case2 (Φe : FunApprox Φm (Set.Iic (-1))) (hx : x < 0) (hk : k Δa 
     linarith
   linarith
 
--- end Cotrans2
+end Cotrans2
 
 -- /-Case 3-/
 
@@ -214,3 +214,32 @@ lemma bound_case2 (Φe : FunApprox Φm (Set.Iic (-1))) (hx : x < 0) (hk : k Δa 
 --       linarith
 --     unfold Ek2; linarith
 --   linarith
+
+
+
+private def f_aux (x : ℝ) := x - Φm x
+
+lemma f_aux_strictMono : StrictMonoOn f_aux (Set.Iio 0) := by
+  unfold f_aux
+  apply strictMonoOn_of_deriv_pos (convex_Iio _)
+  · apply ContinuousOn.sub (continuousOn_id' (Set.Iio 0))
+    apply differentiable_Φm.continuousOn
+  · simp only [interior_Iio, Set.mem_Iio, differentiableAt_id']
+    intro x hx
+    rw [deriv_sub differentiableAt_id' (differentiable_Φm.differentiableAt (Iio_mem_nhds hx))]
+    rw [deriv_id'', deriv_Φm hx]
+    simp only [sub_pos]
+    have : 1 - (2 : ℝ) ^ x > 0 := by
+      simp only [gt_iff_lt, sub_pos]
+      exact rpow_lt_one_of_one_lt_of_neg one_lt_two hx
+    rw [div_lt_one this]
+    linarith
+
+lemma k_bound (ha : Δa > 0) (hx : x ≤ -Δa) : k Δa x ≤ k Δa (-Δa) := by
+  unfold k
+  have eq : x = rb2 Δa x - ra2 Δa x := by unfold ra2; linarith
+  rw (config := {occs := .pos [1]}) [eq]
+  set a := ra2 _ _
+  set b := rb2 _ _
+  have eq : forall c d, b - a - c + d = (b - c) - (a - d) := by intros; ring
+  rw [eq, ← f_aux, ← f_aux]
