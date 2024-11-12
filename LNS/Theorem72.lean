@@ -235,11 +235,61 @@ lemma f_aux_strictMono : StrictMonoOn f_aux (Set.Iio 0) := by
     rw [div_lt_one this]
     linarith
 
-lemma k_bound (ha : Δa > 0) (hx : x ≤ -Δa) : k Δa x ≤ k Δa (-Δa) := by
+
+lemma ix_eq_n_delta {Δ : ℝ} (n : ℤ) (hd : Δ > 0) : Iₓ Δ (n * Δ) = n * Δ := by
+  unfold Iₓ
+  rw [mul_div_cancel_right₀ _ (by linarith : Δ ≠ 0)]
+  simp only [Int.ceil_intCast]
+
+lemma rb2_alt : rb2 Δa x = Iₓ Δa x - Δa := by unfold rb2 Iₓ; linarith
+
+lemma ra2_alt : ra2 Δa x = Rₓ Δa x - Δa := by
+  unfold ra2 Rₓ
+  rw [rb2_alt, sub_right_comm]
+
+lemma ra2_lt_zero (ha : Δa > 0) : ra2 Δa x < 0 := by
+  rw [ra2_alt]; linarith [rx_lt_delta ha x]
+
+lemma ra2_ge_neg_delta (ha : Δa > 0) : ra2 Δa x ≥ -Δa := by
+  rw [ra2_alt]; linarith [rx_nonneg ha x]
+
+lemma rb2_le_2delta (ha : Δa > 0) (hx : x ≤ -Δa) : rb2 Δa x ≤ -2 * Δa := by
+  rw [rb2_alt, sub_le_iff_le_add]; ring_nf
+  have : -Δa = ((-1) : ℤ) * Δa := by
+    simp only [Int.reduceNeg, Int.cast_neg, Int.cast_one, neg_mul, one_mul]
+  rw [this, ←ix_eq_n_delta _ ha, ←this]
+  exact ix_monotone ha hx
+
+lemma k_bound_aux (hd : d > 0) : Φm (-2 * d) - Φm (-d) = Φp (-d) := by
+  unfold Φm Φp
+  have neg_d : -d < 0 ∧ -2 * d < 0 := by constructor <;> linarith
+  have ineq_d := one_minus_two_pow_ne_zero2 _ neg_d.1
+  rw [← logb_div (one_minus_two_pow_ne_zero2 _ neg_d.2) ineq_d]
+  have : 1 - (2 : ℝ) ^ (-2 * d) = (1 - (2 : ℝ) ^ (-d)) * (1 + (2 : ℝ) ^ (-d)) := by
+    rw [(by linarith : -2 * d = (-d) * 2), rpow_mul]
+    ring_nf; simp only [rpow_two]
+    norm_num
+  rw [this]
+  field_simp
+
+lemma k_bound (ha : Δa > 0) (hx : x ≤ -Δa) : k Δa x ≤ -Δa - Φp (-Δa) := by
   unfold k
   have eq : x = rb2 Δa x - ra2 Δa x := by unfold ra2; linarith
   rw (config := {occs := .pos [1]}) [eq]
   set a := ra2 _ _
   set b := rb2 _ _
+  have bx : b < x := rb2_lt_x _ ha
+  have b0 : b < 0 := by linarith
+  have a0 : a < 0 := by linarith
   have eq : forall c d, b - a - c + d = (b - c) - (a - d) := by intros; ring
   rw [eq, ← f_aux, ← f_aux]
+  have ineq1 : f_aux b ≤ f_aux (-2 * Δa) := by
+    apply f_aux_strictMono.monotoneOn b0 (by linarith : -2 * Δa < 0)
+    exact rb2_le_2delta ha hx
+  have ineq2 : f_aux (-Δa) ≤ f_aux a := by
+    apply f_aux_strictMono.monotoneOn (by linarith : -Δa < 0) a0
+    exact ra2_ge_neg_delta ha
+  apply le_trans (by linarith : f_aux b - f_aux a ≤ f_aux (-2 * Δa) - f_aux (-Δa))
+  unfold f_aux
+  have eq : forall a b c : ℝ, -2 * a - b - (-a - c) = -a - (b - c) := by intros; ring
+  rw [eq, k_bound_aux ha]
