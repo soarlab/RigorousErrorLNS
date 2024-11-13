@@ -145,11 +145,26 @@ lemma DifferentiableAt.comp_sub_const {a x : ℝ} {f : ℝ → ℝ} :
 
 
 
-section Derivatives
-
-/- Special derivatives -/
+section Diff
 
 open Real
+
+lemma deriv_EqOn_open {f1 f2 : ℝ → ℝ} (hs : IsOpen s) (h : Set.EqOn f1 f2 s) (hx : x ∈ s) :
+    deriv f1 x = deriv f2 x := by
+  apply Filter.EventuallyEq.deriv_eq
+  apply Filter.eventuallyEq_of_mem _ h
+  exact IsOpen.mem_nhds hs hx
+
+lemma deriv_EqOn_Iio {f1 f2: ℝ → ℝ} (h: Set.EqOn f1 f2 (Set.Iio (a:ℝ))) (hx: x ∈ Set.Iio (a:ℝ)) :
+    deriv f1 x = deriv f2 x := deriv_EqOn_open isOpen_Iio h hx
+
+lemma deriv_EqOn_Ioi {f1 f2: ℝ → ℝ} (h: Set.EqOn f1 f2 (Set.Ioi (a:ℝ))) (hx: x ∈ (Set.Ioi (a:ℝ))) :
+    deriv f1 x = deriv f2 x := deriv_EqOn_open isOpen_Ioi h hx
+
+lemma deriv_EqOn_Ioo {f1 f2: ℝ → ℝ} (h: Set.EqOn f1 f2 (Set.Ioo (a:ℝ) (b:ℝ))) (hx: x ∈ (Set.Ioo (a:ℝ) (b:ℝ))) :
+    deriv f1 x = deriv f2 x := deriv_EqOn_open isOpen_Ioo h hx
+
+/- Special derivatives -/
 
 -- lemma HasDerivAt.const_rpow {f : ℝ → ℝ} {f' a : ℝ} (ha : 0 < a) (hf : HasDerivAt f f' x) :
 --     HasDerivAt (fun x => a ^ f x) (f' * a ^ f x * Real.log a) x := by
@@ -170,7 +185,7 @@ theorem DifferentiableOn.logb (hf : DifferentiableOn ℝ f s) (hx : ∀ x ∈ s,
   unfold Real.logb
   fun_prop (disch := assumption)
 
-end Derivatives
+end Diff
 
 /- Some special limits -/
 

@@ -64,20 +64,7 @@ lemma aux_eq2 :  (2:ℝ)  ^ ((x:ℝ) - r) = 2^x /2^r :=by
 @[simp]
 lemma numineq : ¬ (2:ℝ) = -1 :=by linarith
 
-lemma deriv_EqOn_open {f1 f2 : ℝ → ℝ} (hs : IsOpen s) (h : Set.EqOn f1 f2 s) (hx : x ∈ s) :
-    deriv f1 x = deriv f2 x := by
-  apply Filter.EventuallyEq.deriv_eq
-  apply Filter.eventuallyEq_of_mem _ h
-  exact IsOpen.mem_nhds hs hx
 
-lemma deriv_EqOn_Iio {f1 f2: ℝ → ℝ} (h: Set.EqOn f1 f2 (Set.Iio (a:ℝ))) (hx: x ∈ Set.Iio (a:ℝ)) :
-    deriv f1 x = deriv f2 x := deriv_EqOn_open isOpen_Iio h hx
-
-lemma deriv_EqOn_Ioi {f1 f2: ℝ → ℝ} (h: Set.EqOn f1 f2 (Set.Ioi (a:ℝ))) (hx: x ∈ (Set.Ioi (a:ℝ))) :
-    deriv f1 x = deriv f2 x := deriv_EqOn_open isOpen_Ioi h hx
-
-lemma deriv_EqOn_Ioo {f1 f2: ℝ → ℝ} (h: Set.EqOn f1 f2 (Set.Ioo (a:ℝ) (b:ℝ))) (hx: x ∈ (Set.Ioo (a:ℝ) (b:ℝ))) :
-    deriv f1 x = deriv f2 x := deriv_EqOn_open isOpen_Ioo h hx
 
 /- Derivatives and differentiability of Φ -/
 

@@ -7,7 +7,7 @@ lemma i_sub_r_eq_x (Δ x : ℝ) : Iₓ Δ x - Rₓ Δ x = x := by
   simp only [Iₓ, Rₓ, sub_sub_cancel]
 
 lemma x_le_ix {Δ} (hd : 0 < Δ) x : x ≤ Iₓ Δ x :=
-  (div_le_iff hd).mp $ Int.le_ceil $ x / Δ
+  (div_le_iff₀ hd).mp $ Int.le_ceil $ x / Δ
 
 lemma ix_eq_n_delta {Δ : ℝ} (n : ℤ) (hd : Δ ≠ 0) : Iₓ Δ (n * Δ) = n * Δ := by
   unfold Iₓ
@@ -45,7 +45,7 @@ lemma ix_lt_zero (hd : 0 < Δ) (hx : x ≤ -Δ) : Iₓ Δ x < 0 := by
   simp only [Int.cast_lt_zero]
   apply lt_of_le_of_lt _ (by norm_num : -1 < 0)
   simp only [Int.ceil_le, Int.reduceNeg, Int.cast_neg, Int.cast_one]
-  rw [div_le_iff hd, neg_mul, one_mul]
+  rw [div_le_iff₀ hd, neg_mul, one_mul]
   exact hx
 
 lemma ix_monotone (hd : 0 < Δ) : Monotone (Iₓ Δ) := by
