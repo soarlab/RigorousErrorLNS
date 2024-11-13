@@ -5,19 +5,6 @@ set_option maxHeartbeats 10000000
 
 noncomputable section
 
-/- FunApprox f s models an approximation of a function f on s -/
-structure FunApprox (f : ℝ → ℝ) (s : Set ℝ) where
-  fe : ℝ → ℝ
-  err : ℝ
-  herr : ∀ x ∈ s, |fe x - f x| ≤ err
-
-instance : CoeFun (FunApprox f s) (fun _ => ℝ → ℝ) where
-  coe fapprox := fapprox.fe
-
-lemma funApprox_err_sym (g : FunApprox f s) :
-    ∀ x ∈ s, |f x - g x| ≤ g.err := by
-  intro x xs; rw [abs_sub_comm]; exact g.herr x xs
-
 open LNS
 open Real
 open Real Filter Topology
@@ -27,11 +14,6 @@ variable (fix : FixedPoint)
 lemma hrndn : |fix.rnd x - x| ≤ fix.ε := by
   rw [abs_sub_comm]
   exact fix.hrnd x
-
-attribute [fun_prop] differentiable_Φp
-
-@[fun_prop]
-lemma continuous_Φp : Continuous Φp := differentiable_Φp.continuous
 
 /-Case 2-/
 
@@ -56,9 +38,7 @@ private def f_aux (x : ℝ) := x - Φm x
 
 lemma f_aux_strictMono : StrictMonoOn f_aux (Set.Iio 0) := by
   unfold f_aux
-  apply strictMonoOn_of_deriv_pos (convex_Iio _)
-  · apply ContinuousOn.sub (continuousOn_id' (Set.Iio 0))
-    apply differentiable_Φm.continuousOn
+  apply strictMonoOn_of_deriv_pos (convex_Iio _) (by fun_prop)
   · simp only [interior_Iio, Set.mem_Iio, differentiableAt_id']
     intro x hx
     rw [deriv_sub differentiableAt_id' (differentiable_Φm.differentiableAt (Iio_mem_nhds hx))]
@@ -92,11 +72,6 @@ lemma krnd_bound (Δa x : ℝ) : |k Δa x - krnd fix Δa x| ≤ 2 * fix.ε := by
   have i2 : |a2| ≤ fix.ε := by apply fix.hrnd
   linarith
 
-
-lemma ix_eq_n_delta {Δ : ℝ} (n : ℤ) (hd : Δ > 0) : Iₓ Δ (n * Δ) = n * Δ := by
-  unfold Iₓ
-  rw [mul_div_cancel_right₀ _ (by linarith : Δ ≠ 0)]
-  simp only [Int.ceil_intCast]
 
 lemma rb2_alt : rb2 Δa x = Iₓ Δa x - Δa := by unfold rb2 Iₓ; linarith
 
@@ -240,11 +215,9 @@ theorem Theorem72_case2
     |Φm x - Prnd2 fix Δa Φe x| ≤ fix.ε + Φm (-1 - 2 * fix.ε) - Φm (-1) + Φe.err := by
   apply bound_case2 fix ha Φe (by linarith : x < 0)
   · linarith [k_bound' ha hx]
-  · have ineq1 := krnd_bound fix Δa x
+  · have ineq1 := (abs_le.mp (krnd_bound fix Δa x)).1
     have ineq2 := k_bound' ha hx
-    rw [abs_le] at ineq1
-    linarith [ineq1.1, ineq1.2]
-
+    linarith
 
 end Cotrans2
 

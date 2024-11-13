@@ -13,21 +13,7 @@ namespace LNS
 
 open Real
 
-attribute [fun_prop] Differentiable.div_const
-attribute [fun_prop] Differentiable.rpow
-attribute [fun_prop] Differentiable.log
-attribute [fun_prop] Differentiable.exp
-attribute [fun_prop] Differentiable.div
-attribute [fun_prop] DifferentiableOn.div_const
-attribute [fun_prop] DifferentiableOn.rpow
-attribute [fun_prop] DifferentiableOn.log
-attribute [fun_prop] DifferentiableOn.exp
-attribute [fun_prop] DifferentiableOn.div
-attribute [fun_prop] ContinuousOn.div_const
-attribute [fun_prop] ContinuousOn.rpow
-attribute [fun_prop] ContinuousOn.log
-attribute [fun_prop] ContinuousOn.exp
-attribute [fun_prop] ContinuousOn.div
+
 
 attribute [simp] rpow_pos_of_pos
 attribute [simp] log_pos
@@ -40,33 +26,7 @@ def Fp b a := -(a + 1) * log (a + 1) + (a + 1) * log (a + b) - log b
 
 def Fm b a := (1 - a) * log (1 - a) - (1 - a) * log (b - a) + log b
 
-/-
-  INEQUALITIES FOR FUN_PROP
--/
 
-@[simp]
-lemma one_plus_two_pow_pos (x : ℝ) : 0 < 1 + (2 : ℝ) ^ x := by
-  linarith [rpow_pos_of_pos two_pos x]
-
-@[simp]
-lemma one_plus_two_pow_ne_zero (x : ℝ) : 1 + (2 : ℝ) ^ x ≠ 0 := by
-  linarith [rpow_pos_of_pos two_pos x]
-
-
-@[simp]
-lemma one_minus_two_pow_ne_zero2 :  ∀ x < (0:ℝ),  ¬ 1 - (2:ℝ) ^ x = 0 :=by
-  intro x h
-  have ieq : (2:ℝ) ^ x < 1:=by refine rpow_lt_one_of_one_lt_of_neg ?hx h; linarith
-  linarith
-
-@[simp]
-lemma one_minus_two_pow_ne_zero :  ∀ x ∈ Set.Iio (0:ℝ),  1 - (2:ℝ) ^ x ≠ 0 :=by
-  simp only [Set.mem_Iio, ne_eq] ;  exact one_minus_two_pow_ne_zero2
-
-
-@[simp]
-lemma two_ne_zero :  ∀ x ∈ Set.Iio (0:ℝ),  (2:ℝ)  ≠ (0:ℝ)  :=by
-  simp only [Set.mem_Iio, ne_eq, OfNat.ofNat_ne_zero, not_false_eq_true, implies_true]
 
 lemma one_minus_two_pow_ne_zero3 (hi: i < (0:ℝ)) (hr: r > 0): 1 - (2:ℝ) ^(i-r) ≠ 0 :=by
   apply one_minus_two_pow_ne_zero2; linarith
@@ -100,51 +60,6 @@ lemma aux_eq1:  rexp (-(log 2 * r) )= 1/ 2 ^ r :=by
 lemma aux_eq2 :  (2:ℝ)  ^ ((x:ℝ) - r) = 2^x /2^r :=by
   simp only [Nat.ofNat_pos, rpow_sub];
 
-lemma i_sub_r_eq_x (Δ x : ℝ) : Iₓ Δ x - Rₓ Δ x = x := by
-  simp only [Iₓ, Rₓ, sub_sub_cancel]
-
-lemma x_le_ix {Δ} (hd : 0 < Δ) x : x ≤ Iₓ Δ x :=
-  (div_le_iff hd).mp $ Int.le_ceil $ x / Δ
-
-lemma x_neg_iff_ix_neg {Δ} (hd : 0 < Δ) x : x ≤ 0 ↔ Iₓ Δ x ≤ 0 := by
-  constructor
-  · intro hx
-    apply mul_nonpos_of_nonpos_of_nonneg _ (le_of_lt hd)
-    rw [← Int.cast_zero, Int.cast_le, Int.ceil_le, Int.cast_zero]
-    exact div_nonpos_of_nonpos_of_nonneg hx (le_of_lt hd)
-  · exact le_trans (x_le_ix hd x)
-
-lemma rx_eq_zero_iff {Δ x : ℝ} : Rₓ Δ x = 0 ↔ Iₓ Δ x = x := by
-  simp only [Rₓ, Iₓ, sub_eq_zero]
-
-lemma rx_eq_fract {Δ x : ℝ} (hd : Δ ≠ 0) (ix : Iₓ Δ x ≠ x) :
-    Rₓ Δ x = Δ * (1 - Int.fract (x / Δ)) := by
-  unfold Rₓ Iₓ at *
-  rcases Int.fract_eq_zero_or_add_one_sub_ceil (x / Δ) with h | h
-  · exfalso; apply ix
-    simp only [Int.ceil_eq_self.mpr h]; field_simp
-  · rw [h]; field_simp; ring
-
-lemma rx_nonneg {Δ} (hd : 0 < Δ) x : 0 ≤ Rₓ Δ x :=
-  Int.ceil_div_mul_sub_nonneg hd
-
-lemma rx_lt_delta {Δ} (hd : 0 < Δ) x : Rₓ Δ x < Δ :=
-  Int.ceil_div_mul_sub_lt hd
-
-lemma ix_lt_zero (hd : 0 < Δ) (hx : x ≤ -Δ) : Iₓ Δ x < 0 := by
-  unfold Iₓ
-  apply mul_neg_of_neg_of_pos _ hd
-  simp only [Int.cast_lt_zero]
-  apply lt_of_le_of_lt _ (by norm_num : -1 < 0)
-  simp only [Int.ceil_le, Int.reduceNeg, Int.cast_neg, Int.cast_one]
-  rw [div_le_iff hd, neg_mul, one_mul]
-  exact hx
-
-lemma ix_monotone (hd : 0 < Δ) : Monotone (Iₓ Δ) := by
-  unfold Iₓ; intro a b hab; simp only
-  rw [mul_le_mul_right hd, Int.cast_le]
-  apply Int.ceil_le_ceil
-  exact (div_le_div_right hd).mpr hab
 
 @[simp]
 lemma numineq : ¬ (2:ℝ) = -1 :=by linarith
@@ -166,55 +81,6 @@ lemma deriv_EqOn_Ioo {f1 f2: ℝ → ℝ} (h: Set.EqOn f1 f2 (Set.Ioo (a:ℝ) (b
 
 /- Derivatives and differentiability of Φ -/
 
-lemma differentiable_Φp : Differentiable ℝ Φp := by
-  unfold Φp logb;
-  fun_prop (disch := simp)
-
-lemma deriv_Φp : deriv Φp = fun (x : ℝ) => (2 : ℝ) ^ x / (1 + (2 : ℝ) ^ x) := by
-  unfold Φp logb
-  deriv_EQ fun x ↦ log (1 + 2 ^ x) / log 2
-
-lemma deriv2_Φp : deriv (deriv Φp) = fun x => (2 : ℝ) ^ x * log 2 / (1 + (2 : ℝ) ^ x) ^ 2 := by
-  simp only [deriv_Φp]
-  deriv_EQ (fun x ↦ 2 ^ x / (1 + 2 ^ x))
-
-lemma deriv_Φp_pos : (deriv Φp) x > 0 :=by
-  simp only [deriv_Φp, gt_iff_lt, Nat.ofNat_pos, rpow_pos_of_pos, div_pos_iff_of_pos_left,
-    one_plus_two_pow_pos]
-
-lemma deriv2_Φp_pos :  deriv (deriv Φp) x > 0:= by
-  simp only [deriv2_Φp, gt_iff_lt, one_plus_two_pow_pos, pow_pos, div_pos_iff_of_pos_right,
-    Nat.ofNat_pos, rpow_pos_of_pos, mul_pos_iff_of_pos_left, Nat.one_lt_ofNat, log_pos]
-
-lemma differentiable_Φm : DifferentiableOn ℝ Φm (Set.Iio (0:ℝ)):=by
-  unfold Φm logb;
-  have i:= one_minus_two_pow_ne_zero
-  have i2:= two_ne_zero
-  fun_prop (disch:=assumption)
-
-lemma deriv_Φm : Set.EqOn (deriv Φm) (fun x=> -(2 : ℝ) ^ x / (1 - (2 : ℝ) ^ x)) (Set.Iio (0:ℝ)) := by
-  unfold Φm logb
-  get_deriv (fun x ↦ log (1 - 2 ^ x) / log 2) within (Set.Iio (0:ℝ))
-  simp only [Set.mem_Iio, List.Forall, toFun, ne_eq, log_eq_zero, OfNat.ofNat_ne_zero,
-    OfNat.ofNat_ne_one, numineq, or_self, not_false_eq_true, id_eq, gt_iff_lt, Nat.ofNat_pos,
-    and_self, and_true, true_and]
-  exact one_minus_two_pow_ne_zero2
-  simp only [toFun, Set.mem_Iio, deriv_div_const, zero_mul, one_mul, zero_add, zero_sub, zero_div,
-    mul_zero, sub_zero, Nat.cast_ofNat, rpow_two] at h
-  simp only [Set.EqOn, Set.mem_Iio, deriv_div_const]
-  intro x hx
-  simp only [h.right x hx]; field_simp; ring_nf
-
-lemma deriv2_Φm : Set.EqOn (deriv (deriv Φm)) (fun x => -(log 2 *(2 : ℝ) ^ x ) / (1 - (2 : ℝ) ^ x)^2) (Set.Iio (0:ℝ)) := by
-  unfold Set.EqOn
-  intro x hx
-  rw[deriv_EqOn_Iio deriv_Φm hx]
-  get_deriv (fun x ↦ -2 ^ x / (1 - 2 ^ x)) within (Set.Iio (0:ℝ))
-  simp only [Set.mem_Iio, List.Forall, toFun, ne_eq, id_eq, gt_iff_lt, Nat.ofNat_pos, and_self, and_true]
-  exact one_minus_two_pow_ne_zero2
-  simp only [toFun, zero_mul, one_mul, zero_add, neg_mul, zero_sub, mul_neg, neg_neg,
-    Nat.cast_ofNat, rpow_two] at h
-  simp only [h.right x hx]; field_simp; ring_nf
 
 
 /- Derivatives and differentiability of E -/

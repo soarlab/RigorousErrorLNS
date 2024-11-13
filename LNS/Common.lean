@@ -5,6 +5,22 @@ import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
+attribute [fun_prop] Differentiable.div_const
+attribute [fun_prop] Differentiable.rpow
+attribute [fun_prop] Differentiable.log
+attribute [fun_prop] Differentiable.exp
+attribute [fun_prop] Differentiable.div
+attribute [fun_prop] DifferentiableOn.div_const
+attribute [fun_prop] DifferentiableOn.rpow
+attribute [fun_prop] DifferentiableOn.log
+attribute [fun_prop] DifferentiableOn.exp
+attribute [fun_prop] DifferentiableOn.div
+attribute [fun_prop] ContinuousOn.div_const
+attribute [fun_prop] ContinuousOn.rpow
+attribute [fun_prop] ContinuousOn.log
+attribute [fun_prop] ContinuousOn.exp
+attribute [fun_prop] ContinuousOn.div
+
 
 -- TODO: generalize, simplify and add to Mathlib
 

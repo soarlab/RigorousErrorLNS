@@ -5,6 +5,31 @@ namespace LNS
 
 noncomputable section
 
+/- A model of fixed-point arithmetic -/
+structure FixedPoint where
+  ε : ℝ
+  rnd : ℝ → ℝ
+  hrnd : ∀ x, |x - rnd x| ≤ ε
+  rnd_mono : Monotone rnd
+  rnd_1 : rnd 1 = 1
+  rnd_0 : rnd 0 = 0
+
+lemma fix_hrnd_sym (fix : FixedPoint) : ∀ x : ℝ, |fix.rnd x - x| ≤ fix.ε := by
+  intro x; rw [abs_sub_comm]; exact fix.hrnd x
+
+/- FunApprox f s models an approximation of a function f on s -/
+structure FunApprox (f : ℝ → ℝ) (s : Set ℝ) where
+  fe : ℝ → ℝ
+  err : ℝ
+  herr : ∀ x ∈ s, |fe x - f x| ≤ err
+
+instance : CoeFun (FunApprox f s) (fun _ => ℝ → ℝ) where
+  coe fapprox := fapprox.fe
+
+lemma funApprox_err_sym (g : FunApprox f s) :
+    ∀ x ∈ s, |f x - g x| ≤ g.err := by
+  intro x xs; rw [abs_sub_comm]; exact g.herr x xs
+
 open Real
 
 /- Φ⁺ and Φ⁻ from Introduction -/
@@ -60,14 +85,6 @@ def Rm_opt (Δ : ℝ) :=
 -/
 
 section FixedPoint
-
-structure FixedPoint where
-  ε : ℝ
-  rnd : ℝ → ℝ
-  hrnd : ∀ x, |x - rnd x| ≤ ε
-  rnd_mono : Monotone rnd
-  rnd_1 : rnd 1 = 1
-  rnd_0 : rnd 0 = 0
 
 variable (fix : FixedPoint)
 
