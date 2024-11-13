@@ -51,9 +51,9 @@ def Ep (i r : ℝ) := Φp (i - r) - Φp i + r * deriv Φp i
 
 def Em (i r : ℝ) := -Φm (i - r) + Φm i - r * deriv Φm i
 
-def Ep_i (r: ℝ):= fun i => Ep i r
+-- def Ep_i (r: ℝ):= fun i => Ep i r
 
-def Em_i (r: ℝ):= fun i => Em i r
+-- def Em_i (r: ℝ):= fun i => Em i r
 
 def Qp (Δ i r : ℝ) := Ep i r / Ep i Δ
 
@@ -69,7 +69,7 @@ def Rp_opt (Δ : ℝ) :=
 
 def Qm (Δ i r : ℝ) := Em i r / Em i Δ
 
-def Qm_hi (Δ i r : ℝ) := Qm Δ i r
+def Qm_hi (Δ r : ℝ) := Qm Δ (-1) r
 
 def Qm_lo (Δ r : ℝ) := (2 ^ (-r) + r * log 2 - 1) / (2 ^ (-Δ) + Δ * log 2 - 1)
 
@@ -81,7 +81,7 @@ def Rm_opt (Δ : ℝ) :=
   logb 2 (Bm X / Am X)
 
 /-
-  Fixed-point rounding
+  Fixed-point approximations
 -/
 
 section FixedPoint

@@ -179,11 +179,23 @@ lemma HasDerivAt.const_rpow {f : ℝ → ℝ} {f' a : ℝ} (ha : 0 < a) (hf : Ha
 variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {x : E} {f' : E →L[ℝ] ℝ}
   {s : Set E}
 
-@[fun_prop]
-theorem DifferentiableOn.logb (hf : DifferentiableOn ℝ f s) (hx : ∀ x ∈ s, f x ≠ 0) :
-    DifferentiableOn ℝ (fun x => logb b (f x)) s := by
+theorem DifferentiableWithinAt.logb (b : ℝ) (hf : DifferentiableWithinAt ℝ f s x) (hx : f x ≠ 0) :
+    DifferentiableWithinAt ℝ (fun x => logb b (f x)) s x := by
   unfold Real.logb
   fun_prop (disch := assumption)
+
+@[fun_prop]
+theorem DifferentiableAt.logb (b : ℝ) (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
+    DifferentiableAt ℝ (fun x => logb b (f x)) x := by
+  unfold Real.logb
+  fun_prop (disch := assumption)
+
+@[fun_prop]
+theorem DifferentiableOn.logb (b : ℝ) (hf : DifferentiableOn ℝ f s) (hx : ∀ x ∈ s, f x ≠ 0) :
+    DifferentiableOn ℝ (fun x => logb b (f x)) s := fun x h => (hf x h).logb b (hx _ h)
+
+theorem Differentiable.logb (hf : Differentiable ℝ f) (hx : ∀ x, f x ≠ 0) :
+    Differentiable ℝ fun x => logb b (f x) := fun x => (hf x).logb b (hx x)
 
 end Diff
 

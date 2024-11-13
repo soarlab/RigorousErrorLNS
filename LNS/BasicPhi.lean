@@ -40,6 +40,10 @@ lemma differentiable_Φp : Differentiable ℝ Φp := by
   fun_prop (disch := simp)
 
 @[fun_prop]
+lemma Differentiable.Φp {f : ℝ → ℝ} (hf : Differentiable ℝ f) :
+    Differentiable ℝ (fun x => Φp (f x)) := by fun_prop
+
+@[fun_prop]
 lemma continuous_Φp : Continuous Φp := differentiable_Φp.continuous
 
 lemma deriv_Φp : deriv Φp = fun (x : ℝ) => (2 : ℝ) ^ x / (1 + (2 : ℝ) ^ x) := by
@@ -61,10 +65,27 @@ lemma deriv2_Φp_pos :  deriv (deriv Φp) x > 0 := by
 -/
 
 @[fun_prop]
+lemma DifferentiableAt.Φm {f : ℝ → ℝ} (hf : DifferentiableAt ℝ f x) (hx : f x < 0) :
+    DifferentiableAt ℝ (fun x => Φm (f x)) x := by
+  apply DifferentiableAt.comp
+  · have := one_minus_two_pow_ne_zero2 _ hx
+    fun_prop (disch := assumption)
+  · fun_prop (disch := simp)
+
+@[fun_prop]
+lemma DifferentiableOn.Φm {s : Set ℝ} {f : ℝ → ℝ} (hf : DifferentiableOn ℝ f s) (hx : ∀ x ∈ s, f x < 0) :
+    DifferentiableOn ℝ (fun x => Φm (f x)) s := by
+  apply DifferentiableOn.logb
+  · fun_prop (disch := simp)
+  intro x xs
+  exact one_minus_two_pow_ne_zero (f x) (hx x xs)
+
+@[fun_prop]
+lemma differentiableAt_Φm (hx : x < 0) : DifferentiableAt ℝ Φm x := by
+  fun_prop (disch := assumption)
+
+@[fun_prop]
 lemma differentiable_Φm : DifferentiableOn ℝ Φm (Set.Iio (0:ℝ)) := by
-  unfold Φm
-  -- For some reason, fun_prop cannot prove this directly
-  apply DifferentiableOn.logb _ one_minus_two_pow_ne_zero
   fun_prop (disch := simp)
 
 @[fun_prop]
@@ -86,7 +107,7 @@ lemma deriv_Φm : Set.EqOn (deriv Φm) (fun x=> -(2 : ℝ) ^ x / (1 - (2 : ℝ) 
 lemma deriv2_Φm : Set.EqOn (deriv (deriv Φm)) (fun x => -(log 2 * (2 : ℝ) ^ x ) / (1 - (2 : ℝ) ^ x) ^ 2) (Set.Iio (0 : ℝ)) := by
   unfold Set.EqOn
   intro x hx
-  rw[deriv_EqOn_Iio deriv_Φm hx]
+  rw [deriv_EqOn_Iio deriv_Φm hx]
   get_deriv (fun x ↦ -2 ^ x / (1 - 2 ^ x)) within (Set.Iio (0:ℝ))
   simp only [Set.mem_Iio, List.Forall, toFun, ne_eq, id_eq, gt_iff_lt, Nat.ofNat_pos, and_self, and_true]
   exact one_minus_two_pow_ne_zero2
