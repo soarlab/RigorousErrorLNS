@@ -89,6 +89,15 @@ lemma differentiable_Φm : DifferentiableOn ℝ Φm (Set.Iio (0:ℝ)) := by
   fun_prop (disch := simp)
 
 @[fun_prop]
+lemma ContinuousOn.Φm {s : Set ℝ} {f : ℝ → ℝ} (hf : ContinuousOn f s) (hx : ∀ x ∈ s, f x < 0) :
+    ContinuousOn (fun x => Φm (f x)) s := by
+  apply ContinuousOn.div_const
+  have : ∀ x ∈ s, 1 - (2 : ℝ) ^ f x ≠ 0 := by
+    intro x xs; apply one_minus_two_pow_ne_zero2; exact hx x xs
+  apply ContinuousOn.log _ this
+  fun_prop (disch := first | simp | assumption)
+
+@[fun_prop]
 lemma continuous_Φm : ContinuousOn Φm (Set.Iio 0) := differentiable_Φm.continuousOn
 
 lemma deriv_Φm : Set.EqOn (deriv Φm) (fun x=> -(2 : ℝ) ^ x / (1 - (2 : ℝ) ^ x)) (Set.Iio (0 : ℝ)) := by
@@ -114,3 +123,10 @@ lemma deriv2_Φm : Set.EqOn (deriv (deriv Φm)) (fun x => -(log 2 * (2 : ℝ) ^ 
   simp only [toFun, zero_mul, one_mul, zero_add, neg_mul, zero_sub, mul_neg, neg_neg,
     Nat.cast_ofNat, rpow_two] at h
   simp only [h.right x hx]; field_simp; ring_nf
+
+lemma Φm_strictAntiOn : StrictAntiOn Φm (Set.Iio 0) := by
+  apply strictAntiOn_of_deriv_neg (convex_Iio 0) (by fun_prop)
+  simp only [interior_Iio]; intro t ht; simp only [deriv_Φm ht]
+  simp only [Set.mem_Iio] at ht
+  apply div_neg_of_neg_of_pos; simp only [Left.neg_neg_iff, Nat.ofNat_pos, rpow_pos_of_pos]
+  simp only [gt_iff_lt, sub_pos]; apply rpow_lt_one_of_one_lt_of_neg (by simp only [Nat.one_lt_ofNat]) (by linarith)

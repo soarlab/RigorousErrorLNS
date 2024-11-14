@@ -61,7 +61,7 @@ theorem Theorem53_Em (fix : FixedPoint) {i₀ i r Δ : ℝ} (hi₀ : i₀ < 0) (
 /- A linear Taylor approximation error bound for Φ⁺ -/
 
 theorem Theorem53_ΦTp (fix : FixedPoint) {x Δ : ℝ} (hd : 0 < Δ) (hx : x ≤ 0) :
-    |Φp x - ΦTp_fix fix Δ x| ≤ (Ep 0 Δ) + (2 + Δ) * fix.ε := by
+    |Φp x - ΦTp_fix fix Δ x| ≤ Ep 0 Δ + (2 + Δ) * fix.ε := by
   have eq: Φp x - ΦTp_fix fix Δ x = Ep_fix fix (Iₓ Δ x) (Rₓ Δ x) := by
     unfold ΦTp_fix Ep_fix; rw [i_sub_r_eq_x]; ring_nf
   rw [eq]; apply Theorem53_Ep
@@ -73,7 +73,7 @@ theorem Theorem53_ΦTp (fix : FixedPoint) {x Δ : ℝ} (hd : 0 < Δ) (hx : x ≤
 /- A linear Taylor approximation error bound for Φ⁻ -/
 
 theorem Theorem53_ΦTm (fix : FixedPoint) {x₀ x Δ : ℝ} (hd : 0 < Δ) (hx₀ : x₀ ≤ -Δ) (hx : x ≤ x₀) :
-    |Φm x - ΦTm_fix fix Δ x| ≤ (Em (Iₓ Δ x₀) Δ) + (2 + Δ) * fix.ε := by
+    |Φm x - ΦTm_fix fix Δ x| ≤ Em (Iₓ Δ x₀) Δ + (2 + Δ) * fix.ε := by
   have eq: Φm x - ΦTm_fix fix Δ x = Em_fix fix (Iₓ Δ x) (Rₓ Δ x) := by
     unfold ΦTm_fix Em_fix; rw [i_sub_r_eq_x]; ring_nf
   rw [eq]; apply Theorem53_Em
@@ -87,7 +87,7 @@ theorem Theorem53_ΦTm (fix : FixedPoint) {x₀ x Δ : ℝ} (hd : 0 < Δ) (hx₀
 
 theorem Theorem53_ΦTm' (fix : FixedPoint) {x Δ : ℝ}
     (hd : 0 < Δ) (hdn : ∃ n : ℕ, 1 = n * Δ) (hx : x ≤ -1) :
-    |Φm x - ΦTm_fix fix Δ x| ≤ (Em (-1) Δ) + (2 + Δ) * fix.ε := by
+    |Φm x - ΦTm_fix fix Δ x| ≤ Em (-1) Δ + (2 + Δ) * fix.ε := by
   have hx₀ : -1 ≤ -Δ := by rw [neg_le_neg_iff]; exact div_one_imp_le_one hdn
-  rw [← ix_eq_neg_one (ne_of_gt hd) hdn]
+  rw [← ix_eq_neg_one hdn]
   exact Theorem53_ΦTm fix hd hx₀ hx

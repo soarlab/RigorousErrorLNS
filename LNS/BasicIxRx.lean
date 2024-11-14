@@ -20,17 +20,19 @@ lemma i_sub_r_eq_x (Δ x : ℝ) : Iₓ Δ x - Rₓ Δ x = x := by
 lemma x_le_ix {Δ} (hd : 0 < Δ) x : x ≤ Iₓ Δ x :=
   (div_le_iff₀ hd).mp $ Int.le_ceil $ x / Δ
 
-lemma ix_eq_n_delta {Δ : ℝ} (n : ℤ) (hd : Δ ≠ 0) : Iₓ Δ (n * Δ) = n * Δ := by
-  unfold Iₓ
-  rw [mul_div_cancel_right₀ _ hd]
-  simp only [Int.ceil_intCast]
+lemma ix_eq_n_delta {Δ : ℝ} (n : ℤ) : Iₓ Δ (n * Δ) = n * Δ := by
+  by_cases hd : Δ = 0
+  · simp only [Iₓ, hd, mul_zero, div_zero, Int.ceil_zero, Int.cast_zero]
+  · unfold Iₓ
+    rw [mul_div_cancel_right₀ _ hd]
+    simp only [Int.ceil_intCast]
 
-lemma ix_eq_neg_one {Δ : ℝ} (hd : Δ ≠ 0) (hdn : ∃ n : ℕ, 1 = n * Δ) : Iₓ Δ (-1) = -1 := by
+lemma ix_eq_neg_one {Δ : ℝ} (hdn : ∃ n : ℕ, 1 = n * Δ) : Iₓ Δ (-1) = -1 := by
   obtain ⟨n, hdn⟩ := hdn
   rw [hdn]
   have ⟨m, hm⟩ : ∃ m : ℤ, -(n * Δ) = m * Δ := by
     use -n; simp only [Int.cast_neg, Int.cast_natCast, neg_mul]
-  rw [hm, ix_eq_n_delta _ hd]
+  rw [hm, ix_eq_n_delta]
 
 lemma x_neg_iff_ix_neg {Δ} (hd : 0 < Δ) x : x ≤ 0 ↔ Iₓ Δ x ≤ 0 := by
   constructor

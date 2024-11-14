@@ -1,13 +1,12 @@
-import LNS.Common
-import LNS.Basic
+import LNS.Definitions
+import LNS.BasicIxRx
 import LNS.Lemma71
-set_option maxHeartbeats 10000000
+
+namespace LNS
 
 noncomputable section
 
-open LNS
 open Real
-open Real Filter Topology
 
 variable (fix : FixedPoint)
 
@@ -99,7 +98,7 @@ lemma rb2_le_2delta (hx : x ≤ -Δa) : rb2 Δa x ≤ -2 * Δa := by
   rw [rb2_alt, sub_le_iff_le_add]; ring_nf
   have : -Δa = ((-1) : ℤ) * Δa := by
     simp only [Int.reduceNeg, Int.cast_neg, Int.cast_one, neg_mul, one_mul]
-  rw [this, ←ix_eq_n_delta _ ha, ←this]
+  rw [this, ←ix_eq_n_delta, ←this]
   exact ix_monotone ha hx
 
 lemma k_bound (hx : x ≤ -Δa) : k Δa x ≤ -Δa - Φp (-Δa) := by
@@ -124,8 +123,6 @@ lemma k_bound (hx : x ≤ -Δa) : k Δa x ≤ -Δa - Φp (-Δa) := by
   have eq : forall a b c : ℝ, -2 * a - b - (-a - c) = -a - (b - c) := by intros; ring
   rw [eq, k_bound_aux ha]
 
-
-
 lemma k_bound' (hx : x ≤ -Δa) : k Δa x ≤ -Δa / 2 - 1 := by
   apply le_trans (k_bound ha hx)
   apply (by intros; linarith : forall a b : ℝ, 1 ≤ b + a / 2 → -a - b ≤ -a / 2 - 1)
@@ -145,7 +142,7 @@ lemma k_bound' (hx : x ≤ -Δa) : k Δa x ≤ -Δa / 2 - 1 := by
 lemma k_neg (hx : x < 0) : k Δa x < 0 := by
   have i1 : rb2 Δa x < x := rb2_lt_x ha
   have : Φm (ra2 Δa x) < Φm (rb2 Δa x) := by
-    apply Φm_strictAnti
+    apply Φm_strictAntiOn
     any_goals simp;
     linarith; unfold ra2; linarith; unfold ra2; linarith
   unfold k; linarith
