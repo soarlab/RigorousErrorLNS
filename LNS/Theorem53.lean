@@ -86,8 +86,22 @@ theorem Theorem53_ΦTm (fix : FixedPoint) {x₀ x Δ : ℝ} (hd : 0 < Δ) (hx₀
 /- This theorem corresponds to the approximation theorem in the paper -/
 
 theorem Theorem53_ΦTm' (fix : FixedPoint) {x Δ : ℝ}
-    (hd : 0 < Δ) (hdn : ∃ n : ℕ, 1 = n * Δ) (hx : x ≤ -1) :
+    (hdn : ∃ n : ℕ, 1 = n * Δ) (hx : x ≤ -1) :
     |Φm x - ΦTm_fix fix Δ x| ≤ Em (-1) Δ + (2 + Δ) * fix.ε := by
   have hx₀ : -1 ≤ -Δ := by rw [neg_le_neg_iff]; exact div_one_imp_le_one hdn
   rw [← ix_eq_neg_one hdn]
-  exact Theorem53_ΦTm fix hd hx₀ hx
+  apply Theorem53_ΦTm fix (div_one_imp_pos hdn) hx₀ hx
+
+/- Taylor approximations of Φ⁺ and Φ⁻ -/
+
+noncomputable def ΦTp_approx (fix : FixedPoint) {Δ : ℝ} (hd : 0 < Δ) : FunApprox Φp (Set.Iic 0) := {
+  fe   := ΦTp_fix fix Δ
+  err  := Ep 0 Δ + (2 + Δ) * fix.ε
+  herr := fun _ => Theorem53_ΦTp fix hd
+}
+
+noncomputable def ΦTm_approx (fix : FixedPoint) {Δ : ℝ} (hdn : ∃ n : ℕ, 1 = n * Δ) : FunApprox Φm (Set.Iic (-1)) := {
+  fe   := ΦTm_fix fix Δ
+  err  := Em (-1) Δ + (2 + Δ) * fix.ε
+  herr := fun _ => Theorem53_ΦTm' fix hdn
+}

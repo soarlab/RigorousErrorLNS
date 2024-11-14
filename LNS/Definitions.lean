@@ -21,13 +21,13 @@ lemma fix_hrnd_sym (fix : FixedPoint) : ∀ x : ℝ, |fix.rnd x - x| ≤ fix.ε 
 structure FunApprox (f : ℝ → ℝ) (s : Set ℝ) where
   fe : ℝ → ℝ
   err : ℝ
-  herr : ∀ x ∈ s, |fe x - f x| ≤ err
+  herr : ∀ x ∈ s, |f x - fe x| ≤ err
 
 instance : CoeFun (FunApprox f s) (fun _ => ℝ → ℝ) where
   coe fapprox := fapprox.fe
 
 lemma funApprox_err_sym (g : FunApprox f s) :
-    ∀ x ∈ s, |f x - g x| ≤ g.err := by
+    ∀ x ∈ s, |g x - f x| ≤ g.err := by
   intro x xs; rw [abs_sub_comm]; exact g.herr x xs
 
 open Real

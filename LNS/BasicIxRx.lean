@@ -3,6 +3,15 @@ import LNS.Definitions
 
 namespace LNS
 
+lemma div_one_imp_pos {Δ : ℝ} (hdn : ∃ n : ℕ, 1 = n * Δ) : 0 < Δ := by
+  cases le_or_lt Δ 0 with
+  | inl h =>
+    obtain ⟨n, hdn⟩ := hdn
+    suffices n * Δ ≤ 0 from by linarith
+    apply mul_nonpos_of_nonneg_of_nonpos _ h
+    simp only [Nat.cast_nonneg]
+  | inr h => exact h
+
 lemma div_one_imp_le_one {Δ : ℝ} (hdn : ∃ n : ℕ, 1 = n * Δ) : Δ ≤ 1 := by
   cases le_or_lt Δ 0 with
   | inl h => linarith

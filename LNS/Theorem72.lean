@@ -198,7 +198,7 @@ lemma bound_case2 (Φe : FunApprox Φm (Set.Iic (-1))) (hx : x < 0) (hk : k Δa 
   have i02: |s1 + s2| ≤ |s1| + |s2|:= by apply abs_add
   have i1 : |s1| ≤ fix.ε := by apply fix.hrnd
   have i3 : |s3| ≤ Φe.err := by
-    apply funApprox_err_sym
+    apply Φe.herr
     apply hkr
   have i2 : |s2| ≤ Φm (-1-2*fix.ε) - Φm (-1) := by
     apply Lemma71 (by norm_num : -1 < (0 : ℝ)) hk hkr
