@@ -3,6 +3,17 @@ import LNS.Definitions
 
 namespace LNS
 
+lemma div_one_imp_le_one {Δ : ℝ} (hdn : ∃ n : ℕ, 1 = n * Δ) : Δ ≤ 1 := by
+  cases le_or_lt Δ 0 with
+  | inl h => linarith
+  | inr h =>
+    obtain ⟨n, hdn⟩ := hdn
+    rw [hdn]
+    apply (le_mul_iff_one_le_left h).mpr; norm_cast
+    cases n
+    · contrapose hdn; simp
+    · simp only [le_add_iff_nonneg_left, zero_le]
+
 lemma i_sub_r_eq_x (Δ x : ℝ) : Iₓ Δ x - Rₓ Δ x = x := by
   simp only [Iₓ, Rₓ, sub_sub_cancel]
 
@@ -13,6 +24,13 @@ lemma ix_eq_n_delta {Δ : ℝ} (n : ℤ) (hd : Δ ≠ 0) : Iₓ Δ (n * Δ) = n 
   unfold Iₓ
   rw [mul_div_cancel_right₀ _ hd]
   simp only [Int.ceil_intCast]
+
+lemma ix_eq_neg_one {Δ : ℝ} (hd : Δ ≠ 0) (hdn : ∃ n : ℕ, 1 = n * Δ) : Iₓ Δ (-1) = -1 := by
+  obtain ⟨n, hdn⟩ := hdn
+  rw [hdn]
+  have ⟨m, hm⟩ : ∃ m : ℤ, -(n * Δ) = m * Δ := by
+    use -n; simp only [Int.cast_neg, Int.cast_natCast, neg_mul]
+  rw [hm, ix_eq_n_delta _ hd]
 
 lemma x_neg_iff_ix_neg {Δ} (hd : 0 < Δ) x : x ≤ 0 ↔ Iₓ Δ x ≤ 0 := by
   constructor
