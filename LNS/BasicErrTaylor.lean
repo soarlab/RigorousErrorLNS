@@ -214,7 +214,8 @@ private def gp a := exp (-a) + a - 1
 lemma differentiable_Ep_i: Differentiable ℝ (fun i => Ep i r) := by
   unfold Ep; rw [deriv_Φp]; fun_prop (disch := simp)
 
-lemma differentiable_Em_i (hr : 0 ≤ r) : DifferentiableOn ℝ (fun i => Em i r) (Set.Iio 0) := by
+@[fun_prop]
+lemma differentiableOn_Em_i (hr : 0 ≤ r) : DifferentiableOn ℝ (fun i => Em i r) (Set.Iio 0) := by
   unfold Em
   have : ∀ i ∈ (Set.Iio 0), (fun i ↦ -Φm (i - r) + Φm i - r * deriv Φm i) i =
             (fun i ↦ -Φm (i - r) + Φm i - r * (-(2 : ℝ) ^ i / (1 - (2 : ℝ) ^ i))) i :=by
@@ -257,3 +258,123 @@ private lemma deriv_Em_i (hr : 0 ≤ r) : Set.EqOn (deriv (fun i => Em i r))
   have ie2 := one_minus_two_pow_ne_zero2 i hi
   field_simp
   simp[aux_eq1, aux_eq2]; field_simp; ring_nf
+
+/-
+  Monotonicity properties of Ep(i, r) and Em(i, r) with respect to i
+-/
+
+private lemma differentiable_fp : Differentiable ℝ fp := by
+  unfold fp; fun_prop
+
+private lemma deriv_fp : deriv fp = fun (a : ℝ) => -a * exp (-a) := by
+  unfold fp
+  get_deriv fun a ↦ a * rexp (-a) + rexp (-a) - 1
+  simp only [List.Forall, implies_true]
+  simp_all only [toFun, differentiable_const, Differentiable.sub_iff_left, one_mul, mul_neg,
+    mul_one, add_neg_cancel_comm, sub_zero, neg_mul]
+
+private lemma fp_nonpos (hx : 0 ≤ x) : fp x ≤ 0 := by
+  have eq : fp 0 = 0 := by
+    simp only [fp, neg_zero, exp_zero, mul_one, zero_add, sub_self]
+  rw [← eq]
+  apply antitoneOn_of_deriv_nonpos (convex_Ici 0) (by unfold fp; fun_prop) _ _ (le_refl 0) hx hx
+  · apply Differentiable.differentiableOn differentiable_fp
+  · simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi]
+    intro x hx
+    simp only [deriv_fp, neg_mul, Left.neg_nonpos_iff]
+    positivity
+
+private def N a (i:ℝ) := 2 ^ i * fp a + gp a
+
+private def N0 a := N a 0
+
+private lemma differentiable_N0 : Differentiable ℝ N0 := by unfold N0 N gp fp; fun_prop
+
+private lemma deriv_N0 : deriv N0 = fun x => -fp x := by
+  unfold N0 N fp gp
+  deriv_EQ fun a ↦ 2 ^ 0 * (a * rexp (-a) + rexp (-a) - 1) + (rexp (-a) + a - 1)
+  ring_nf
+
+private lemma N0_eq_zero : N0 0 = 0 := by
+  simp only [N0, N, pow_zero, fp, neg_zero, exp_zero, mul_one, zero_add, sub_self, mul_zero, gp, add_zero]
+
+private lemma N0_nonneg (ha : 0 ≤ a) : 0 ≤ N0 a := by
+  rw [← N0_eq_zero]
+  apply monotoneOn_of_deriv_nonneg (convex_Ici 0) _ _ _ (le_refl 0) ha ha
+  · exact differentiable_N0.continuous.continuousOn
+  · apply differentiable_N0.differentiableOn
+  · simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi]
+    intro x hx
+    simp only [deriv_N0, ge_iff_le, Left.nonneg_neg_iff]
+    exact fp_nonpos (le_of_lt hx)
+
+private lemma differentiable_N : Differentiable ℝ (N a) := by
+  unfold N fp gp; fun_prop (disch := simp)
+
+private lemma deriv_N : deriv (N a) = fun i => 2 ^ i * log 2 * fp a := by
+  unfold N fp gp
+  get_deriv fun i ↦ 2 ^ i * (a * rexp (-a) + rexp (-a) - 1) + (rexp (-a) + a - 1)
+  simp only [List.Forall, toFun, gt_iff_lt, Nat.ofNat_pos, id_eq, implies_true]
+  simp_all only [toFun, differentiable_add_const_iff, deriv_add_const', deriv_mul_const_field',
+    zero_mul, one_mul, zero_add, neg_zero, mul_zero, add_zero, sub_self]
+
+private lemma N_nonneg (hi : i ≤ 0) (ha : 0 ≤ a) : 0 ≤ N a i := by
+  apply le_trans (N0_nonneg ha); unfold N0
+  apply antitoneOn_of_deriv_nonpos (convex_Iic 0) _ _ _ hi (by norm_num) hi
+  · exact differentiable_N.continuous.continuousOn
+  · exact differentiable_N.differentiableOn
+  simp only [Set.nonempty_Ioi, interior_Iic', Set.mem_Iio]
+  intro x hx; simp only [deriv_N]
+  apply mul_nonpos_of_nonneg_of_nonpos _ (fp_nonpos ha)
+  positivity
+
+lemma deriv_Ep_i_nonneg (hi : i ≤ 0) (hr : 0 ≤ r) : 0 ≤ (deriv (fun i => Ep i r)) i := by
+  simp only [deriv_Ep_i, ge_iff_le]
+  apply mul_nonneg (by positivity)
+  rw[← N]; apply N_nonneg hi
+  positivity
+
+lemma Ep_i_monotoneOn (hr : 0 ≤ r) : MonotoneOn (fun i => Ep i r) (Set.Iic 0) := by
+  apply monotoneOn_of_deriv_nonneg (convex_Iic 0)
+  · exact differentiable_Ep_i.continuous.continuousOn
+  · fun_prop
+  simp only [Set.nonempty_Ioi, interior_Iic', Set.mem_Iio]
+  intro i hi; exact deriv_Ep_i_nonneg (le_of_lt hi) hr
+
+private lemma differentiable_gp : Differentiable ℝ gp := by
+  unfold gp; fun_prop
+
+private lemma gp_nonneg (ha : 0 ≤ a) : 0 ≤ gp a := by
+  have eq : gp 0 = 0 := by
+    simp only [gp, neg_zero, exp_zero, add_zero, sub_self]
+  rw [← eq]
+  apply monotoneOn_of_deriv_nonneg (convex_Ici 0) _ _ _ (le_refl 0) ha ha
+  · exact differentiable_gp.continuous.continuousOn
+  · exact differentiable_gp.differentiableOn
+  simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi]
+  intro x hx; unfold gp
+  get_deriv (fun a ↦ rexp (-a) + a - 1)
+  simp only [List.Forall, implies_true]
+  simp only [toFun, differentiable_const, Differentiable.sub_iff_left, differentiable_id',
+    Differentiable.add_iff_left, mul_neg, mul_one, sub_zero] at h
+  simp only [h.right, ge_iff_le, le_neg_add_iff_add_le, add_zero, exp_le_one_iff,
+    Left.neg_nonpos_iff, le_of_lt hx]
+
+lemma deriv_Em_i_nonneg (hi : i < 0) (hr : 0 ≤ r) : 0 ≤ (deriv (fun i => Em i r)) i := by
+  simp only [deriv_Em_i hr hi, ge_iff_le]
+  have i2 : (2:ℝ) ^ (i-r) < 1 := by apply rpow_lt_one_of_one_lt_of_neg; simp only [Nat.one_lt_ofNat]; linarith
+  have i2 : 1 - (2:ℝ) ^ (i-r) > 0 := by linarith
+  have i0 : (2:ℝ) ^ i > 0 := by positivity
+  have ie : (-(2 ^ i * LNS.fp (log 2 * r)) + LNS.gp (log 2 * r)) ≥ 0 :=by
+    have : 2 ^ i * (- LNS.fp (log 2 * r)) ≥ 0 := by
+      apply mul_nonneg; linarith; simp only [Left.nonneg_neg_iff]; apply fp_nonpos; positivity
+    have: LNS.gp (log 2 * r) ≥ 0 :=by apply gp_nonneg; positivity
+    linarith
+  positivity
+
+lemma Em_i_monotoneOn (hr : 0 ≤ r) : MonotoneOn (fun i => Em i r) (Set.Iio 0) := by
+  apply monotoneOn_of_deriv_nonneg (convex_Iio 0)
+  · exact (differentiableOn_Em_i hr).continuousOn
+  · simp only [interior_Iio]; exact differentiableOn_Em_i hr
+  simp only [interior_Iio, Set.mem_Iio]
+  exact fun i hi => deriv_Em_i_nonneg hi hr
