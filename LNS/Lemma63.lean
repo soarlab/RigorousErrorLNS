@@ -111,7 +111,7 @@ lemma dR_pos:  Y > 1 →  dR Y > 0 := by
   simp only [dR, log_one, mul_zero, (by linarith : (1 : ℝ) + 1 = 2), zero_sub, ne_eq, one_ne_zero,
     not_false_eq_true, div_self]; ring_nf
   intro x hx; rw [deriv_dR hx]
-  have: x - 1 > 0 := by linarith
+  have : x - 1 > 0 := by linarith
   positivity
 
 lemma R_pos:  Y > 1 →  R Y > 0 := by
@@ -126,11 +126,11 @@ lemma R_pos:  Y > 1 →  R Y > 0 := by
 
 lemma Max_X_lt_X (h: Y > 1): Max_X Y < Y := by
   unfold Max_X
-  have i1: A Y > 0 := A_pos h
-  have i2: Y/ A Y > 0 := by positivity
-  have i3: A Y - (B Y)/Y > 0 := R_pos h
+  have i1 : A Y > 0 := A_pos h
+  have i2 : Y/ A Y > 0 := by positivity
+  have i3 : A Y - (B Y)/Y > 0 := R_pos h
   simp only [gt_iff_lt, sub_pos] at i3
-  have i3: (B Y / Y)* (Y/ A Y) < A Y * (Y/ A Y) := (mul_lt_mul_right i2).mpr i3
+  have i3 : (B Y / Y)* (Y/ A Y) < A Y * (Y/ A Y) := (mul_lt_mul_right i2).mpr i3
   field_simp at i3
   exact i3
 
@@ -155,21 +155,21 @@ lemma M_pos : Y > 1 → M Y > 0 := by
   simp only [M, B, (by linarith : (1 : ℝ) + 1 = 2), log_one, sub_zero, sub_self, mul_zero, A,
     mul_one, zero_sub, neg_add_cancel, div_one]
   intro x hx; rw [deriv_M hx]
-  have: x - 1 > 0 := by linarith
+  have : x - 1 > 0 := by linarith
   positivity
 
 lemma Max_X_gt_one (h: Y > 1): Max_X Y > 1 := by
   unfold Max_X
-  have i1: A Y > 0 := A_pos h
-  have i2: (B Y - A Y)/Y > 0 := M_pos h
+  have i1 : A Y > 0 := A_pos h
+  have i2 : (B Y - A Y)/Y > 0 := M_pos h
   field_simp at i2
   exact (one_lt_div i1).mpr i2
 
 lemma deriv_Qp_Range_YX (hY: Y > 1) : Set.EqOn (deriv (Qp_Range_YX Y)) (dQp_Range_YX Y) (Set.Ioi 0) := by
-  have i1: (2 * log (Y + 1) - log Y - 2 * log 2) > 0 := V_pos hY
-  have i2: A Y > 0 := A_pos hY
-  have i3: B Y > 0 := B_pos hY
-  have i4: 1 / Y + log Y - 1 > 0 := U_pos hY
+  have i1 : (2 * log (Y + 1) - log Y - 2 * log 2) > 0 := V_pos hY
+  have i2 : A Y > 0 := A_pos hY
+  have i3 : B Y > 0 := B_pos hY
+  have i4 : 1 / Y + log Y - 1 > 0 := U_pos hY
   intro X hX; unfold Qp_Range_YX Qp_hi_YX Qp_lo_YX U V
   get_deriv (fun X ↦ (1 / X + log X - 1) / (1 / Y + log Y - 1) -
         (2 * log (X + 1) - log X - 2 * log 2) / (2 * log (Y + 1) - log Y - 2 * log 2)) within (Set.Ioi 0)
@@ -193,36 +193,36 @@ lemma deriv_Qp_Range_YX (hY: Y > 1) : Set.EqOn (deriv (Qp_Range_YX Y)) (dQp_Rang
 lemma max_Qp_Range_YX (h1: X ≥ 1) (h2: X < Y): Qp_Range_YX Y X ≤ Qp_Range_YX Y (Max_X Y) := by
   have : ∀ x ∈ Set.Ici (1:ℝ) , x + 1 ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intros; linarith
   have : ∀ x ∈ Set.Ici (1:ℝ) , x ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intros; linarith
-  have hY: Y > 1 := by linarith
-  have iA: A Y > 0 := A_pos hY
-  have iB: B Y > 0 := B_pos hY
-  have cont: ContinuousOn (Qp_Range_YX Y) (Set.Ici 1) := by
+  have hY : Y > 1 := by linarith
+  have iA : A Y > 0 := A_pos hY
+  have iB : B Y > 0 := B_pos hY
+  have cont : ContinuousOn (Qp_Range_YX Y) (Set.Ici 1) := by
     unfold Qp_Range_YX Qp_hi_YX Qp_lo_YX U V
     fun_prop (disch := assumption)
-  have first_half: StrictMonoOn (Qp_Range_YX Y) (Set.Icc 1 (Max_X Y)) := by
+  have first_half : StrictMonoOn (Qp_Range_YX Y) (Set.Icc 1 (Max_X Y)) := by
     apply strictMonoOn_of_deriv_pos (convex_Icc 1 (Max_X Y))
     apply ContinuousOn.mono cont
     rw [Set.Icc_subset_Ici_iff]
     linarith [Max_X_gt_one hY]
     intro x hx; simp only [interior_Icc, Set.mem_Ioo] at hx
     rw [deriv_Qp_Range_YX hY, dQp_Range_YX ]
-    have i1: A Y * x < A Y * Max_X Y := (mul_lt_mul_left iA).mpr hx.right
+    have i1 : A Y * x < A Y * Max_X Y := (mul_lt_mul_left iA).mpr hx.right
     unfold Max_X at i1; field_simp at i1
     have : -A Y * x + B Y > 0 := by linarith
-    have: (x - 1) > 0 := by linarith
+    have : (x - 1) > 0 := by linarith
     have : x > 0 := by linarith
     positivity
     simp only [Set.mem_Ioi]; linarith
-  have second_half: StrictAntiOn (Qp_Range_YX Y) (Set.Icc (Max_X Y) Y) := by
+  have second_half : StrictAntiOn (Qp_Range_YX Y) (Set.Icc (Max_X Y) Y) := by
     apply strictAntiOn_of_deriv_neg (convex_Icc (Max_X Y) Y)
     apply ContinuousOn.mono cont
     rw [Set.Icc_subset_Ici_iff]
     linarith [Max_X_gt_one hY]; linarith [Max_X_lt_X hY]
     intro x hx; simp only [interior_Icc, Set.mem_Ioo] at hx
     rw [deriv_Qp_Range_YX hY, dQp_Range_YX ]
-    have i1: A Y * x > A Y * Max_X Y := (mul_lt_mul_left iA).mpr hx.left
+    have i1 : A Y * x > A Y * Max_X Y := (mul_lt_mul_left iA).mpr hx.left
     unfold Max_X at i1; field_simp at i1
-    have: (x - 1) > 0 := by linarith [Max_X_gt_one hY]
+    have : (x - 1) > 0 := by linarith [Max_X_gt_one hY]
     have : x > 0 := by linarith
     apply mul_neg_of_pos_of_neg
     positivity; linarith
@@ -239,9 +239,9 @@ lemma max_Qp_Range_YX (h1: X ≥ 1) (h2: X < Y): Qp_Range_YX Y X ≤ Qp_Range_YX
 
 lemma Qp_Range_YX_eq_Qp_range (hΔ : 0 < Δ) (hr: 0 ≤ r) :  Qp_Range Δ r =  Qp_Range_YX (2^Δ) (2^r) := by
   unfold Qp_Range Qp_Range_YX
-  have hΔ0: Δ > 0 := by linarith
-  have e1: ∀ x ≥ (0:ℝ), (2:ℝ)^(-x) = 1/2^x := by intro x _; rw [rpow_neg]; ring_nf; simp only [Nat.ofNat_nonneg]
-  have e2: ∀ x ≥ (0:ℝ), log ((2:ℝ)^x) = x * log 2 := by intro x _; rw [log_rpow]; simp only [Nat.ofNat_pos]
+  have $1 : Δ > 0 := by linarith
+  have e1 : ∀ x ≥ (0:ℝ), (2:ℝ)^(-x) = 1/2^x := by intro x _; rw [rpow_neg]; ring_nf; simp only [Nat.ofNat_nonneg]
+  have e2 : ∀ x ≥ (0:ℝ), log ((2:ℝ)^x) = x * log 2 := by intro x _; rw [log_rpow]; simp only [Nat.ofNat_pos]
   have eh : Qp_hi Δ r = Qp_hi_YX (2 ^ Δ) (2 ^ r) := by
     unfold Qp_hi Qp_hi_YX U
     simp only [e1 r hr, e1 Δ (le_of_lt hΔ0), e2 r hr, e2 Δ (le_of_lt hΔ0)]
@@ -249,16 +249,16 @@ lemma Qp_Range_YX_eq_Qp_range (hΔ : 0 < Δ) (hr: 0 ≤ r) :  Qp_Range Δ r =  Q
     unfold Qp_lo Qp_lo_YX V
     simp only [Qp_of_Fp hΔ, Fp, neg_add_rev, Function.comp_apply, rpow_zero,
       (by linarith : (-1 : ℝ) + -1 = -2), (by linarith : (1 : ℝ) + 1 = 2), neg_mul]
-    have e1:  (-(2 * log 2) + 2 * log (1 + 2 ^ r) - log (2 ^ r))  =  (2 * log (2 ^ r + 1) - log (2 ^ r) - 2 * log 2) := by ring_nf
-    have e2:  (-(2 * log 2) + 2 * log (1 + 2 ^ Δ) - log (2 ^ Δ))   =  (2 * log (2 ^ Δ + 1) - log (2 ^ Δ) - 2 * log 2) := by ring_nf
+    have e1 : (-(2 * log 2) + 2 * log (1 + 2 ^ r) - log (2 ^ r))  =  (2 * log (2 ^ r + 1) - log (2 ^ r) - 2 * log 2) := by ring_nf
+    have e2 : (-(2 * log 2) + 2 * log (1 + 2 ^ Δ) - log (2 ^ Δ))   =  (2 * log (2 ^ Δ + 1) - log (2 ^ Δ) - 2 * log 2) := by ring_nf
     rw [e1,e2]
   rw [el,eh]
 
 lemma lemma63sub  (hΔ  : r < Δ) (hr : 0 ≤ r) : Qp_Range Δ r ≤ Qp_Range Δ (Rp_opt Δ) := by
-  have hΔ0: 0 < Δ := by linarith
-  have i1: (2:ℝ) ^ Δ > 1 := by apply one_lt_rpow (by simp only [Nat.one_lt_ofNat]) hΔ0
-  have i2: (2:ℝ) ^ r ≥ 1 := by apply one_le_rpow (by simp only [Nat.one_le_ofNat]) hr
-  have hRp_opt0: 0 < Rp_opt Δ := logb_pos (by simp only [Nat.one_lt_ofNat]) (Max_X_gt_one i1)
+  have $1 : 0 < Δ := by linarith
+  have i1 : (2:ℝ) ^ Δ > 1 := by apply one_lt_rpow (by simp only [Nat.one_lt_ofNat]) hΔ0
+  have i2 : (2:ℝ) ^ r ≥ 1 := by apply one_le_rpow (by simp only [Nat.one_le_ofNat]) hr
+  have hRp_opt0 : 0 < Rp_opt Δ := logb_pos (by simp only [Nat.one_lt_ofNat]) (Max_X_gt_one i1)
   rw [Qp_Range_YX_eq_Qp_range hΔ0 hr, Qp_Range_YX_eq_Qp_range hΔ0 (le_of_lt hRp_opt0)]
   have : 2 ^ Rp_opt Δ = Max_X (2 ^ Δ) := by
     have iA := @A_pos (2 ^ Δ) i1
@@ -284,16 +284,16 @@ lemma q_upper_bound (hi : i ≤ 0) (hr : 0 ≤ r) (hΔ : r < Δ) : Qp Δ i r ≤
 
 lemma lemma63 (hi : i ≤ 0) (hc : c ≤ 0) (hr : 0 ≤ r) (hΔ : r < Δ) :
     |Qp Δ i r - Qp Δ c r| ≤ Qp_hi Δ (Rp_opt Δ) - Qp_lo Δ (Rp_opt Δ) := by
-  have i1:  Qp_hi Δ r - Qp_lo Δ r ≤ Qp_hi Δ (Rp_opt Δ) - Qp_lo Δ (Rp_opt Δ) := by apply lemma63sub hΔ hr
-  have case1:  Qp Δ i r - Qp Δ c r ≥ 0 → |Qp Δ i r - Qp Δ c r| ≤ Qp_hi Δ (Rp_opt Δ) - Qp_lo Δ (Rp_opt Δ) := by
+  have i1 : Qp_hi Δ r - Qp_lo Δ r ≤ Qp_hi Δ (Rp_opt Δ) - Qp_lo Δ (Rp_opt Δ) := by apply lemma63sub hΔ hr
+  have case1 : Qp Δ i r - Qp Δ c r ≥ 0 → |Qp Δ i r - Qp Δ c r| ≤ Qp_hi Δ (Rp_opt Δ) - Qp_lo Δ (Rp_opt Δ) := by
     intro i0
-    have i2: Qp Δ i r ≤ Qp_hi Δ r := by apply q_upper_bound; linarith; assumption; assumption
-    have i3: Qp_lo Δ r ≤ Qp Δ c r := by apply q_lower_bound; assumption; assumption; assumption
-    have e0: |Qp Δ i r - Qp Δ c r| = Qp Δ i r - Qp Δ c r := by apply abs_of_nonneg; linarith
+    have i2 : Qp Δ i r ≤ Qp_hi Δ r := by apply q_upper_bound; linarith; assumption; assumption
+    have i3 : Qp_lo Δ r ≤ Qp Δ c r := by apply q_lower_bound; assumption; assumption; assumption
+    have e0 : |Qp Δ i r - Qp Δ c r| = Qp Δ i r - Qp Δ c r := by apply abs_of_nonneg; linarith
     linarith
   apply by_cases case1; simp
   intro i0
-  have i2: Qp Δ c r ≤ Qp_hi Δ r := by apply q_upper_bound; linarith; assumption; assumption
-  have i3: Qp_lo Δ r ≤ Qp Δ i r := by apply q_lower_bound; assumption; assumption; assumption
-  have e0:   |Qp Δ i r - Qp Δ c r| = -(Qp Δ i r - Qp Δ c r) := by apply abs_of_neg; linarith
+  have i2 : Qp Δ c r ≤ Qp_hi Δ r := by apply q_upper_bound; linarith; assumption; assumption
+  have i3 : Qp_lo Δ r ≤ Qp Δ i r := by apply q_lower_bound; assumption; assumption; assumption
+  have e0 : |Qp Δ i r - Qp Δ c r| = -(Qp Δ i r - Qp Δ c r) := by apply abs_of_neg; linarith
   linarith

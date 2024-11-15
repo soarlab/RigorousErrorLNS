@@ -44,15 +44,15 @@ lemma deriv2_K (ha : 0 < a) : Set.EqOn (deriv (deriv (K a)))
   have : a + b ≠ 0 := by linarith
   field_simp; ring_nf
 
-lemma deriv_K_strictAnti (ha : a > 0) : StrictAntiOn (deriv (K a)) (Set.Ici 1) := by
+lemma deriv_K_strictAnti (ha : 0 < a) : StrictAntiOn (deriv (K a)) (Set.Ici 1) := by
   have hsub : Set.Ici (1 : ℝ) ⊆ Set.Ioi 0 := by
     intro x; simp only [Set.mem_Ici, Set.mem_Ioi]; intro h; linarith
   apply strictAntiOn_of_deriv_neg (convex_Ici 1)
   · apply ContinuousOn.congr _ ((deriv_K ha).mono hsub)
-    have: ∀ x ∈ Set.Ici 1, a + x ≠ 0 := by
+    have : ∀ x ∈ Set.Ici 1, a + x ≠ 0 := by
       simp only [Set.mem_Ici, ne_eq]
       intro x hx; linarith
-    have: ∀ x ∈ Set.Ici (1:ℝ), x ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intro x hx; linarith
+    have : ∀ x ∈ Set.Ici (1:ℝ), x ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intro x hx; linarith
     fun_prop (disch := assumption)
   · intro b hb; simp only [Set.nonempty_Iio, interior_Ici'] at hb
     have hb' : b > 0 := by simp only [Set.mem_Ioi] at hb; linarith
@@ -63,7 +63,7 @@ lemma deriv_K_strictAnti (ha : a > 0) : StrictAntiOn (deriv (K a)) (Set.Ici 1) :
     have : b - 1 > 0 := by linarith
     positivity
 
-lemma deriv_K_neg (ha : a > 0) (hb : b > 1) : deriv (K a) b < 0 := by
+lemma deriv_K_neg (ha : 0 < a) (hb : 1 < b) : deriv (K a) b < 0 := by
   have : deriv (K a) 1 = 0 := by
     have : (1 : ℝ) ∈ Set.Ioi 0 := by simp only [Set.mem_Ioi, zero_lt_one]
     rw [deriv_K ha this]
@@ -75,10 +75,10 @@ lemma deriv_K_neg (ha : a > 0) (hb : b > 1) : deriv (K a) b < 0 := by
 lemma K_strictAnti (ha : a > 0) : StrictAntiOn (K a) (Set.Ici 1) := by
   apply strictAntiOn_of_deriv_neg (convex_Ici 1)
   unfold K
-  have: ∀ x ∈ Set.Ici 1, a + x ≠ 0 := by
+  have : ∀ x ∈ Set.Ici 1, a + x ≠ 0 := by
     simp only [Set.mem_Ici, ne_eq]
     intro x hx; linarith
-  have: ∀ x ∈ Set.Ici (1:ℝ), x ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intro x hx; linarith
+  have : ∀ x ∈ Set.Ici (1:ℝ), x ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intro x hx; linarith
   fun_prop (disch := assumption)
   intro b hb
   apply deriv_K_neg ha; simp only [Set.nonempty_Iio, interior_Ici'] at hb; exact hb
@@ -131,8 +131,8 @@ lemma deriv_Fp_div_pos (ha : a > 0) (hb : b > 1) (hc : c > b) :
     deriv (fun a ↦ Fp b a / Fp c a) a < 0 := by
   have ie : Gp a b > Gp a c := by apply Anti_Gp_b ha hb (by simp only [Set.mem_Ioi]; linarith) hc
   unfold Gp at ie
-  have i1: deriv (Fp b) a > 0 := by apply deriv_Fp_a_pos ha hb
-  have i2: deriv (Fp c) a > 0 := by apply deriv_Fp_a_pos ha; linarith
+  have i1 : deriv (Fp b) a > 0 := by apply deriv_Fp_a_pos ha hb
+  have i2 : deriv (Fp c) a > 0 := by apply deriv_Fp_a_pos ha; linarith
   simp only [gt_iff_lt, div_lt_div_iff i2 i1] at ie
   rw [deriv_div]
   apply div_neg_of_neg_of_pos; linarith
@@ -145,11 +145,11 @@ lemma deriv_Fp_div_pos (ha : a > 0) (hb : b > 1) (hc : c > b) :
 lemma Lemma62_strictAnti (hr1 : 0 < r) (hr2 : r < Δ) : StrictAntiOn (fun i => Qp Δ i r) (Set.Iic 0) := by
   have i1 : ∀ x : ℝ, (2 : ℝ) ^ x > 0 := by
     simp only [gt_iff_lt, Nat.ofNat_pos, rpow_pos_of_pos, implies_true]
-  have i2: ∀ x ∈ Set.Ioi (0:ℝ), (2:ℝ) ^ x ∈ Set.Ioi 1 := by
+  have i2 : ∀ x ∈ Set.Ioi (0:ℝ), (2:ℝ) ^ x ∈ Set.Ioi 1 := by
     intro x hx
     apply one_lt_rpow (by simp only [Nat.one_lt_ofNat]) hx
   apply strictAntiOn_of_deriv_neg (convex_Iic (0:ℝ))
-  have: ContinuousOn (fun i ↦ Qp Δ i r) (Set.Iic 0) := by
+  have : ContinuousOn (fun i ↦ Qp Δ i r) (Set.Iic 0) := by
     unfold Qp; apply ContinuousOn.div
     apply DifferentiableOn.continuousOn (Differentiable.differentiableOn differentiable_Ep_i)
     apply DifferentiableOn.continuousOn (Differentiable.differentiableOn differentiable_Ep_i)

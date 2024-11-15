@@ -27,7 +27,7 @@ private lemma aux_inq1' (hi : i ∈  (Set.Iio (0:ℝ))) :
     ∀ x ∈ Set.Ici 0, ¬1 - (2:ℝ) ^ (i - x) = 0 ∧ ¬1 - (2:ℝ) ^ i = 0 := by
   simp_all only [Set.mem_Iio, Set.mem_Ici, one_minus_two_pow_ne_zero2, not_false_eq_true, and_true]
   intro x hx
-  have: (2:ℝ) ^ (i - x) < 1 := by apply rpow_lt_one_of_one_lt_of_neg; simp only [Nat.one_lt_ofNat]; linarith
+  have : (2:ℝ) ^ (i - x) < 1 := by apply rpow_lt_one_of_one_lt_of_neg; simp only [Nat.one_lt_ofNat]; linarith
   linarith
 
 private lemma aux_inq2 (hi : i ∈  (Set.Iio (0:ℝ))) :
@@ -107,7 +107,7 @@ lemma deriv_Ep_r_pos (hr : 0 < r) : 0 < deriv (Ep i) r := by
   simp only [deriv_Ep_r, ge_iff_le]
   have i3 : (2:ℝ) ^ i > 2 ^ (i - r) := by
     apply rpow_lt_rpow_of_exponent_lt; simp only [Nat.one_lt_ofNat]; linarith
-  have i3: (2:ℝ) ^ i - 2 ^ (i - r) > 0 := by linarith
+  have i3 : (2:ℝ) ^ i - 2 ^ (i - r) > 0 := by linarith
   positivity
 
 lemma deriv_Em_r_pos (hi : i < 0) (hr : 0 < r) : 0 < deriv (Em i) r := by
@@ -167,7 +167,7 @@ lemma deriv_Ep_r_strictMono : StrictMonoOn (deriv (Ep r)) (Set.Ici 0) := by
   simp only [toFun] at h
   rw [HasDerivAt.deriv h]; simp only [zero_mul, add_zero, zero_sub, neg_mul, one_mul, zero_add,
     sub_neg_eq_add, mul_neg, Nat.cast_ofNat, rpow_two, gt_iff_lt]
-  have: (2 ^ (r - x) * log 2 * ((1 + 2 ^ r) * (1 + 2 ^ (r - x))) +
+  have : (2 ^ (r - x) * log 2 * ((1 + 2 ^ r) * (1 + 2 ^ (r - x))) +
       (2 ^ r - 2 ^ (r - x)) * ((1 + 2 ^ r) * (2 ^ (r - x) * log 2))) /
     ((1 + 2 ^ r) * (1 + 2 ^ (r - x))) ^ 2 = 2 ^ (r - x) * log 2/ (1 + 2 ^ (r - x))^2 := by
     field_simp; ring_nf
@@ -178,8 +178,8 @@ lemma deriv_Em_r_strictMono (hi : i < 0) : StrictMonoOn (deriv (Em i)) (Set.Ioi 
     OfNat.ofNat_ne_zero, not_false_eq_true, sub_pos, true_or, implies_true]
   have : ∀ x ∈ Set.Ioi 0, (1 - (2:ℝ) ^ i) * (1 - 2 ^ (i - x)) ≠ 0 := by
     intro x hx; simp only [Set.mem_Ioi, Set.mem_Iio] at hx hi
-    have _: (2:ℝ) ^ i < 1 := by apply rpow_lt_one_of_one_lt_of_neg _ hi; simp only [Nat.one_lt_ofNat]
-    have _:  (2:ℝ) ^ (i-x) < 1 := by apply rpow_lt_one_of_one_lt_of_neg; simp only [Nat.one_lt_ofNat]; linarith
+    have _ : (2:ℝ) ^ i < 1 := by apply rpow_lt_one_of_one_lt_of_neg _ hi; simp only [Nat.one_lt_ofNat]
+    have _ : (2:ℝ) ^ (i-x) < 1 := by apply rpow_lt_one_of_one_lt_of_neg; simp only [Nat.one_lt_ofNat]; linarith
     norm_num; constructor <;> linarith
   apply StrictMonoOn.congr _ (Set.EqOn.symm (deriv_Em_r hi))
   apply strictMonoOn_of_deriv_pos (convex_Ioi 0) (by fun_prop (disch := assumption))
@@ -196,7 +196,7 @@ lemma deriv_Em_r_strictMono (hi : i < 0) : StrictMonoOn (deriv (Em i)) (Set.Ioi 
   simp only [toFun] at h; rw [HasDerivAt.deriv h]
   simp only [zero_mul, add_zero, zero_sub, neg_mul, one_mul, zero_add, sub_neg_eq_add, sub_self,
     Nat.cast_ofNat, rpow_two]
-  have: (2 ^ (i - x) * log 2 * ((1 - 2 ^ i) * (1 - 2 ^ (i - x))) -
+  have : (2 ^ (i - x) * log 2 * ((1 - 2 ^ i) * (1 - 2 ^ (i - x))) -
       (2 ^ i - 2 ^ (i - x)) * ((1 - 2 ^ i) * (2 ^ (i - x) * log 2))) /
     ((1 - 2 ^ i) * (1 - 2 ^ (i - x))) ^ 2 = 2 ^ (i - x) * log 2/(1 - 2 ^ (i - x))^2 := by
     field_simp; ring_nf
@@ -368,7 +368,7 @@ lemma deriv_Em_i_nonneg (hi : i < 0) (hr : 0 ≤ r) : 0 ≤ (deriv (fun i => Em 
   have ie : (-(2 ^ i * LNS.fp (log 2 * r)) + LNS.gp (log 2 * r)) ≥ 0 := by
     have : 2 ^ i * (- LNS.fp (log 2 * r)) ≥ 0 := by
       apply mul_nonneg; linarith; simp only [Left.nonneg_neg_iff]; apply fp_nonpos; positivity
-    have: LNS.gp (log 2 * r) ≥ 0 := by apply gp_nonneg; positivity
+    have : LNS.gp (log 2 * r) ≥ 0 := by apply gp_nonneg; positivity
     linarith
   positivity
 

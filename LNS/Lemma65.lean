@@ -29,7 +29,7 @@ lemma deriv_Km (ha: a ∈ (Set.Ioo 0 1)): Set.EqOn (deriv (Km a))
 
 lemma deriv2_Km (ha: a ∈ (Set.Ioo 0 1)):  Set.EqOn (deriv (deriv (Km a)))
       (fun b=> -((a^2*(b-1))/(b*(b-a)^2))) (Set.Ioi 1) := by
-  have e: Set.EqOn (deriv (Km a))
+  have e : Set.EqOn (deriv (Km a))
       (fun b=> (a*a)/(b-a) + a - b/(b-a) + log b + log (1-a) - log (b-a) + (1:ℝ)) (Set.Ioi 1) := by
     apply Set.EqOn.mono _ (deriv_Km ha)
     simp only [Set.Ioi_subset_Ici_iff, le_refl]
@@ -47,10 +47,10 @@ lemma deriv2_Km (ha: a ∈ (Set.Ioo 0 1)):  Set.EqOn (deriv (deriv (Km a)))
 lemma deriv_Km_strictAnti (ha: a ∈ (Set.Ioo 0 1)): StrictAntiOn (deriv (Km a)) (Set.Ici 1) := by
   apply strictAntiOn_of_deriv_neg (convex_Ici 1)
   apply ContinuousOn.congr _ (deriv_Km ha)
-  have: ∀ x ∈ Set.Ici 1, a + x ≠ 0 := by
+  have : ∀ x ∈ Set.Ici 1, a + x ≠ 0 := by
     simp only [Set.mem_Ici, ne_eq]; simp only [Set.mem_Ioo] at ha
     intro x hx; linarith
-  have: ∀ x ∈ Set.Ici (1:ℝ), x ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intro x hx; linarith
+  have : ∀ x ∈ Set.Ici (1:ℝ), x ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intro x hx; linarith
   have : ∀ x ∈ Set.Ici 1, x - a ≠ 0 := by intro x hx; simp only [Set.mem_Ici, Set.mem_Ioo] at hx ha; linarith
   fun_prop (disch := assumption)
   intro b hb; simp only [Set.nonempty_Iio, interior_Ici'] at hb
@@ -78,10 +78,10 @@ lemma deriv_Km_neg (ha: a ∈ (Set.Ioo 0 1)) (hb: b ∈ (Set.Ioi 1)) : deriv (Km
 lemma Km_strictAnti (ha: a ∈ (Set.Ioo 0 1)): StrictAntiOn (Km a) (Set.Ici 1) := by
   apply strictAntiOn_of_deriv_neg (convex_Ici 1)
   unfold Km
-  have: ∀ x ∈ Set.Ici 1, x - a ≠ 0 := by
+  have : ∀ x ∈ Set.Ici 1, x - a ≠ 0 := by
     simp only [Set.mem_Ici, ne_eq]; simp only [Set.mem_Ioo] at ha
     intro x hx; linarith
-  have: ∀ x ∈ Set.Ici (1:ℝ), x ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intro x hx; linarith
+  have : ∀ x ∈ Set.Ici (1:ℝ), x ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intro x hx; linarith
   fun_prop (disch := assumption)
   intro b hb
   apply deriv_Km_neg ha; simp only [Set.nonempty_Iio, interior_Ici'] at hb; exact hb
@@ -137,8 +137,8 @@ lemma Mono_Gm_b (ha: a ∈ (Set.Ioo 0 1)) : StrictMonoOn (Gm a) (Set.Ioi 1) := b
 lemma deriv_Fm_div_pos (ha: a ∈ (Set.Ioo 0 1)) (hb: b > 1) (hc: c > b) : deriv (fun a ↦ Fm b a / Fm c a) a > 0 := by
   have ie : Gm a b < Gm a c := by apply Mono_Gm_b ha hb (by simp only [Set.mem_Ioi];linarith) hc
   unfold Gm at ie
-  have i1: deriv (Fm b) a > 0 := by apply deriv_Fm_a_pos ha hb
-  have i2: deriv (Fm c) a > 0 := by apply deriv_Fm_a_pos ha; linarith
+  have i1 : deriv (Fm b) a > 0 := by apply deriv_Fm_a_pos ha hb
+  have i2 : deriv (Fm c) a > 0 := by apply deriv_Fm_a_pos ha; linarith
   simp only [div_lt_div_iff i1 i2] at ie
   rw [deriv_div]
   apply div_pos; linarith
@@ -150,16 +150,16 @@ lemma deriv_Fm_div_pos (ha: a ∈ (Set.Ioo 0 1)) (hb: b > 1) (hc: c > b) : deriv
 
 lemma Lemma65_strictMono (hr1 : 0 < r) (hr2 : r < Δ) :
     StrictMonoOn (fun i => Qm Δ i r) (Set.Iio 0) := by
-  have i1: ∀ x ∈ Set.Iio (0:ℝ), (2:ℝ) ^ x ∈ Set.Ioo 0 1 := by
+  have i1 : ∀ x ∈ Set.Iio (0:ℝ), (2:ℝ) ^ x ∈ Set.Ioo 0 1 := by
     intro x hx
     simp only [Set.mem_Ioo, Nat.ofNat_pos, rpow_pos_of_pos, true_and]
     apply rpow_lt_one_of_one_lt_of_neg (by simp only [Nat.one_lt_ofNat]) hx
-  have i2: ∀ x ∈ Set.Ioi (0:ℝ), (2:ℝ) ^ x ∈ Set.Ioi 1 := by
+  have i2 : ∀ x ∈ Set.Ioi (0:ℝ), (2:ℝ) ^ x ∈ Set.Ioi 1 := by
     intro x hx
     apply one_lt_rpow (by simp only [Nat.one_lt_ofNat]) hx
   apply strictMonoOn_of_deriv_pos (convex_Iio 0)
-  have: ContinuousOn (fun i ↦ Qm Δ i r) (Set.Iio 0) := by
-    have: ∀ t > 0, DifferentiableOn ℝ (Em_i t) (Set.Iio 0) := by
+  have : ContinuousOn (fun i ↦ Qm Δ i r) (Set.Iio 0) := by
+    have : ∀ t > 0, DifferentiableOn ℝ (Em_i t) (Set.Iio 0) := by
       intro t ht
       apply DifferentiableOn.mono (@differentiable_Em_i t (by simp only [Set.mem_Ici]; linarith))
       exact subset_refl _
@@ -176,7 +176,7 @@ lemma Lemma65_strictMono (hr1 : 0 < r) (hr2 : r < Δ) :
     simp only [Set.mem_Iio]; simp only [Set.mem_Iio] at hi; linarith; linarith; linarith
   rw [deriv_EqOn_Iio this hx, deriv.comp]
   apply mul_pos
-  any_goals have hx: x ∈ Set.Iio 0 := by simp only [Set.mem_Iio] ; linarith
+  any_goals have hx : x ∈ Set.Iio 0 := by simp only [Set.mem_Iio] ; linarith
   apply deriv_Fm_div_pos (i1 x hx) (i2 r hr1)
   apply rpow_lt_rpow_of_exponent_lt (by simp only [Nat.one_lt_ofNat]) hr2
   get_deriv (fun i ↦ 2 ^ i)

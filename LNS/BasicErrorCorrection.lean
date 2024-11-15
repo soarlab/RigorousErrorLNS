@@ -104,7 +104,7 @@ lemma differentiable_Fp_b (ha : 0 < a) (hb : 0 < b) : DifferentiableAt ℝ (fun 
 
 lemma deriv_Fp_a_b (ha : 0 < a) (hb : 0 < b) :
     deriv (fun b ↦ deriv (Fp b) a) b = (b - 1) / (a + b) ^ 2 := by
-  have e: Set.EqOn (fun b ↦ deriv (Fp b) a) (fun b => (a+1)/(a+b) - 1 - log (a+1) + log (a+b)) (Set.Ioi 0) := by
+  have e : Set.EqOn (fun b ↦ deriv (Fp b) a) (fun b => (a+1)/(a+b) - 1 - log (a+1) + log (a+b)) (Set.Ioi 0) := by
     unfold Set.EqOn; intro x hx; simp only
     rw [deriv_Fp_a hx ha]
   rw [deriv_EqOn_Ioi e hb]
@@ -119,7 +119,7 @@ lemma deriv_Fp_a_b (ha : 0 < a) (hb : 0 < b) :
 
 lemma differentiable_Fp_a_b (ha : 0 < a) (hb : 0 < b) :
     DifferentiableAt ℝ (fun b ↦ deriv (Fp b) a) b := by
-  have e: Set.EqOn (fun b ↦ deriv (Fp b) a) (fun b => (a+1)/(a+b) - 1 - log (a+1) + log (a+b)) (Set.Ioi 0) := by
+  have e : Set.EqOn (fun b ↦ deriv (Fp b) a) (fun b => (a+1)/(a+b) - 1 - log (a+1) + log (a+b)) (Set.Ioi 0) := by
     unfold Set.EqOn; intro x hx; simp only
     rw [deriv_Fp_a hx ha]
   get_deriv (fun b ↦ (a + 1) / (a + b) - 1 - log (a + 1) + log (a + b)) within (Set.Ioi 0)
@@ -136,11 +136,11 @@ lemma deriv_Fp_a_pos (ha : 0 < a) (hb : 1 < b) : 0 < deriv (Fp b) a := by
     simp only [@deriv_Fp_a 1 (by norm_num) a ha, sub_add_cancel]
     field_simp
   rw [e1, ← e2]
-  have e: Set.EqOn (fun b ↦ deriv (Fp b) a) (fun b => (a+1)/(a+b) - 1 - log (a+1) + log (a+b)) (Set.Ici 1) := by
+  have e : Set.EqOn (fun b ↦ deriv (Fp b) a) (fun b => (a+1)/(a+b) - 1 - log (a+1) + log (a+b)) (Set.Ici 1) := by
     unfold Set.EqOn; intro x hx; simp only
     simp only [Set.mem_Ici] at hx
     rw [deriv_Fp_a (by linarith : x > 0) ha]
-  have: StrictMonoOn (fun b ↦ deriv (Fp b) a) (Set.Ici 1) := by
+  have : StrictMonoOn (fun b ↦ deriv (Fp b) a) (Set.Ici 1) := by
     apply strictMonoOn_of_deriv_pos (convex_Ici 1)
     apply ContinuousOn.congr _ e
     have : ∀ x ∈ Set.Ici 1, a + x ≠ 0 := by intro x hx; simp only [Set.mem_Ici] at hx; linarith
@@ -156,7 +156,7 @@ lemma Fp_pos (ha: 0 < a) (hb: 1 < b) : 0 < (Fp b) a := by
   have e1 : (Fp b) a = (fun b ↦ (Fp b) a) b := by simp only
   have e2 : (fun b ↦  (Fp b) a) 1 = 0 := by simp only [Fp, neg_add_rev, log_one, sub_zero]; ring_nf
   rw [e1, ← e2]
-  have: StrictMonoOn (fun b ↦ (Fp b) a) (Set.Ici 1) := by
+  have : StrictMonoOn (fun b ↦ (Fp b) a) (Set.Ici 1) := by
     apply strictMonoOn_of_deriv_pos (convex_Ici 1)
     unfold Fp
     have : ∀ x ∈ Set.Ici 1, a + x ≠ 0 := by intro x hx; simp only [Set.mem_Ici] at hx; linarith
@@ -217,7 +217,7 @@ lemma differentiable_Fm_b (ha : a ∈ Set.Ioo 0 1) (hb : 1 ≤ b) : Differentiab
 
 lemma deriv_Fm_a_b (ha : a ∈ Set.Ioo 0 1) (hb : 1 < b) :
      deriv (fun b ↦ deriv (Fm b) a) b = (b - 1) / (b - a) ^ 2 := by
-  have e: Set.EqOn (fun b ↦ deriv (Fm b) a) (fun b => (1-a)/(b-a) - 1 - log (1-a) + log (b-a)) (Set.Ioi 1) := by
+  have e : Set.EqOn (fun b ↦ deriv (Fm b) a) (fun b => (1-a)/(b-a) - 1 - log (1-a) + log (b-a)) (Set.Ioi 1) := by
     unfold Set.EqOn; intro x hx; simp only
     rw [deriv_Fm_a _ ha]
     exact le_of_lt hx
@@ -235,7 +235,7 @@ lemma deriv_Fm_a_b (ha : a ∈ Set.Ioo 0 1) (hb : 1 < b) :
 
 lemma differentiable_Fm_a_b (ha : a ∈ Set.Ioo 0 1) (hb : 1 < b) :
     DifferentiableAt ℝ (fun b ↦ deriv (Fm b) a) b := by
-  have e: Set.EqOn (fun b ↦ deriv (Fm b) a) (fun b => (1-a)/(b-a) - 1 - log (1-a) + log (b-a))  (Set.Ioi 1) := by
+  have e : Set.EqOn (fun b ↦ deriv (Fm b) a) (fun b => (1-a)/(b-a) - 1 - log (1-a) + log (b-a))  (Set.Ioi 1) := by
     unfold Set.EqOn; intro x hx; simp only
     rw [deriv_Fm_a _ ha]
     simp_all only [Set.mem_Ioo, Set.mem_Ioi, Set.mem_Ici]; linarith
@@ -275,7 +275,7 @@ lemma Fm_pos (ha : a ∈ Set.Ioo 0 1) (hb : 1 < b) : 0 < (Fm b) a := by
   have e2 : (fun b ↦  (Fm b) a) 1 = 0 := by simp only [Fm, neg_add_rev, log_one, sub_zero]; ring_nf
   rw [e1, ← e2]
   simp only [Set.mem_Ioo, Set.mem_Ioi] at ha hb
-  have: StrictMonoOn (fun b ↦ (Fm b) a) (Set.Ici 1) := by
+  have : StrictMonoOn (fun b ↦ (Fm b) a) (Set.Ici 1) := by
     apply strictMonoOn_of_deriv_pos (convex_Ici 1)
     unfold Fm
     have : ∀ x ∈ Set.Ici 1, x - a ≠ 0 := by intro x hx; simp only [Set.mem_Ici] at hx; linarith

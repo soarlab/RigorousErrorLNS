@@ -26,15 +26,15 @@ lemma monoWp2 (hd : 0 < Δ) (ht : t ≥ 0) (htr : t ≤ r) (htd : r ≤ Δ):
   have ep : Ep c Δ > 0 := by apply Ep_r_pos; linarith
   unfold Wp; rw [div_le_div_right ep]
   have ec2 : (fun y ↦ Ep c (y - t)) = (fun y=> Ep c y) ∘ (fun y=>y-t) := by ext y; simp only [Function.comp_apply]
-  have diff: DifferentiableOn ℝ (fun x => Ep c x - Ep c (x - t))  (Set.Ici t) := by
+  have diff : DifferentiableOn ℝ (fun x => Ep c x - Ep c (x - t))  (Set.Ici t) := by
     apply DifferentiableOn.sub
     apply Differentiable.differentiableOn differentiable_Ep_r
-    have mt: Set.MapsTo (fun y ↦ y - t) (Set.Ici t) (Set.Ici 0) := by
+    have mt : Set.MapsTo (fun y ↦ y - t) (Set.Ici t) (Set.Ici 0) := by
       unfold Set.MapsTo; intro x hx; simp only [Set.mem_Ici] at hx; simp only [Set.mem_Ici, sub_nonneg, hx]
     rw [ec2]; apply DifferentiableOn.comp (Differentiable.differentiableOn differentiable_Ep_r) _ mt
     simp only [differentiableOn_const, DifferentiableOn.sub_iff_left]
     exact differentiableOn_id
-  have: MonotoneOn (fun x => Ep c x - Ep c (x - t))  (Set.Ici t) := by
+  have : MonotoneOn (fun x => Ep c x - Ep c (x - t))  (Set.Ici t) := by
     apply monotoneOn_of_deriv_nonneg (convex_Ici t)
     apply DifferentiableOn.continuousOn diff
     apply DifferentiableOn.mono diff
@@ -68,7 +68,7 @@ lemma mainlem64 (hd : Δ > 0) (ht0 : 0 ≤ t) (htp : t ≤ ΔP) (htr : t ≤ r)
   linarith
 
 lemma W_pos (hd : Δ > 0) (ht0 : 0 ≤ t) (htr : t ≤ r) : Wp c Δ r t ≥ 0 := by
-  have e0: 0 = Wp c Δ r 0 := by unfold Wp; field_simp
+  have e0 : 0 = Wp c Δ r 0 := by unfold Wp; field_simp
   rw [e0]; apply monoWp1 hd htr ht0
 
 lemma W_eq_Q_Δ (hΔ : Δ > 0) : 1 - Qp Δ c (Δ - ΔP) = (Wp c Δ) Δ ΔP := by
@@ -83,7 +83,7 @@ lemma W_eq_Q (hΔ : Δ > 0) : Qp Δ c r - Qp Δ c rr = Wp c Δ r (r - rr) := by
 
 lemma lemma64sub (hd : Δ > 0) (ht0: 0 ≤ r - rr) (htp: r - rr ≤ ΔP) (hrr: rr ≥ 0)
             (htd: r ≤ Δ) (hΔ:  ΔP ≤ Δ ) :  |Qp Δ c r - Qp Δ c rr| ≤ 1 - Qp Δ c (Δ - ΔP) := by
-  have e1: |Qp Δ c r - Qp Δ c rr| = Qp Δ c r - Qp Δ c rr := by
+  have e1 : |Qp Δ c r - Qp Δ c rr| = Qp Δ c r - Qp Δ c rr := by
     apply abs_of_nonneg; rw [W_eq_Q]; apply W_pos
     any_goals linarith
   rw [e1, W_eq_Q_Δ, W_eq_Q ]
@@ -93,30 +93,30 @@ lemma lemma64sub (hd : Δ > 0) (ht0: 0 ≤ r - rr) (htp: r - rr ≤ ΔP) (hrr: r
 
 lemma lemma64 (hc : c ≤ 0) (hr1 : 0 ≤ r) (hr2 : r < Δ) (hΔ : ΔP < Δ) (hΔP : ΔP > 0) :
     |Qp Δ c r - Qp Δ c (Int.floor (r / ΔP) * ΔP)| ≤ 1 - Qp_lo Δ (Δ - ΔP) := by
-  have i00: (Int.floor (r / ΔP) * ΔP) ≥ 0 := by
+  have i00 : (Int.floor (r / ΔP) * ΔP) ≥ 0 := by
     apply mul_nonneg; simp; apply Int.floor_nonneg.mpr
     apply div_nonneg
     any_goals linarith
 
-  have i01: r - (Int.floor (r / ΔP) * ΔP) ≥ 0 := by
+  have i01 : r - (Int.floor (r / ΔP) * ΔP) ≥ 0 := by
     simp
-    have i2: Int.floor (r / ΔP) * ΔP ≤ r / ΔP * ΔP := by
+    have i2 : Int.floor (r / ΔP) * ΔP ≤ r / ΔP * ΔP := by
       apply mul_le_mul; apply Int.floor_le; simp; linarith
       apply div_nonneg
       any_goals linarith
-    have e0: r / ΔP * ΔP = r := by field_simp
+    have e0 : r / ΔP * ΔP = r := by field_simp
     linarith
 
-  have i02: r - (Int.floor (r / ΔP) * ΔP) <  ΔP := by
-    have i1: Int.floor (r / ΔP) +1 > r / ΔP := by apply Int.lt_floor_add_one
-    have i2: Int.floor (r / ΔP) * ΔP > (r/ΔP -1)* ΔP := by
+  have i02 : r - (Int.floor (r / ΔP) * ΔP) <  ΔP := by
+    have i1 : Int.floor (r / ΔP) +1 > r / ΔP := by apply Int.lt_floor_add_one
+    have i2 : Int.floor (r / ΔP) * ΔP > (r/ΔP -1)* ΔP := by
       apply mul_lt_mul; linarith; simp; linarith; simp
       apply Int.floor_nonneg.mpr; apply div_nonneg; linarith;linarith
-    have e1: r - (r/ΔP -1)* ΔP = ΔP := by field_simp
+    have e1 : r - (r/ΔP -1)* ΔP = ΔP := by field_simp
     linarith
 
-  have i1: |Qp Δ c r - Qp Δ c (Int.floor (r / ΔP) * ΔP)| ≤ 1 - Qp Δ c (Δ - ΔP) := by
+  have i1 : |Qp Δ c r - Qp Δ c (Int.floor (r / ΔP) * ΔP)| ≤ 1 - Qp Δ c (Δ - ΔP) := by
     apply lemma64sub
     any_goals linarith
-  have i2: Qp Δ c (Δ - ΔP) ≥  Qp_lo Δ (Δ - ΔP) := by apply q_lower_bound; assumption; linarith; linarith
+  have i2 : Qp Δ c (Δ - ΔP) ≥  Qp_lo Δ (Δ - ΔP) := by apply q_lower_bound; assumption; linarith; linarith
   linarith

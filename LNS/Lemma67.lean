@@ -25,20 +25,20 @@ lemma monoWm1 (hd : Δ > 0) (hc : c < 0) (h1 : r ≥ ΔP) (htp: t ≤ ΔP) :
 
 lemma monoWm2 (hd : Δ > 0) (hc : c < 0) (ht : t ≥ 0) (htr : t ≤ r) (htd : r ≤ Δ) :
     (Wm c Δ) r t ≤  (Wm c Δ) Δ t := by
-  have hc0: c ∈ Set.Iio 0 := by simp only [Set.mem_Iio]; linarith
+  have hc0 : c ∈ Set.Iio 0 := by simp only [Set.mem_Iio]; linarith
   have ep : Em c Δ > 0 := Em_r_pos hc hd
   unfold Wm; rw [div_le_div_right ep]
   have ec2 : (fun y ↦ Em c (y - t)) = (fun y=> Em c y) ∘ (fun y=>y-t) := by ext y; simp only [Function.comp_apply]
-  have mt: Set.MapsTo (fun y ↦ y - t) (Set.Ioi t) (Set.Ioi 0) := by
+  have mt : Set.MapsTo (fun y ↦ y - t) (Set.Ioi t) (Set.Ioi 0) := by
     unfold Set.MapsTo; intro x hx; simp only [Set.mem_Ioi] at hx; simp only [Set.mem_Ioi, sub_nonneg, hx]; linarith
-  have diff: DifferentiableOn ℝ (fun x => Em c x - Em c (x - t))  (Set.Ioi t) := by
+  have diff : DifferentiableOn ℝ (fun x => Em c x - Em c (x - t))  (Set.Ioi t) := by
     apply DifferentiableOn.sub
     apply DifferentiableOn.mono (differentiable_Em_r hc0)
     simp only [Set.Ioi_subset_Ioi_iff]; exact ht
     rw [ec2]; apply DifferentiableOn.comp (differentiable_Em_r hc0) _ mt
     simp only [differentiableOn_const, DifferentiableOn.sub_iff_left]
     exact differentiableOn_id
-  have cont: ContinuousOn (fun x => Em c x - Em c (x - t))  (Set.Ici t) := by
+  have cont : ContinuousOn (fun x => Em c x - Em c (x - t))  (Set.Ici t) := by
     apply ContinuousOn.sub
     apply ContinuousOn.mono (continuous_Em_r hc0)
     rw [Set.Ici_subset_Ici]; exact ht
@@ -46,7 +46,7 @@ lemma monoWm2 (hd : Δ > 0) (hc : c < 0) (ht : t ≥ 0) (htr : t ≤ r) (htd : r
     apply ContinuousOn.comp (continuous_Em_r hc0)
     apply ContinuousOn.sub continuousOn_id continuousOn_const
     unfold Set.MapsTo; intro x hx; simp only [Set.mem_Ici] at hx; simp only [Set.mem_Ici, sub_nonneg, hx]
-  have: MonotoneOn (fun x => Em c x - Em c (x - t))  (Set.Ici t) := by
+  have : MonotoneOn (fun x => Em c x - Em c (x - t))  (Set.Ici t) := by
     apply monotoneOn_of_deriv_nonneg (convex_Ici t) cont
     apply DifferentiableOn.mono diff
     simp only [Set.nonempty_Iio, interior_Ici', subset_refl]
@@ -82,7 +82,7 @@ lemma mainlem67 (hd : Δ > 0) (hc : c < 0) (ht0 : 0 ≤ t) (htp : t ≤ ΔP) (ht
   linarith
 
 lemma Wm_pos (hd : Δ > 0) (hc : c < 0) (ht0 : 0 ≤ t) (htr : t ≤ r) : Wm c Δ r t ≥ 0 := by
-  have e0: 0 = Wm c Δ r 0 := by unfold Wm; field_simp
+  have e0 : 0 = Wm c Δ r 0 := by unfold Wm; field_simp
   rw [e0]; apply monoWm1 hd hc htr ht0
 
 lemma Wm_eq_Qm_Δ (hc : c < 0) (hΔ : Δ > 0) : 1 - Qm Δ c (Δ - ΔP) = (Wm c Δ) Δ ΔP := by
@@ -97,7 +97,7 @@ lemma Wm_eq_Qm (hc : c < 0) (hΔ : Δ > 0) : Qm Δ c r - Qm Δ c rr = Wm c Δ r 
 
 lemma lemma67sub (hd : Δ > 0) (hc : c < 0) (ht0 : 0 ≤ r - rr) (htp : r - rr ≤ ΔP) (hrr : rr ≥ 0)
     (htd : r ≤ Δ) (hΔ : ΔP ≤ Δ) : |Qm Δ c r - Qm Δ c rr| ≤ 1 - Qm Δ c (Δ - ΔP) := by
-  have e1: |Qm Δ c r - Qm Δ c rr| = Qm Δ c r - Qm Δ c rr := by
+  have e1 : |Qm Δ c r - Qm Δ c rr| = Qm Δ c r - Qm Δ c rr := by
     apply abs_of_nonneg; rw [Wm_eq_Qm]; apply Wm_pos
     any_goals linarith
   rw [e1, Wm_eq_Qm_Δ, Wm_eq_Qm ]
@@ -107,30 +107,30 @@ lemma lemma67sub (hd : Δ > 0) (hc : c < 0) (ht0 : 0 ≤ r - rr) (htp : r - rr �
 
 lemma Lemma67 (hd : Δ > 0) (hc : c < 0) (hr1 : 0 ≤ r) (hr2 : r < Δ) (hΔ : ΔP < Δ) (hΔP : ΔP > 0) :
     |Qm Δ c r - Qm Δ c (Int.floor (r / ΔP) * ΔP)| ≤ 1 - Qm_lo Δ (Δ - ΔP) := by
-  have i00: (Int.floor (r / ΔP) * ΔP) ≥ 0 := by
+  have i00 : (Int.floor (r / ΔP) * ΔP) ≥ 0 := by
     apply mul_nonneg; simp; apply Int.floor_nonneg.mpr
     apply div_nonneg
     any_goals linarith
 
-  have i01: r - (Int.floor (r / ΔP) * ΔP) ≥ 0 := by
+  have i01 : r - (Int.floor (r / ΔP) * ΔP) ≥ 0 := by
     simp
-    have i2: Int.floor (r / ΔP) * ΔP ≤ r / ΔP * ΔP := by
+    have i2 : Int.floor (r / ΔP) * ΔP ≤ r / ΔP * ΔP := by
       apply mul_le_mul; apply Int.floor_le; simp; linarith
       apply div_nonneg
       any_goals linarith
-    have e0: r / ΔP * ΔP = r := by field_simp
+    have e0 : r / ΔP * ΔP = r := by field_simp
     linarith
 
-  have i02: r - (Int.floor (r / ΔP) * ΔP) <  ΔP := by
-    have i1: Int.floor (r / ΔP) +1 > r / ΔP := by apply Int.lt_floor_add_one
-    have i2: Int.floor (r / ΔP) * ΔP > (r/ΔP -1)* ΔP := by
+  have i02 : r - (Int.floor (r / ΔP) * ΔP) <  ΔP := by
+    have i1 : Int.floor (r / ΔP) +1 > r / ΔP := by apply Int.lt_floor_add_one
+    have i2 : Int.floor (r / ΔP) * ΔP > (r/ΔP -1)* ΔP := by
       apply mul_lt_mul; linarith; simp; linarith; simp
       apply Int.floor_nonneg.mpr; apply div_nonneg; linarith;linarith
-    have e1: r - (r/ΔP -1)* ΔP = ΔP := by field_simp
+    have e1 : r - (r/ΔP -1)* ΔP = ΔP := by field_simp
     linarith
 
-  have i1: |Qm Δ c r - Qm Δ c (Int.floor (r / ΔP) * ΔP)| ≤ 1 - Qm Δ c (Δ - ΔP) := by
+  have i1 : |Qm Δ c r - Qm Δ c (Int.floor (r / ΔP) * ΔP)| ≤ 1 - Qm Δ c (Δ - ΔP) := by
     apply lemma67sub hd hc i01 (by linarith) i00 (by linarith) (by linarith)
-  have i2: Qm Δ c (Δ - ΔP) ≥  Qm_lo Δ (Δ - ΔP) := by
+  have i2 : Qm Δ c (Δ - ΔP) ≥  Qm_lo Δ (Δ - ΔP) := by
     apply qm_lower_bound hc (le_refl c) (by linarith) (by linarith)
   linarith

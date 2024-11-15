@@ -42,30 +42,30 @@ lemma hrndn : |fix.rnd x - x| ≤ fix.ε := by
   exact fix.hrnd x
 
 lemma Qp_lt_1 (hr1 : 0 ≤ r) (hr2 : r < Δ): |fix.rnd (Qp Δ c r)| ≤ (1:ℝ) := by
-  have i1: Qp Δ c r ≥ 0 := by
+  have i1 : Qp Δ c r ≥ 0 := by
     unfold Qp; apply div_nonneg; apply Ep_r_nonneg; linarith; apply Ep_r_nonneg; linarith
-  have i2: fix.rnd (Qp Δ c r) ≥ 0 := by
+  have i2 : fix.rnd (Qp Δ c r) ≥ 0 := by
     rw [← fix.rnd_0]; apply fix.rnd_mono; assumption
-  have e1: |fix.rnd (Qp Δ c r)| = fix.rnd (Qp Δ c r) := by apply abs_of_nonneg; assumption
+  have e1 : |fix.rnd (Qp Δ c r)| = fix.rnd (Qp Δ c r) := by apply abs_of_nonneg; assumption
   rw [e1, ← fix.rnd_1]; apply fix.rnd_mono
   unfold Qp; apply le_of_lt
-  have i3:  Ep c Δ >0 := by apply Ep_r_pos; linarith
+  have i3 : Ep c Δ >0 := by apply Ep_r_pos; linarith
   apply (div_lt_one i3).mpr
   apply Ep_r_strictMonotone
   any_goals simp
   any_goals linarith
 
 lemma Qm_lt_1 (hc: c ≤ -1) (hr1 : 0 ≤ r) (hr2 : r < Δ): |fix.rnd (Qm Δ c r)| ≤ (1:ℝ) := by
-  have i1: Qm Δ c r ≥ 0 := by
+  have i1 : Qm Δ c r ≥ 0 := by
     unfold Qm; apply div_nonneg
     apply Em_r_nonneg; linarith; assumption
     apply Em_r_nonneg; linarith; linarith
-  have i2: fix.rnd (Qm Δ c r) ≥ 0 := by
+  have i2 : fix.rnd (Qm Δ c r) ≥ 0 := by
     rw [← fix.rnd_0]; apply fix.rnd_mono; assumption
-  have e1: |fix.rnd (Qm Δ c r)| = fix.rnd (Qm Δ c r) := by apply abs_of_nonneg; assumption
+  have e1 : |fix.rnd (Qm Δ c r)| = fix.rnd (Qm Δ c r) := by apply abs_of_nonneg; assumption
   rw [e1, ← fix.rnd_1]; apply fix.rnd_mono
   unfold Qm; apply le_of_lt
-  have i3:  Em c Δ >0 := by apply Em_r_pos; linarith; linarith
+  have i3 : Em c Δ >0 := by apply Em_r_pos; linarith; linarith
   apply (div_lt_one i3).mpr
   apply Em_r_strictMonotone
   any_goals simp
@@ -107,21 +107,21 @@ theorem Theorem68p (hi : i ≤ 0)(hc : c ≤ 0) (hr1 : 0 ≤ r) (hr2 : r < Δ) (
   set a7 := (fix.rnd (Qp Δ c rr)) * ((Ep i Δ) - (fix.rnd (Ep i Δ) ) )
   set a8 := (fix.rnd (Ep i Δ) ) * (fix.rnd (Qp Δ c rr)) - fix.rnd (fix.rnd (Ep i Δ) * fix.rnd (Qp Δ c rr))
 
-  have irr0: rr ≥ 0 := by
+  have irr0 : rr ≥ 0 := by
     apply mul_nonneg; simp; apply Int.floor_nonneg.mpr
     apply div_nonneg
     any_goals linarith
 
-  have irr1: r - rr ≥ 0 := by
+  have irr1 : r - rr ≥ 0 := by
     simp only [ge_iff_le, sub_nonneg]
-    have i2: Int.floor (r / ΔP) * ΔP ≤ r / ΔP * ΔP := by
+    have i2 : Int.floor (r / ΔP) * ΔP ≤ r / ΔP * ΔP := by
       apply mul_le_mul; apply Int.floor_le; simp only [le_refl]; linarith
       apply div_nonneg
       any_goals linarith
-    have e0: r / ΔP * ΔP = r := by field_simp
+    have e0 : r / ΔP * ΔP = r := by field_simp
     rw [e0] at i2; exact i2
 
-  have eq0: Φp (i - r) - EECp fix Δ ΔP c i r = a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 := by
+  have eq0 : Φp (i - r) - EECp fix Δ ΔP c i r = a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 := by
     rw [Φp_eq_EC hr1 hr2]; unfold EECp; ring_nf
   have i0 : |Ep i Δ| ≤ (EMp Δ) := by unfold EMp; apply Lemma51 hi ; linarith; linarith
   have i01 :  (EMp Δ) ≥ 0 := by
@@ -134,26 +134,26 @@ theorem Theorem68p (hi : i ≤ 0)(hc : c ≤ 0) (hr1 : 0 ≤ r) (hr2 : r < Δ) (
     have e2 : |r| = r := by apply abs_of_nonneg hr1
     rw [e1,e2]; apply mul_le_mul; linarith; apply hrndn; simp only [abs_nonneg]; linarith
   have i4 : |a4| ≤ (EMp Δ) * (QRp Δ) := by
-    have e1: |a4| = |Ep i Δ| * |(Qp Δ i r) - (Qp Δ c r)| := by apply abs_mul
-    have i1: |(Qp Δ i r) - (Qp Δ c r)| ≤ (QRp Δ) := by apply lemma63; any_goals linarith
+    have e1 : |a4| = |Ep i Δ| * |(Qp Δ i r) - (Qp Δ c r)| := by apply abs_mul
+    have i1 : |(Qp Δ i r) - (Qp Δ c r)| ≤ (QRp Δ) := by apply lemma63; any_goals linarith
     rw [e1] ; apply mul_le_mul; assumption; assumption; simp; assumption
-  have i5: |a5| ≤ (EMp Δ) * (QIp Δ ΔP) := by
-    have e1: |a5| = |Ep i Δ| * |(Qp Δ c r) - (Qp Δ c rr)| := by apply abs_mul
-    have i1: |(Qp Δ c r) - (Qp Δ c rr)| ≤ QIp Δ ΔP := by apply lemma64; any_goals linarith
+  have i5 : |a5| ≤ (EMp Δ) * (QIp Δ ΔP) := by
+    have e1 : |a5| = |Ep i Δ| * |(Qp Δ c r) - (Qp Δ c rr)| := by apply abs_mul
+    have i1 : |(Qp Δ c r) - (Qp Δ c rr)| ≤ QIp Δ ΔP := by apply lemma64; any_goals linarith
     rw [e1] ; apply mul_le_mul; assumption; assumption; simp; assumption
-  have i6: |a6| ≤ (EMp Δ) * fix.ε := by
-    have e1: |a6| = |Ep i Δ| * |(Qp Δ c rr) - (fix.rnd (Qp Δ c rr))| := by apply abs_mul
-    have i1: |(Qp Δ c rr) - (fix.rnd (Qp Δ c rr))| ≤ fix.ε := by apply fix.hrnd
+  have i6 : |a6| ≤ (EMp Δ) * fix.ε := by
+    have e1 : |a6| = |Ep i Δ| * |(Qp Δ c rr) - (fix.rnd (Qp Δ c rr))| := by apply abs_mul
+    have i1 : |(Qp Δ c rr) - (fix.rnd (Qp Δ c rr))| ≤ fix.ε := by apply fix.hrnd
     rw [e1] ; apply mul_le_mul; assumption; assumption; simp; assumption
-  have i7: |a7| ≤ fix.ε := by
-    have e1: |a7| = |fix.rnd (Qp Δ c rr)| * |(Ep i Δ) - (fix.rnd (Ep i Δ) )| := by apply abs_mul
-    have i1: |(Ep i Δ) - (fix.rnd (Ep i Δ) )| ≤ fix.ε := by apply fix.hrnd
-    have i2: |fix.rnd (Qp Δ c rr)| ≤ (1:ℝ) := by
+  have i7 : |a7| ≤ fix.ε := by
+    have e1 : |a7| = |fix.rnd (Qp Δ c rr)| * |(Ep i Δ) - (fix.rnd (Ep i Δ) )| := by apply abs_mul
+    have i1 : |(Ep i Δ) - (fix.rnd (Ep i Δ) )| ≤ fix.ε := by apply fix.hrnd
+    have i2 : |fix.rnd (Qp Δ c rr)| ≤ (1:ℝ) := by
       apply Qp_lt_1 fix irr0 (by linarith)
-    have e2: fix.ε = (1:ℝ) * fix.ε := by simp
+    have e2 : fix.ε = (1:ℝ) * fix.ε := by simp
     rw [e1, e2] ; apply mul_le_mul; assumption; assumption; simp; linarith
-  have i8: |a8| ≤  fix.ε := by apply fix.hrnd
-  have isum: |EECp_fix fix Δ ΔP c i r| ≤ |a1|+|a2|+|a3|+|a4|+|a5|+|a6|+|a7|+|a8| := by
+  have i8 : |a8| ≤  fix.ε := by apply fix.hrnd
+  have isum : |EECp_fix fix Δ ΔP c i r| ≤ |a1|+|a2|+|a3|+|a4|+|a5|+|a6|+|a7|+|a8| := by
     unfold EECp_fix; rw [eq0]; apply sum_8_abs1
   linarith
 
@@ -170,21 +170,21 @@ theorem Theorem68m (hi : i ≤ -1)(hc : c ≤ -1) (hr1 : 0 < r) (hr2 : r < Δ) (
   set a7 := (fix.rnd (Qm Δ c rr)) * ((Em i Δ) - (fix.rnd (Em i Δ) ) )
   set a8 := (fix.rnd (Em i Δ) ) * (fix.rnd (Qm Δ c rr)) - fix.rnd (fix.rnd (Em i Δ) * fix.rnd (Qm Δ c rr))
 
-  have irr0: rr ≥ 0 := by
+  have irr0 : rr ≥ 0 := by
     apply mul_nonneg; simp; apply Int.floor_nonneg.mpr
     apply div_nonneg
     any_goals linarith
 
-  have irr1: r - rr ≥ 0 := by
+  have irr1 : r - rr ≥ 0 := by
     simp only [ge_iff_le, sub_nonneg]
-    have i2: Int.floor (r / ΔP) * ΔP ≤ r / ΔP * ΔP := by
+    have i2 : Int.floor (r / ΔP) * ΔP ≤ r / ΔP * ΔP := by
       apply mul_le_mul; apply Int.floor_le; simp only [le_refl]; linarith
       apply div_nonneg
       any_goals linarith
-    have e0: r / ΔP * ΔP = r := by field_simp
+    have e0 : r / ΔP * ΔP = r := by field_simp
     rw [e0] at i2; exact i2
 
-  have eq0: Φm (i - r) - EECm fix Δ ΔP c i r = a1 + a2 + a3 - (a4 + a5 + a6 + a7 + a8) := by
+  have eq0 : Φm (i - r) - EECm fix Δ ΔP c i r = a1 + a2 + a3 - (a4 + a5 + a6 + a7 + a8) := by
     rw [Φm_eq_EC hi hr1 hr2]; unfold EECm; ring_nf
   have i0 : |Em i Δ| ≤ (EMm Δ) := by unfold EMm; apply Lemma52 (by norm_num : -1 < (0 : ℝ)) hi ; linarith; linarith
   have i01 :  (EMm Δ) ≥ 0 := by
@@ -197,34 +197,34 @@ theorem Theorem68m (hi : i ≤ -1)(hc : c ≤ -1) (hr1 : 0 < r) (hr2 : r < Δ) (
     have e2 : |r| = r := by apply abs_of_pos hr1
     rw [e1,e2]; apply mul_le_mul; linarith; apply hrndn; simp only [abs_nonneg]; linarith
   have i4 : |a4| ≤ (EMm Δ) * (QRm Δ) := by
-    have e1: |a4| = |Em i Δ| * |(Qm Δ i r) - (Qm Δ c r)| := by apply abs_mul
-    have i1: |(Qm Δ i r) - (Qm Δ c r)| ≤ (QRm Δ) := by apply Lemma66; any_goals linarith
+    have e1 : |a4| = |Em i Δ| * |(Qm Δ i r) - (Qm Δ c r)| := by apply abs_mul
+    have i1 : |(Qm Δ i r) - (Qm Δ c r)| ≤ (QRm Δ) := by apply Lemma66; any_goals linarith
     rw [e1] ; apply mul_le_mul; assumption; assumption; simp; assumption
-  have i5: |a5| ≤ (EMm Δ) * (QIm Δ ΔP) := by
-    have e1: |a5| = |Em i Δ| * |(Qm Δ c r) - (Qm Δ c rr)| := by apply abs_mul
-    have i1: |(Qm Δ c r) - (Qm Δ c rr)| ≤ QIm Δ ΔP := by apply Lemma67; any_goals linarith
+  have i5 : |a5| ≤ (EMm Δ) * (QIm Δ ΔP) := by
+    have e1 : |a5| = |Em i Δ| * |(Qm Δ c r) - (Qm Δ c rr)| := by apply abs_mul
+    have i1 : |(Qm Δ c r) - (Qm Δ c rr)| ≤ QIm Δ ΔP := by apply Lemma67; any_goals linarith
     rw [e1] ; apply mul_le_mul; assumption; assumption; simp; assumption
-  have i6: |a6| ≤ (EMm Δ) * fix.ε := by
-    have e1: |a6| = |Em i Δ| * |(Qm Δ c rr) - (fix.rnd (Qm Δ c rr))| := by apply abs_mul
-    have i1: |(Qm Δ c rr) - (fix.rnd (Qm Δ c rr))| ≤ fix.ε := by apply fix.hrnd
+  have i6 : |a6| ≤ (EMm Δ) * fix.ε := by
+    have e1 : |a6| = |Em i Δ| * |(Qm Δ c rr) - (fix.rnd (Qm Δ c rr))| := by apply abs_mul
+    have i1 : |(Qm Δ c rr) - (fix.rnd (Qm Δ c rr))| ≤ fix.ε := by apply fix.hrnd
     rw [e1] ; apply mul_le_mul; assumption; assumption; simp; assumption
-  have i7: |a7| ≤ fix.ε := by
-    have e1: |a7| = |fix.rnd (Qm Δ c rr)| * |(Em i Δ) - (fix.rnd (Em i Δ) )| := by apply abs_mul
-    have i1: |(Em i Δ) - (fix.rnd (Em i Δ) )| ≤ fix.ε := by apply fix.hrnd
-    have i2: |fix.rnd (Qm Δ c rr)| ≤ (1:ℝ) := by
+  have i7 : |a7| ≤ fix.ε := by
+    have e1 : |a7| = |fix.rnd (Qm Δ c rr)| * |(Em i Δ) - (fix.rnd (Em i Δ) )| := by apply abs_mul
+    have i1 : |(Em i Δ) - (fix.rnd (Em i Δ) )| ≤ fix.ε := by apply fix.hrnd
+    have i2 : |fix.rnd (Qm Δ c rr)| ≤ (1:ℝ) := by
       apply Qm_lt_1 fix hc irr0 (by linarith)
-    have e2: fix.ε = (1:ℝ) * fix.ε := by simp
+    have e2 : fix.ε = (1:ℝ) * fix.ε := by simp
     rw [e1, e2] ; apply mul_le_mul; assumption; assumption; simp; linarith
-  have i8: |a8| ≤ fix.ε := by apply fix.hrnd
-  have isum: |EECm_fix fix Δ ΔP c i r| ≤ |a1|+|a2|+|a3|+|a4|+|a5|+|a6|+|a7|+|a8| := by
+  have i8 : |a8| ≤ fix.ε := by apply fix.hrnd
+  have isum : |EECm_fix fix Δ ΔP c i r| ≤ |a1|+|a2|+|a3|+|a4|+|a5|+|a6|+|a7|+|a8| := by
     unfold EECm_fix; rw [eq0]; apply sum_8_abs2
   linarith
 
 
 theorem Theorem68_ΦECp (hc : c ≤ 0) (hΔ : ΔP < Δ) (hΔP : ΔP > 0) (hx : x ≤ 0):
     |Φp x - ΦECp_fix fix Δ ΔP c x| ≤ (4 + Δ) * fix.ε + EMp Δ * (QRp Δ + QIp Δ ΔP + fix.ε) := by
-  have hd: 0 < Δ := by linarith
-  have eq: Φp x - ΦECp_fix fix Δ ΔP c x = EECp_fix fix Δ ΔP c (Iₓ Δ x) (Rₓ Δ x) := by
+  have hd : 0 < Δ := by linarith
+  have eq : Φp x - ΦECp_fix fix Δ ΔP c x = EECp_fix fix Δ ΔP c (Iₓ Δ x) (Rₓ Δ x) := by
     unfold ΦECp_fix EECp_fix; rw [i_sub_r_eq_x]
   rw [eq]
   apply Theorem68p fix _ hc _ _ hΔ hΔP

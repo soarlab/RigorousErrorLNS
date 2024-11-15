@@ -62,7 +62,7 @@ theorem Theorem53_Em (fix : FixedPoint) {i₀ i r Δ : ℝ} (hi₀ : i₀ < 0) (
 
 theorem Theorem53_ΦTp (fix : FixedPoint) {x Δ : ℝ} (hd : 0 < Δ) (hx : x ≤ 0) :
     |Φp x - ΦTp_fix fix Δ x| ≤ Ep 0 Δ + (2 + Δ) * fix.ε := by
-  have eq: Φp x - ΦTp_fix fix Δ x = Ep_fix fix (Iₓ Δ x) (Rₓ Δ x) := by
+  have eq : Φp x - ΦTp_fix fix Δ x = Ep_fix fix (Iₓ Δ x) (Rₓ Δ x) := by
     unfold ΦTp_fix Ep_fix; rw [i_sub_r_eq_x]; ring_nf
   rw [eq]; apply Theorem53_Ep
   · rw [← x_neg_iff_ix_neg] <;> assumption
@@ -74,7 +74,7 @@ theorem Theorem53_ΦTp (fix : FixedPoint) {x Δ : ℝ} (hd : 0 < Δ) (hx : x ≤
 
 theorem Theorem53_ΦTm (fix : FixedPoint) {x₀ x Δ : ℝ} (hd : 0 < Δ) (hx₀ : x₀ ≤ -Δ) (hx : x ≤ x₀) :
     |Φm x - ΦTm_fix fix Δ x| ≤ Em (Iₓ Δ x₀) Δ + (2 + Δ) * fix.ε := by
-  have eq: Φm x - ΦTm_fix fix Δ x = Em_fix fix (Iₓ Δ x) (Rₓ Δ x) := by
+  have eq : Φm x - ΦTm_fix fix Δ x = Em_fix fix (Iₓ Δ x) (Rₓ Δ x) := by
     unfold ΦTm_fix Em_fix; rw [i_sub_r_eq_x]; ring_nf
   rw [eq]; apply Theorem53_Em
   · exact ix_lt_zero hd hx₀
