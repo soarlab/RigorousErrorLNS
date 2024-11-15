@@ -95,7 +95,7 @@ lemma deriv_Fp_b (ha : 0 < a) (hb : 0 < b) :
   simp only [Set.mem_Ioi, List.Forall, toFun, ne_eq, id_eq]
   intro x hx; split_ands <;> linarith
   simp only [toFun] at h
-  rw [ h.right b hb]
+  rw [h.right b hb]
   have : a + b ≠ 0 := by linarith
   field_simp; ring_nf
 
