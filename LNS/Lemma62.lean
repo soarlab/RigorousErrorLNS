@@ -1,8 +1,8 @@
-import LNS.Common
 import LNS.Tactic
-import LNS.Basic
+import LNS.Definitions
+import LNS.BasicErrorCorrection
 
-open LNS
+namespace LNS
 
 open Real
 
@@ -12,8 +12,8 @@ private def Gp a b := Fp b a / deriv (Fp b) a
 
 private def K a b := a * a * log (a + b) - a * a * log (a + 1) - a * b + a + b * log b + b * log (a + 1) - b * log (a + b)
 
-lemma deriv_K (ha : a > 0): Set.EqOn (deriv (K a))
-    (fun b => (a*a)/(a+b) - a - b/(a+b) + log b + log (a+1) - log (a+b) + (1:ℝ)) (Set.Ioi 0) := by
+private lemma deriv_K (ha : 0 < a) : Set.EqOn (deriv (K a))
+    (fun b => (a * a) / (a + b) - a - b / (a + b) + log b + log (a + 1) - log (a + b) + 1) (Set.Ioi 0) := by
   unfold K
   get_deriv (fun b ↦ a * a * log (a + b) - a * a * log (a + 1) - a * b + a + b * log b + b * log (a + 1) - b * log (a + b))
       within (Set.Ioi 0)
@@ -21,27 +21,27 @@ lemma deriv_K (ha : a > 0): Set.EqOn (deriv (K a))
   intro x hx; split_ands <;> linarith
   simp only [toFun] at h
   intro b hb
-  rw[h.right b hb]
+  rw [h.right b hb]
   simp only [Set.mem_Ioi] at hb
-  have : a + 1 ≠ 0 := by  linarith
-  have : a + b ≠ 0 := by  linarith
+  have : a + 1 ≠ 0 := by linarith
+  have : a + b ≠ 0 := by linarith
   field_simp; ring_nf
 
-lemma deriv2_K (ha : a > 0) : Set.EqOn (deriv (deriv (K a)))
-      (fun b=> (a*a)*(1-b)/(b*(a+b)^2)) (Set.Ioi 0) := by
-  have e: Set.EqOn (deriv (K a))
+lemma deriv2_K (ha : 0 < a) : Set.EqOn (deriv (deriv (K a)))
+      (fun b => (a * a) * (1 - b) / (b * (a + b) ^ 2)) (Set.Ioi 0) := by
+  have e : Set.EqOn (deriv (K a))
       (fun b=> (a*a)/(a+b) - a - b/(a+b) + log b + log (a+1) - log (a+b) + (1:ℝ)) (Set.Ioi 0) := by
     apply Set.EqOn.mono _ (deriv_K ha)
     exact subset_refl _
-  intro b hb; rw[deriv_EqOn_Ioi e hb]
+  intro b hb; rw [deriv_EqOn_Ioi e hb]
   simp only [Set.mem_Ioi] at hb
   get_deriv (fun b ↦ a * a / (a + b) - a - b / (a + b) + log b + log (a + 1) - log (a + b) + 1) within (Set.Ioi 0)
   simp only [Set.mem_Ioi, List.Forall, toFun, ne_eq, id_eq, and_self_left]
   intro x hx; split_ands <;> linarith
   simp only [toFun] at h
-  rw[h.right b hb]
-  have : a + 1 ≠ 0 := by  linarith
-  have : a + b ≠ 0 := by  linarith
+  rw [h.right b hb]
+  have : a + 1 ≠ 0 := by linarith
+  have : a + b ≠ 0 := by linarith
   field_simp; ring_nf
 
 lemma deriv_K_strictAnti (ha : a > 0) : StrictAntiOn (deriv (K a)) (Set.Ici 1) := by
@@ -66,34 +66,34 @@ lemma deriv_K_strictAnti (ha : a > 0) : StrictAntiOn (deriv (K a)) (Set.Ici 1) :
 lemma deriv_K_neg (ha : a > 0) (hb : b > 1) : deriv (K a) b < 0 := by
   have : deriv (K a) 1 = 0 := by
     have : (1 : ℝ) ∈ Set.Ioi 0 := by simp only [Set.mem_Ioi, zero_lt_one]
-    rw[deriv_K ha this]
-    have : a + 1 > 0 :=by linarith
+    rw [deriv_K ha this]
+    have : a + 1 > 0 := by linarith
     field_simp; ring_nf
-  rw[← this]
+  rw [← this]
   apply (deriv_K_strictAnti ha) (by simp only [Set.mem_Ici, le_refl]) (by simp only [Set.mem_Ici]; linarith) hb
 
 lemma K_strictAnti (ha : a > 0) : StrictAntiOn (K a) (Set.Ici 1) := by
   apply strictAntiOn_of_deriv_neg (convex_Ici 1)
   unfold K
-  have: ∀ x ∈ Set.Ici 1, a + x ≠ 0 :=by
+  have: ∀ x ∈ Set.Ici 1, a + x ≠ 0 := by
     simp only [Set.mem_Ici, ne_eq]
     intro x hx; linarith
-  have: ∀ x ∈ Set.Ici (1:ℝ), x ≠ 0 :=by simp only [Set.mem_Ici, ne_eq]; intro x hx; linarith
+  have: ∀ x ∈ Set.Ici (1:ℝ), x ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intro x hx; linarith
   fun_prop (disch := assumption)
-  intro b hb;
+  intro b hb
   apply deriv_K_neg ha; simp only [Set.nonempty_Iio, interior_Ici'] at hb; exact hb
 
 lemma K_neg (ha : a > 0) (hb : b > 1) : K a b < 0 := by
   have : K a 1 = 0 := by simp only [K, sub_self, mul_one, zero_sub, neg_add_cancel, log_one,
     mul_zero, add_zero, one_mul, zero_add]
-  rw[← this]
+  rw [← this]
   apply (K_strictAnti ha) (by simp only [Set.mem_Ici, le_refl]) _ hb
   simp only [Set.mem_Ici]; linarith
 
 lemma deriv_Gp_b_neg (ha : a > 0) (hb : b > 1) : deriv (Gp a) b < 0 := by
   have hb0 : b > 0 := by linarith
   unfold Gp
-  rw[deriv_div]
+  rw [deriv_div]
   · have : deriv (Fp b) a ^ 2 > 0 := by apply pow_pos (deriv_Fp_a_pos ha hb)
     apply div_neg_of_neg_of_pos _ this
     rw [deriv_Fp_a_b ha hb0, deriv_Fp_b ha hb0, deriv_Fp_a hb0 ha]
@@ -129,12 +129,12 @@ lemma Anti_Gp_b (ha: a > 0) : StrictAntiOn (Gp a) (Set.Ioi 1) := by
 
 lemma deriv_Fp_div_pos (ha : a > 0) (hb : b > 1) (hc : c > b) :
     deriv (fun a ↦ Fp b a / Fp c a) a < 0 := by
-  have ie : Gp a b > Gp a c :=by apply Anti_Gp_b ha hb (by simp only [Set.mem_Ioi]; linarith) hc
+  have ie : Gp a b > Gp a c := by apply Anti_Gp_b ha hb (by simp only [Set.mem_Ioi]; linarith) hc
   unfold Gp at ie
   have i1: deriv (Fp b) a > 0 := by apply deriv_Fp_a_pos ha hb
   have i2: deriv (Fp c) a > 0 := by apply deriv_Fp_a_pos ha; linarith
   simp only [gt_iff_lt, div_lt_div_iff i2 i1] at ie
-  rw[deriv_div]
+  rw [deriv_div]
   apply div_neg_of_neg_of_pos; linarith
   apply pow_pos (Fp_pos ha (by linarith : c > 1))
   apply differentiable_Fp_a ha (by linarith : b > 0)
@@ -145,20 +145,20 @@ lemma deriv_Fp_div_pos (ha : a > 0) (hb : b > 1) (hc : c > b) :
 lemma Lemma62_strictAnti (hr1 : 0 < r) (hr2 : r < Δ) : StrictAntiOn (fun i => Qp Δ i r) (Set.Iic 0) := by
   have i1 : ∀ x : ℝ, (2 : ℝ) ^ x > 0 := by
     simp only [gt_iff_lt, Nat.ofNat_pos, rpow_pos_of_pos, implies_true]
-  have i2: ∀ x ∈ Set.Ioi (0:ℝ), (2:ℝ) ^ x ∈ Set.Ioi 1 :=by
+  have i2: ∀ x ∈ Set.Ioi (0:ℝ), (2:ℝ) ^ x ∈ Set.Ioi 1 := by
     intro x hx
     apply one_lt_rpow (by simp only [Nat.one_lt_ofNat]) hx
   apply strictAntiOn_of_deriv_neg (convex_Iic (0:ℝ))
-  have: ContinuousOn (fun i ↦ Qp Δ i r) (Set.Iic 0) :=by
-    unfold Qp; apply ContinuousOn.div;
+  have: ContinuousOn (fun i ↦ Qp Δ i r) (Set.Iic 0) := by
+    unfold Qp; apply ContinuousOn.div
     apply DifferentiableOn.continuousOn (Differentiable.differentiableOn differentiable_Ep_i)
     apply DifferentiableOn.continuousOn (Differentiable.differentiableOn differentiable_Ep_i)
     intro x _; apply ne_of_gt (Ep_r_pos (by linarith))
   exact this
   intro x hx; simp only [Set.nonempty_Ioi, interior_Iic'] at hx
-  have : Set.EqOn (fun i ↦ Qp Δ i r) ((fun a => Fp (2^r) a / Fp (2^Δ) a) ∘ (fun i=> 2^i)) (Set.Iio 0):=by
+  have : Set.EqOn (fun i ↦ Qp Δ i r) ((fun a => Fp (2^r) a / Fp (2^Δ) a) ∘ (fun i=> 2^i)) (Set.Iio 0) := by
     intro i _; simp only [Qp_of_Fp (by linarith)]
-  rw[deriv_EqOn_Iio this hx, deriv.comp]
+  rw [deriv_EqOn_Iio this hx, deriv.comp]
   apply mul_neg_of_neg_of_pos
   apply deriv_Fp_div_pos (i1 x) (i2 r hr1)
   apply rpow_lt_rpow_of_exponent_lt (by simp only [Nat.one_lt_ofNat]) hr2

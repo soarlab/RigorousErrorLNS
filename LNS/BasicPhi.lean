@@ -23,11 +23,11 @@ lemma one_plus_two_pow_ne_zero (x : ℝ) : 1 + (2 : ℝ) ^ x ≠ 0 := by
 @[simp]
 lemma one_minus_two_pow_ne_zero2 : ∀ x < (0:ℝ), 1 - (2:ℝ) ^ x ≠ 0 := by
   intro x hx
-  have ieq : (2:ℝ) ^ x < 1:=by refine rpow_lt_one_of_one_lt_of_neg ?hx hx; linarith
+  have ieq : (2:ℝ) ^ x < 1 := by refine rpow_lt_one_of_one_lt_of_neg ?hx hx; linarith
   linarith
 
 @[simp]
-lemma one_minus_two_pow_ne_zero : ∀ x ∈ Set.Iio 0, 1 - (2 : ℝ) ^ (x : ℝ) ≠ 0 :=by
+lemma one_minus_two_pow_ne_zero : ∀ x ∈ Set.Iio 0, 1 - (2 : ℝ) ^ (x : ℝ) ≠ 0 := by
   simp only [Set.mem_Iio, ne_eq]; exact one_minus_two_pow_ne_zero2
 
 /-
@@ -36,7 +36,7 @@ lemma one_minus_two_pow_ne_zero : ∀ x ∈ Set.Iio 0, 1 - (2 : ℝ) ^ (x : ℝ)
 
 @[fun_prop]
 lemma differentiable_Φp : Differentiable ℝ Φp := by
-  unfold Φp logb;
+  unfold Φp logb
   fun_prop (disch := simp)
 
 @[fun_prop]

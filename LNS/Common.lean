@@ -16,12 +16,6 @@ attribute [fun_prop] ContinuousOn.div_const
 attribute [fun_prop] ContinuousOn.rpow
 attribute [fun_prop] ContinuousOn.div
 
-section Diff
-
-open Real
-
-end Diff
-
 -- TODO: generalize, simplify and add to Mathlib
 
 lemma List.forall_append {α : Type u} (xs ys : List α) (p : α → Prop) :
@@ -35,9 +29,9 @@ lemma DifferentiableAt.comp_linear {a b x : ℝ} {f : ℝ → ℝ} (ha : a ≠ 0
     DifferentiableAt ℝ (fun x => f (a * x + b)) x ↔ DifferentiableAt ℝ f (a * x + b) := by
   constructor <;> intro df
   · have : f = (fun x => f (a * x + b)) ∘ (fun x => (x - b) / a) := by
-      ext y; congr; field_simp;
+      ext y; congr; field_simp
     rw [this]
-    apply DifferentiableAt.comp;
+    apply DifferentiableAt.comp
     · simp only [add_sub_cancel_right]; field_simp
       exact df
     · simp only [differentiableAt_id', differentiableAt_const, sub, div_const]
@@ -68,82 +62,6 @@ lemma DifferentiableAt.comp_sub_const {a x : ℝ} {f : ℝ → ℝ} :
     DifferentiableAt ℝ (fun x => f (x - a)) x ↔ DifferentiableAt ℝ f (x - a) := by
   have : ∀ x, x - a = 1 * x + -a := by intro; ring
   simp only [this, DifferentiableAt.comp_linear (by norm_num : 1 ≠ (0 : ℝ))]
-
-/-
-  MONOTONIC/ANTITONIC LEMMAS
--/
-
--- lemma antitoneOn_of_deriv_nonneg_Ici0 {f: ℝ → ℝ} (h0: DifferentiableOn ℝ f (Set.Ici 0))
---     (h2: ∀ x, x ≥ 0 → (deriv f) x ≤  0) : AntitoneOn f (Set.Ici 0) :=by
---   apply antitoneOn_of_deriv_nonpos (convex_Ici 0)
---   apply DifferentiableOn.continuousOn h0
---   apply DifferentiableOn.mono h0
---   any_goals simp;
---   intro y hy; exact h2 y (le_of_lt hy)
-
--- lemma monotoneOn_of_deriv_nonneg_Ici0 {f: ℝ → ℝ} (h0: DifferentiableOn ℝ f (Set.Ici 0))
---     (h2: ∀ x, x ≥ 0 → (deriv f) x ≥  0) : MonotoneOn f (Set.Ici 0) :=by
---   apply monotoneOn_of_deriv_nonneg (convex_Ici 0)
---   apply DifferentiableOn.continuousOn h0
---   apply DifferentiableOn.mono h0
---   any_goals simp;
---   intro y hy; exact h2 y (le_of_lt hy)
-
--- lemma monotoneOn_of_deriv_nonneg_Iic0 {f: ℝ → ℝ} (h0: DifferentiableOn ℝ f (Set.Iic 0))
---     (h2: ∀ x, x ≤  0 → (deriv f) x ≥  0) : MonotoneOn f (Set.Iic 0) :=by
---   apply monotoneOn_of_deriv_nonneg (convex_Iic 0)
---   apply DifferentiableOn.continuousOn h0
---   apply DifferentiableOn.mono h0
---   any_goals simp;
---   intro y hy; exact h2 y (le_of_lt hy)
-
--- lemma monotoneOn_of_deriv_nonneg_Iio0 {f: ℝ → ℝ} (h0: DifferentiableOn ℝ f (Set.Iio 0))
---     (h2: ∀ x, x <  0 → (deriv f) x ≥  0) : MonotoneOn f (Set.Iio 0) :=by
---   apply monotoneOn_of_deriv_nonneg (convex_Iio 0)
---   apply DifferentiableOn.continuousOn h0
---   apply DifferentiableOn.mono h0
---   any_goals simp;
---   intro y hy; exact h2 y hy
-
--- lemma strictMonoOn_of_deriv_pos_Ici0 {f: ℝ → ℝ} (h0: ContinuousOn f (Set.Ici a))
---     (h2: ∀ x, x > a → (deriv f) x >  0) : StrictMonoOn f (Set.Ici a) :=by
---   apply strictMonoOn_of_deriv_pos (convex_Ici a) h0
---   simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi]
---   intro y hy; exact h2 y hy
-
--- lemma nonpos_of_deriv_nonpos_Ici0 (h0: DifferentiableOn ℝ f (Set.Ici 0))
---     (h1: f (0:ℝ)  = (0:ℝ) ) (h2: ∀ x, x ≥ 0 → (deriv f) x ≤ 0) : x ≥ 0 →  f x ≤ 0 :=by
---   intro h; rw[← h1]
---   apply antitoneOn_of_deriv_nonneg_Ici0 h0 h2
---   any_goals simp;
---   any_goals assumption
-
--- lemma nonneg_of_deriv_nonneg_Ici0 (h0: DifferentiableOn ℝ f (Set.Ici 0))
---     (h1: f (0:ℝ)  = (0:ℝ) ) (h2: ∀ x, x ≥ 0 → (deriv f) x ≥  0) : x ≥ 0 →  f x ≥  0 :=by
---   intro h; rw[← h1]
---   apply monotoneOn_of_deriv_nonneg_Ici0 h0 h2
---   any_goals simp
---   any_goals assumption
-
--- lemma pos_of_deriv_pos_Ici (h0: ContinuousOn f (Set.Ici a))
---     (h1: f (a:ℝ)  = (0:ℝ) ) (h2: ∀ x, x > a → (deriv f) x >  0) : x > a →  f x >  0 :=by
---   intro h; rw[← h1]
---   apply strictMonoOn_of_deriv_pos_Ici0 h0 h2
---   simp only [Set.mem_Ici, le_refl]; simp only [Set.mem_Ici]; linarith; assumption
-
--- lemma nonneg_of_deriv_nonpos_Iic0 (h0: DifferentiableOn ℝ f (Set.Iic 0))
---     (h1: f (0:ℝ)  ≥ (0:ℝ) ) (h2: ∀ x, x ≤  0 → (deriv f) x ≤  0) : x ≤ 0 →  f x ≥  0 :=by
---   intro h;
---   have : f x ≥ f 0:=by
---     apply antitoneOn_of_deriv_nonpos (convex_Iic 0)
---     apply DifferentiableOn.continuousOn h0
---     apply DifferentiableOn.mono h0
---     any_goals simp;
---     any_goals assumption
---     intro y hy; exact h2 y (le_of_lt hy)
---   linarith
-
-
 
 section Diff
 
@@ -207,7 +125,7 @@ open Real Filter Topology
 
 lemma tendsto_x_mul_inv_x : Tendsto (fun x : ℝ => x * x⁻¹) (𝓝[≠] 0) (𝓝 1) := by
   field_simp; apply tendsto_nhds_of_eventually_eq; apply eventually_nhdsWithin_of_forall
-  simp only [Set.mem_compl_iff, Set.mem_singleton_iff];
+  simp only [Set.mem_compl_iff, Set.mem_singleton_iff]
   intro x hx
   field_simp
 

@@ -51,9 +51,9 @@ def Ep (i r : ℝ) := Φp (i - r) - Φp i + r * deriv Φp i
 
 def Em (i r : ℝ) := -Φm (i - r) + Φm i - r * deriv Φm i
 
--- def Ep_i (r: ℝ):= fun i => Ep i r
+-- def Ep_i (r: ℝ) := fun i => Ep i r
 
--- def Em_i (r: ℝ):= fun i => Em i r
+-- def Em_i (r: ℝ) := fun i => Em i r
 
 def Qp (Δ i r : ℝ) := Ep i r / Ep i Δ
 
@@ -101,13 +101,13 @@ def EECp (Δ ΔP c i r  : ℝ) :=
   fix.rnd (Φp i) - fix.rnd (r * fix.rnd (deriv Φp i) )
                  + fix.rnd (fix.rnd (Ep i Δ) * fix.rnd (Qp Δ c (⌊r / ΔP⌋ * ΔP)))
 
-def EECp_fix (Δ ΔP c i r  : ℝ):= Φp (i - r) - EECp fix Δ ΔP c i r
+def EECp_fix (Δ ΔP c i r  : ℝ) := Φp (i - r) - EECp fix Δ ΔP c i r
 
 def EECm (Δ ΔP c i r : ℝ) :=
   fix.rnd (Φm i) - fix.rnd (r * fix.rnd (deriv Φm i) )
                  - fix.rnd (fix.rnd (Em i Δ) * fix.rnd (Qm Δ c (⌊r / ΔP⌋ * ΔP)))
 
-def EECm_fix (Δ ΔP c i r  : ℝ):= Φm (i - r) - EECm fix Δ ΔP c i r
+def EECm_fix (Δ ΔP c i r  : ℝ) := Φm (i - r) - EECm fix Δ ΔP c i r
 
 def ΦECp_fix (Δ ΔP c x : ℝ) := EECp fix Δ ΔP c (Iₓ Δ x) (Rₓ Δ x)
 

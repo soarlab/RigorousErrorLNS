@@ -19,9 +19,9 @@ lemma deriv_Fp_tendsto (hr : 0 ≤ r) :
     apply Filter.eventuallyEq_of_mem self_mem_nhdsWithin (deriv_Fp_a _)
     linarith
   rw [Filter.tendsto_congr' this]
-  have : 2 ^ (-r) + r * log 2 - 1 = (fun a ↦ (a + 1) / (a + 2 ^ r) - 1 - log (a + 1) + log (a + 2 ^ r)) 0 :=by
-    simp only [zero_add, one_div, log_one, sub_zero];
-    rw [log_rpow, rpow_neg];
+  have : 2 ^ (-r) + r * log 2 - 1 = (fun a ↦ (a + 1) / (a + 2 ^ r) - 1 - log (a + 1) + log (a + 2 ^ r)) 0 := by
+    simp only [zero_add, one_div, log_one, sub_zero]
+    rw [log_rpow, rpow_neg]
     ring_nf; simp only [Nat.ofNat_nonneg]; simp only [Nat.ofNat_pos]
   rw [this]
   apply ContinuousWithinAt.tendsto
@@ -35,9 +35,9 @@ lemma deriv_Fm_tendsto (hr : 0 ≤ r) :
     apply Filter.eventuallyEq_of_mem _ (deriv_Fm_a this)
     exact Ioo_mem_nhdsWithin_Ioi' (by norm_num)
   rw [Filter.tendsto_congr' this]
-  have : 2 ^ (-r) + r * log 2 - 1 = (fun a => (1-a)/(2 ^ r-a) - 1 - log (1-a) + log (2 ^ r-a)) 0 :=by
-    simp only [zero_add, one_div, log_one, sub_zero];
-    rw[log_rpow, rpow_neg];
+  have : 2 ^ (-r) + r * log 2 - 1 = (fun a => (1-a)/(2 ^ r-a) - 1 - log (1-a) + log (2 ^ r-a)) 0 := by
+    simp only [zero_add, one_div, log_one, sub_zero]
+    rw [log_rpow, rpow_neg]
     ring_nf; simp only [Nat.ofNat_nonneg]; simp only [Nat.ofNat_pos]
   rw [this]
   apply ContinuousWithinAt.tendsto
@@ -105,7 +105,7 @@ lemma Lemma61m (hΔ : 0 < Δ) (hr : 0 ≤ r) : Tendsto (fun i => Qm Δ i r) atBo
     simp only [t21, Set.mem_Ioi, Nat.ofNat_pos, rpow_pos_of_pos, eventually_atBot, implies_true,
       exists_const, and_self]
   have : (fun i => Qm Δ i r) =ᶠ[(atBot)] (fun a ↦ Fm (2^r) a / Fm (2^Δ) a) ∘ (fun i=> 2^i) := by
-    have : Set.EqOn (fun i => Qm Δ i r) ((fun a ↦ Fm (2^r) a / Fm (2^Δ) a) ∘ (fun i=> 2^i)) (Set.Iio 0) :=by
+    have : Set.EqOn (fun i => Qm Δ i r) ((fun a ↦ Fm (2^r) a / Fm (2^Δ) a) ∘ (fun i=> 2^i)) (Set.Iio 0) := by
       intro i hi
       simp only [Qm_of_Fm hi hr hΔ, Function.comp_apply]
     apply Filter.eventuallyEq_of_mem _ this
