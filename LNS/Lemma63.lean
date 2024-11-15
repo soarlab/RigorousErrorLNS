@@ -1,6 +1,5 @@
 import LNS.Tactic
 import LNS.Definitions
-import LNS.BasicErrorCorrection
 import LNS.Lemma61
 import LNS.Lemma62
 

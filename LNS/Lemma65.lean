@@ -1,6 +1,6 @@
 import LNS.Tactic
 import LNS.Definitions
-import LNS.BasicErrorCorrection
+import LNS.BasicErrCorrection
 
 namespace LNS
 

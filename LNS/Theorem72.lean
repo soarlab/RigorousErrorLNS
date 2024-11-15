@@ -10,10 +10,6 @@ open Real
 
 variable (fix : FixedPoint)
 
-lemma hrndn : |fix.rnd x - x| ≤ fix.ε := by
-  rw [abs_sub_comm]
-  exact fix.hrnd x
-
 /-Case 2-/
 
 section Cotrans2
@@ -67,7 +63,7 @@ lemma krnd_bound (Δa x : ℝ) : |k Δa x - krnd fix Δa x| ≤ 2 * fix.ε := by
   have eq : k Δa x - krnd fix Δa x = a1 + a2 := by unfold k krnd; ring_nf
   rw [eq]
   apply le_trans (abs_add _ _)
-  have i1 : |a1| ≤ fix.ε := by apply hrndn
+  have i1 : |a1| ≤ fix.ε := by apply fix.hrnd_sym
   have i2 : |a2| ≤ fix.ε := by apply fix.hrnd
   linarith
 
