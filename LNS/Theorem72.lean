@@ -90,7 +90,7 @@ lemma ra2_ge_neg_delta : ra2 Δa x ≥ -Δa := by
 
 lemma rb2_lt_x : rb2 Δa x < x := by
   rw [rb2_alt]
-  rw (config := {occs := .pos [2]}) [←i_sub_r_eq_x Δa x]
+  nth_rewrite 2 [←i_sub_r_eq_x Δa x]
   rw [sub_lt_sub_iff_left]
   exact rx_lt_delta ha x
 
@@ -104,7 +104,7 @@ lemma rb2_le_2delta (hx : x ≤ -Δa) : rb2 Δa x ≤ -2 * Δa := by
 lemma k_bound (hx : x ≤ -Δa) : k Δa x ≤ -Δa - Φp (-Δa) := by
   unfold k
   have eq : x = rb2 Δa x - ra2 Δa x := by unfold ra2; linarith
-  rw (config := {occs := .pos [1]}) [eq]
+  nth_rewrite 1 [eq]
   set a := ra2 _ _
   set b := rb2 _ _
   have bx : b < x := rb2_lt_x ha
