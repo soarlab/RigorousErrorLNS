@@ -14,7 +14,7 @@ structure FixedPoint where
   rnd_1 : rnd 1 = 1
   rnd_0 : rnd 0 = 0
 
-lemma fix_hrnd_sym (fix : FixedPoint) : ∀ x : ℝ, |fix.rnd x - x| ≤ fix.ε := by
+lemma FixedPoint.hrnd_sym (fix : FixedPoint) : ∀ x : ℝ, |fix.rnd x - x| ≤ fix.ε := by
   intro x; rw [abs_sub_comm]; exact fix.hrnd x
 
 /- FunApprox f s models an approximation of a function f on s -/
@@ -26,7 +26,7 @@ structure FunApprox (f : ℝ → ℝ) (s : Set ℝ) where
 instance : CoeFun (FunApprox f s) (fun _ => ℝ → ℝ) where
   coe fapprox := fapprox.fe
 
-lemma funApprox_err_sym (g : FunApprox f s) :
+lemma FunApprox.err_sym (g : FunApprox f s) :
     ∀ x ∈ s, |g x - f x| ≤ g.err := by
   intro x xs; rw [abs_sub_comm]; exact g.herr x xs
 
