@@ -115,13 +115,13 @@ def QIm Δ ΔP := 1 - Qm_lo Δ (Δ - ΔP)
 variable (fix : FixedPoint)
 
 def EECp (Δ ΔP c i r : ℝ) :=
-  fix.rnd (Φp i) - fix.rnd (r * fix.rnd (deriv Φp i) )
+  fix.rnd (Φp i) - fix.rnd (r * fix.rnd (deriv Φp i))
                  + fix.rnd (fix.rnd (Ep i Δ) * fix.rnd (Qp Δ c (⌊r / ΔP⌋ * ΔP)))
 
 def EECp_fix (Δ ΔP c i r : ℝ) := Φp (i - r) - EECp fix Δ ΔP c i r
 
 def EECm (Δ ΔP c i r : ℝ) :=
-  fix.rnd (Φm i) - fix.rnd (r * fix.rnd (deriv Φm i) )
+  fix.rnd (Φm i) - fix.rnd (r * fix.rnd (deriv Φm i))
                  - fix.rnd (fix.rnd (Em i Δ) * fix.rnd (Qm Δ c (⌊r / ΔP⌋ * ΔP)))
 
 def EECm_fix (Δ ΔP c i r  : ℝ) := Φm (i - r) - EECm fix Δ ΔP c i r

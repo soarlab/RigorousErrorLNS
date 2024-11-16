@@ -58,7 +58,7 @@ theorem Theorem53_Em (fix : FixedPoint) {i₀ i r Δ : ℝ} (hi₀ : i₀ < 0) (
   have i01 : |Em i r| < Em i₀ Δ := by exact Lemma52 hi₀ hi hr1 hr2
   linarith
 
-/- A linear Taylor approximation error bound for Φ⁺ -/
+/- A first order Taylor approximation error bound for Φ⁺ -/
 
 theorem Theorem53_ΦTp (fix : FixedPoint) {x Δ : ℝ} (hd : 0 < Δ) (hx : x ≤ 0) :
     |Φp x - ΦTp_fix fix Δ x| < Ep 0 Δ + (2 + Δ) * fix.ε := by
@@ -68,7 +68,7 @@ theorem Theorem53_ΦTp (fix : FixedPoint) {x Δ : ℝ} (hd : 0 < Δ) (hx : x ≤
   apply Theorem53_Ep fix _ (rx_nonneg hd x) (rx_lt_delta hd x)
   rw [← x_neg_iff_ix_neg hd]; exact hx
 
-/- A linear Taylor approximation error bound for Φ⁻ -/
+/- A first order Taylor approximation error bound for Φ⁻ -/
 
 theorem Theorem53_ΦTm (fix : FixedPoint) {x₀ x Δ : ℝ} (hd : 0 < Δ) (hx₀ : x₀ ≤ -Δ) (hx : x ≤ x₀) :
     |Φm x - ΦTm_fix fix Δ x| < Em (Iₓ Δ x₀) Δ + (2 + Δ) * fix.ε := by
@@ -77,14 +77,14 @@ theorem Theorem53_ΦTm (fix : FixedPoint) {x₀ x Δ : ℝ} (hd : 0 < Δ) (hx₀
   rw [eq]
   exact Theorem53_Em fix (ix_lt_zero hd hx₀) (ix_monotone hd hx) (rx_nonneg hd x) (rx_lt_delta hd x)
 
-/- This theorem corresponds to the approximation theorem in the paper -/
+/- A first order Taylor approximation of Φ⁻ for x ≤ -1 -/
 
 theorem Theorem53_ΦTm' (fix : FixedPoint) {x Δ : ℝ}
     (hdn : ∃ n : ℕ, 1 = n * Δ) (hx : x ≤ -1) :
     |Φm x - ΦTm_fix fix Δ x| < Em (-1) Δ + (2 + Δ) * fix.ε := by
   have hx₀ : -1 ≤ -Δ := by rw [neg_le_neg_iff]; exact div_one_imp_le_one hdn
   rw [← ix_eq_neg_one hdn]
-  apply Theorem53_ΦTm fix (div_one_imp_pos hdn) hx₀ hx
+  exact Theorem53_ΦTm fix (div_one_imp_pos hdn) hx₀ hx
 
 /- Taylor approximations of Φ⁺ and Φ⁻ -/
 

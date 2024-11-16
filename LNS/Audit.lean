@@ -19,12 +19,12 @@ theorem TaylorApprox_Φm (fix : FixedPoint) {x Δ : ℝ}
 
 theorem ErrorCorrection_Φp (fix : FixedPoint) (hc : c ≤ 0) (hΔ : ΔP < Δ)
     (hΔP : 0 < ΔP) (hx : x ≤ 0) :
-    |Φp x - ΦECp_fix fix Δ ΔP c x| ≤ (4 + Δ) * fix.ε + Ep 0 Δ * (QRp Δ + QIp Δ ΔP + fix.ε) :=
+    |Φp x - ΦECp_fix fix Δ ΔP c x| ≤ (4 + Δ) * fix.ε + (Ep 0 Δ) * (QRp Δ + QIp Δ ΔP + fix.ε) :=
   Theorem68_ΦECp fix hc hΔ hΔP hx
 
 theorem ErrorCorrection_Φm (fix : FixedPoint) {Δ ΔP : ℝ} (hc : c ≤ -1) (hΔ : ΔP < Δ)
     (hΔP : 0 < ΔP) (hdn : ∃ n : ℕ, 1 = n * Δ) (hx : x ≤ -1) :
-    |Φm x - ΦECm_fix fix Δ ΔP c x| ≤ (4 + Δ) * fix.ε + Em (-1) Δ * (QRm Δ + QIm Δ ΔP + fix.ε) :=
+    |Φm x - ΦECm_fix fix Δ ΔP c x| ≤ (4 + Δ) * fix.ε + (Em (-1) Δ) * (QRm Δ + QIm Δ ΔP + fix.ε) :=
   Theorem68_ΦECm fix hc hΔ hΔP hdn hx
 
 /- All theorems depend on standard axioms only: [propext, Classical.choice, Quot.sound]-/
