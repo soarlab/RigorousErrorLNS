@@ -99,7 +99,7 @@ theorem Theorem68p (hi : i ≤ 0)(hc : c ≤ 0) (hr1 : 0 ≤ r) (hr2 : r < Δ) (
     rw [e0] at i2; exact i2
   have eq0 : Φp (i - r) - EECp fix Δ ΔP c i r = a1 + a2 + a3 + a4 + a5 + a6 + a7 + a8 := by
     rw [Φp_eq_EC hr1 hr2]; unfold EECp; ring_nf
-  have i0 : |Ep i Δ| ≤ (Ep 0 Δ) := by apply Lemma51 hi ; linarith; linarith
+  have i0 : |Ep i Δ| ≤ (Ep 0 Δ) := by apply Lemma51' hi; linarith; linarith
   have i01 :  Ep 0 Δ ≥ 0 := by
     have : |Ep i Δ| ≥ 0 := by simp
     linarith
@@ -158,7 +158,7 @@ theorem Theorem68m (hi : i ≤ -1)(hc : c ≤ -1) (hr1 : 0 ≤ r) (hr2 : r < Δ)
     rw [e0] at i2; exact i2
   have eq0 : Φm (i - r) - EECm fix Δ ΔP c i r = a1 + a2 + a3 - (a4 + a5 + a6 + a7 + a8) := by
     rw [Φm_eq_EC hi hr1 hr2]; unfold EECm; ring_nf
-  have i0 : |Em i Δ| ≤ Em (-1) Δ := by apply Lemma52 (by norm_num : -1 < (0 : ℝ)) hi ; linarith; linarith
+  have i0 : |Em i Δ| ≤ Em (-1) Δ := by apply Lemma52' (by norm_num : -1 < (0 : ℝ)) hi ; linarith; linarith
   have i01 : Em (-1) Δ ≥ 0 := by
     have : |Em i Δ| ≥ 0 := by simp only [ge_iff_le, abs_nonneg]
     linarith

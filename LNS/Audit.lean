@@ -9,11 +9,11 @@ open LNS
 /- First order Taylor approximations -/
 
 theorem TaylorApprox_Φp (fix : FixedPoint) {x Δ : ℝ} (hd : 0 < Δ) (hx : x ≤ 0) :
-    |Φp x - ΦTp_fix fix Δ x| ≤ Ep 0 Δ + (2 + Δ) * fix.ε := Theorem53_ΦTp fix hd hx
+    |Φp x - ΦTp_fix fix Δ x| < Ep 0 Δ + (2 + Δ) * fix.ε := Theorem53_ΦTp fix hd hx
 
 theorem TaylorApprox_Φm (fix : FixedPoint) {x Δ : ℝ}
     (hdn : ∃ n : ℕ, 1 = n * Δ) (hx : x ≤ -1) :
-    |Φm x - ΦTm_fix fix Δ x| ≤ Em (-1) Δ + (2 + Δ) * fix.ε := Theorem53_ΦTm' fix hdn hx
+    |Φm x - ΦTm_fix fix Δ x| < Em (-1) Δ + (2 + Δ) * fix.ε := Theorem53_ΦTm' fix hdn hx
 
 /- Error correction approximations -/
 
