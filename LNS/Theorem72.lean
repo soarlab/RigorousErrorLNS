@@ -8,30 +8,9 @@ noncomputable section
 
 open Real
 
-variable (fix : FixedPoint)
-
-/-Case 2-/
-
-section Cotrans2
-
-variable (Δa : ℝ)
-
-def rb2 (x : ℝ) := (⌈x / Δa⌉ - 1) * Δa
-
-def ra2 (x : ℝ) := rb2 Δa x - x
-
-def k (x : ℝ) := x - Φm (rb2 Δa x)  + Φm (ra2 Δa x)
-
-def Pestimate2 (x : ℝ) := Φm (rb2 Δa x) + Φm (k Δa x)
-
-def krnd (x : ℝ) := x - fix.rnd (Φm (rb2 Δa x)) + fix.rnd (Φm (ra2 Δa x))
-
-def Prnd2 (Φe : FunApprox Φm s) (x : ℝ) :=
-  fix.rnd (Φm (rb2 Δa x)) + Φe (krnd fix Δa x)
-
 private def f_aux (x : ℝ) := x - Φm x
 
-lemma f_aux_strictMono : StrictMonoOn f_aux (Set.Iio 0) := by
+private lemma f_aux_strictMono : StrictMonoOn f_aux (Set.Iio 0) := by
   unfold f_aux
   apply strictMonoOn_of_deriv_pos (convex_Iio _) (by fun_prop)
   · simp only [interior_Iio, Set.mem_Iio, differentiableAt_id']
@@ -45,7 +24,7 @@ lemma f_aux_strictMono : StrictMonoOn f_aux (Set.Iio 0) := by
     rw [div_lt_one this]
     linarith
 
-lemma k_bound_aux (hd : d > 0) : Φm (-2 * d) - Φm (-d) = Φp (-d) := by
+private lemma k_bound_eq (hd : 0 < d) : Φm (-2 * d) - Φm (-d) = Φp (-d) := by
   unfold Φm Φp
   have neg_d : -d < 0 ∧ -2 * d < 0 := by constructor <;> linarith
   have ineq_d := one_minus_two_pow_ne_zero2 _ neg_d.1
@@ -57,75 +36,12 @@ lemma k_bound_aux (hd : d > 0) : Φm (-2 * d) - Φm (-d) = Φp (-d) := by
   rw [this]
   field_simp
 
-lemma krnd_bound (Δa x : ℝ) : |k Δa x - krnd fix Δa x| ≤ 2 * fix.ε := by
-  set a1 := fix.rnd (Φm (rb2 Δa x)) - Φm (rb2 Δa x)
-  set a2 := Φm (ra2 Δa x) - fix.rnd (Φm (ra2 Δa x))
-  have eq : k Δa x - krnd fix Δa x = a1 + a2 := by unfold k krnd; ring_nf
-  rw [eq]
-  apply le_trans (abs_add _ _)
-  have i1 : |a1| ≤ fix.ε := by apply fix.hrnd_sym
-  have i2 : |a2| ≤ fix.ε := by apply fix.hrnd
-  linarith
-
-
-lemma rb2_alt : rb2 Δa x = Iₓ Δa x - Δa := by unfold rb2 Iₓ; linarith
-
-lemma ra2_alt : ra2 Δa x = Rₓ Δa x - Δa := by
-  unfold ra2 Rₓ
-  rw [rb2_alt, sub_right_comm]
-
-variable {Δa}
-variable (ha : Δa > 0)
-include ha
-
-lemma ra2_lt_zero : ra2 Δa x < 0 := by
-  rw [ra2_alt]; linarith [rx_lt_delta ha x]
-
-lemma ra2_ge_neg_delta : ra2 Δa x ≥ -Δa := by
-  rw [ra2_alt]; linarith [rx_nonneg ha x]
-
-lemma rb2_lt_x : rb2 Δa x < x := by
-  rw [rb2_alt]
-  nth_rewrite 2 [←i_sub_r_eq_x Δa x]
-  rw [sub_lt_sub_iff_left]
-  exact rx_lt_delta ha x
-
-lemma rb2_le_2delta (hx : x ≤ -Δa) : rb2 Δa x ≤ -2 * Δa := by
-  rw [rb2_alt, sub_le_iff_le_add]; ring_nf
-  have : -Δa = ((-1) : ℤ) * Δa := by
-    simp only [Int.reduceNeg, Int.cast_neg, Int.cast_one, neg_mul, one_mul]
-  rw [this, ←ix_eq_n_delta, ←this]
-  exact ix_monotone ha hx
-
-lemma k_bound (hx : x ≤ -Δa) : k Δa x ≤ -Δa - Φp (-Δa) := by
-  unfold k
-  have eq : x = rb2 Δa x - ra2 Δa x := by unfold ra2; linarith
-  nth_rewrite 1 [eq]
-  set a := ra2 _ _
-  set b := rb2 _ _
-  have bx : b < x := rb2_lt_x ha
-  have b0 : b < 0 := by linarith
-  have a0 : a < 0 := by linarith
-  have eq : forall c d, b - a - c + d = (b - c) - (a - d) := by intros; ring
-  rw [eq, ← f_aux, ← f_aux]
-  have ineq1 : f_aux b ≤ f_aux (-2 * Δa) := by
-    apply f_aux_strictMono.monotoneOn b0 (by linarith : -2 * Δa < 0)
-    exact rb2_le_2delta ha hx
-  have ineq2 : f_aux (-Δa) ≤ f_aux a := by
-    apply f_aux_strictMono.monotoneOn (by linarith : -Δa < 0) a0
-    exact ra2_ge_neg_delta ha
-  apply le_trans (by linarith : f_aux b - f_aux a ≤ f_aux (-2 * Δa) - f_aux (-Δa))
-  unfold f_aux
-  have eq : forall a b c : ℝ, -2 * a - b - (-a - c) = -a - (b - c) := by intros; ring
-  rw [eq, k_bound_aux ha]
-
-lemma k_bound' (hx : x ≤ -Δa) : k Δa x ≤ -Δa / 2 - 1 := by
-  apply le_trans (k_bound ha hx)
+private lemma k_bound_ineq (hd : 0 < d) : -d - Φp (-d) ≤ -d / 2 - 1 := by
   apply (by intros; linarith : forall a b : ℝ, 1 ≤ b + a / 2 → -a - b ≤ -a / 2 - 1)
   set f := fun x => Φp (-x) + x / 2
-  suffices h : 1 ≤ f (Δa) from h
+  suffices h : 1 ≤ f d from h
   rw [(by norm_num [f, Φp] : 1 = f 0)]
-  suffices h : MonotoneOn f (Set.Ici 0) from h (le_refl (0 : ℝ)) (le_of_lt ha) (le_of_lt ha)
+  suffices h : MonotoneOn f (Set.Ici 0) from h (le_refl (0 : ℝ)) (le_of_lt hd) (le_of_lt hd)
   apply monotoneOn_of_deriv_nonneg (convex_Ici 0) (by fun_prop) (by fun_prop)
   simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi, f]
   intro x hx
@@ -135,67 +51,130 @@ lemma k_bound' (hx : x ≤ -Δa) : k Δa x ≤ -Δa / 2 - 1 := by
   apply (by intros; linarith : forall a : ℝ, a ≤ 1 → a * 2 ≤ 1 * (1 + a))
   exact rpow_le_one_of_one_le_of_nonpos one_le_two (by linarith)
 
+def ind (Δ : ℝ) (x : ℝ) := (⌈x / Δ⌉ - 1) * Δ
+
+def rem (Δ : ℝ) (x : ℝ) := ind Δ x - x
+
+lemma ind_sub_rem (Δ x : ℝ) : ind Δ x - rem Δ x = x := by unfold rem; linarith
+
+lemma ind_alt : ind Δ x = Iₓ Δ x - Δ := by unfold ind Iₓ; linarith
+
+lemma rem_alt : rem Δ x = Rₓ Δ x - Δ := by unfold rem Rₓ; rw [ind_alt, sub_right_comm]
+
+lemma rem_lt_zero (hd : 0 < Δ) : rem Δ x < 0 := by
+  rw [rem_alt]; linarith [rx_lt_delta hd x]
+
+lemma rem_ge_neg_delta (hd : 0 < Δ) : -Δ ≤ rem Δ x := by
+  rw [rem_alt]; linarith [rx_nonneg hd x]
+
+lemma ind_lt_x (hd : 0 < Δ) : ind Δ x < x := by
+  rw [ind_alt]
+  nth_rewrite 2 [←i_sub_r_eq_x Δ x]
+  rw [sub_lt_sub_iff_left]
+  exact rx_lt_delta hd x
+
+lemma ind_lt_zero (hd : 0 < Δ) (hx : x < 0) : ind Δ x < 0 := lt_trans (ind_lt_x hd) hx
+
+lemma ind_le_two_delta (hd : 0 < Δ) (hx : x ≤ -Δ) : ind Δ x ≤ -2 * Δ := by
+  rw [ind_alt, sub_le_iff_le_add]; ring_nf
+  have : -Δ = ((-1) : ℤ) * Δ := by
+    simp only [Int.reduceNeg, Int.cast_neg, Int.cast_one, neg_mul, one_mul]
+  rw [this, ←ix_eq_n_delta, ←this]
+  exact ix_monotone hd hx
+
+lemma k_bound (hd : 0 < Δ) (hx : x ≤ -Δ) :
+    x - Φm (ind Δ x) + Φm (rem Δ x) ≤ -Δ - Φp (-Δ) := by
+  nth_rewrite 1 [← ind_sub_rem Δ x]
+  set a := rem _ _
+  set b := ind _ _
+  have bx : b < x := ind_lt_x hd
+  have b0 : b < 0 := by linarith
+  have a0 : a < 0 := rem_lt_zero hd
+  have eq : forall c d, b - a - c + d = (b - c) - (a - d) := by intros; ring
+  rw [eq, ← f_aux, ← f_aux]
+  have ineq1 : f_aux b ≤ f_aux (-2 * Δ) := by
+    apply f_aux_strictMono.monotoneOn b0 (by linarith : -2 * Δ < 0)
+    exact ind_le_two_delta hd hx
+  have ineq2 : f_aux (-Δ) ≤ f_aux a := by
+    apply f_aux_strictMono.monotoneOn (by linarith : -Δ < 0) a0
+    exact rem_ge_neg_delta hd
+  apply le_trans (by linarith : f_aux b - f_aux a ≤ f_aux (-2 * Δ) - f_aux (-Δ))
+  unfold f_aux
+  have eq : forall a b c : ℝ, -2 * a - b - (-a - c) = -a - (b - c) := by intros; ring
+  rw [eq, k_bound_eq hd]
+
+lemma k_bound' (hd : 0 < Δ) (hx : x ≤ -Δ) :
+    x - Φm (ind Δ x) + Φm (rem Δ x) ≤ -Δ / 2 - 1 :=
+  le_trans (k_bound hd hx) (k_bound_ineq hd)
+
+/- Case 2 -/
+
+section Cotrans2
+
+variable (fix : FixedPoint)
+variable (Δa : ℝ)
+
+def k (x : ℝ) := x - Φm (ind Δa x) + Φm (rem Δa x)
+
+def krnd (x : ℝ) := x - fix.rnd (Φm (ind Δa x)) + fix.rnd (Φm (rem Δa x))
+
+def Prnd2 (Φe : FunApprox Φm s) (x : ℝ) := fix.rnd (Φm (ind Δa x)) + Φe (krnd fix Δa x)
+
+lemma krnd_bound (Δa x : ℝ) : |k Δa x - krnd fix Δa x| ≤ 2 * fix.ε := by
+  set a1 := fix.rnd (Φm (ind Δa x)) - Φm (ind Δa x)
+  set a2 := Φm (rem Δa x) - fix.rnd (Φm (rem Δa x))
+  have eq : k Δa x - krnd fix Δa x = a1 + a2 := by unfold k krnd; ring_nf
+  rw [eq]
+  apply le_trans (abs_add _ _)
+  have i1 : |a1| ≤ fix.ε := by apply fix.hrnd_sym
+  have i2 : |a2| ≤ fix.ε := by apply fix.hrnd
+  linarith
+
+variable {Δa}
+variable (ha : 0 < Δa)
+include ha
+
 lemma k_neg (hx : x < 0) : k Δa x < 0 := by
-  have i1 : rb2 Δa x < x := rb2_lt_x ha
-  have : Φm (ra2 Δa x) < Φm (rb2 Δa x) := by
-    apply Φm_strictAntiOn
-    any_goals simp
-    linarith; unfold ra2; linarith; unfold ra2; linarith
+  have i1 : ind Δa x < x := ind_lt_x ha
+  have : Φm (rem Δa x) < Φm (ind Δa x) := by
+    apply Φm_strictAntiOn (by linarith : ind Δa x < 0) (rem_lt_zero ha)
+    apply lt_of_sub_neg
+    rw [ind_sub_rem]; exact hx
   unfold k; linarith
 
-lemma cotrans2 (hx : x < 0) : Φm x = Pestimate2 Δa x := by
-  unfold Pestimate2 Φm
-  have i0 : (2:ℝ) ^ x < 1 := by
-    apply rpow_lt_one_of_one_lt_of_neg; linarith; linarith
-  have i1 : (2:ℝ) ^ rb2 Δa x < 1 := by
-    apply rpow_lt_one_of_one_lt_of_neg one_lt_two
-    apply lt_trans _ hx
-    apply rb2_lt_x ha
-  have i2 : (2:ℝ) ^ k Δa x < 1 := by
-    apply rpow_lt_one_of_one_lt_of_neg one_lt_two
-    apply k_neg ha hx
-  have i3 : (2:ℝ) ^ ra2 Δa x < 1 := by
-    have i0 : rb2 Δa x < x := rb2_lt_x ha
-    apply rpow_lt_one_of_one_lt_of_neg one_lt_two
-    unfold ra2; linarith
-  have e1 : logb 2 (1 - 2 ^ rb2 Δa x) + logb 2 (1 - 2 ^ k Δa x) = logb 2 ((1 - 2 ^ rb2 Δa x) * (1 - 2 ^ k Δa x)) := by
-    rw [← logb_mul]; linarith; linarith
-  rw [e1]; unfold logb; field_simp
+lemma cotrans2 (hx : x < 0) : Φm x = Φm (ind Δa x) + Φm (k Δa x) := by
+  unfold Φm
+  have ineq : ∀ {y : ℝ}, y < 0 → (2:ℝ) ^ y < 1 := by
+    intro y hy; exact rpow_lt_one_of_one_lt_of_neg one_lt_two hy
+  have i0 : (2:ℝ) ^ x < 1 := ineq hx
+  have i1 : (2:ℝ) ^ ind Δa x < 1 := ineq (ind_lt_zero ha hx)
+  have i2 : (2:ℝ) ^ k Δa x < 1 := ineq (k_neg ha hx)
+  have i3 : (2:ℝ) ^ rem Δa x < 1 := ineq (rem_lt_zero ha)
+  unfold logb; field_simp
   apply Real.exp_eq_exp.mp
-  have e : rexp (log (1 - 2 ^ x)) = 1 - 2 ^ x := by apply Real.exp_log; linarith
-  rw [e]
-  have e : rexp (log ((1 - 2 ^ rb2 Δa x) * (1 - 2 ^ k Δa x)))= (1 - 2 ^ rb2 Δa x) * (1 - 2 ^ k Δa x) := by
-    apply Real.exp_log; apply mul_pos; linarith; linarith
-  rw [e]
-  set a := (2:ℝ)^ra2 Δa x
-  set b := (2:ℝ)^rb2 Δa x
-  have e : 2^ k Δa x = 2^x * (1-(2:ℝ)^ra2 Δa x)/(1-(2:ℝ)^rb2 Δa x) := by
+  rw [exp_log (by linarith), exp_add, exp_log (by linarith), exp_log (by linarith)]
+  set a := (2:ℝ) ^ rem Δa x
+  set b := (2:ℝ) ^ ind Δa x
+  have eq : 2 ^ k Δa x = 2 ^ x * (1 - a) / (1 - b) := by
     unfold k Φm; rw [rpow_add, rpow_sub, rpow_logb, rpow_logb]; field_simp
     any_goals linarith
-  rw [e]
-  have e : (1 - b) * (1 - 2 ^ x * (1 - a) / (1 - b)) = 1 - b - 2^x + a* 2^x := by
-    have i : 1 - b ≠ 0 := by linarith
-    field_simp; ring_nf
-  rw [e]
-  have e : a * (2:ℝ) ^ x = b := by rw [← rpow_add]; unfold ra2; simp; linarith
-  rw [e]; ring_nf
+  rw [eq]; field_simp [(by linarith : 1 - b ≠ 0)]; ring_nf
+  have eq : (2:ℝ) ^ x * a = b := by rw [← rpow_add zero_lt_two]; unfold rem; simp
+  rw [eq]; ring
 
 lemma bound_case2 (Φe : FunApprox Φm (Set.Iic (-1))) (hx : x < 0) (hk : k Δa x ≤ -1) (hkr : krnd fix Δa x ≤ -1) :
     |Φm x - Prnd2 fix Δa Φe x| ≤ fix.ε + Φm (-1 - 2 * fix.ε) - Φm (-1) + Φe.err := by
-  have e : Φm x = Pestimate2 Δa x := cotrans2 ha hx
-  rw [e]
-  set s1 := Φm (rb2 Δa x) - fix.rnd (Φm (rb2 Δa x) )
+  rw [cotrans2 ha hx]
+  set s1 := Φm (ind Δa x) - fix.rnd (Φm (ind Δa x) )
   set s2 := Φm (k Δa x) - Φm (krnd fix Δa x)
   set s3 := Φm (krnd fix Δa x) - Φe (krnd fix Δa x)
-  have e : Pestimate2 Δa x - Prnd2 fix Δa Φe x = s1 + s2 + s3 := by
-    unfold Pestimate2 Prnd2; ring_nf
-  rw [e]
+  have eq : Φm (ind Δa x) + Φm (k Δa x) - Prnd2 fix Δa Φe x = s1 + s2 + s3 := by
+    unfold Prnd2; ring_nf
+  rw [eq]
   have i01 : |s1 + s2 + s3| ≤ |s1 + s2| + |s3| := by apply abs_add
   have i02 : |s1 + s2| ≤ |s1| + |s2| := by apply abs_add
   have i1 : |s1| ≤ fix.ε := by apply fix.hrnd
-  have i3 : |s3| ≤ Φe.err := by
-    apply Φe.herr
-    apply hkr
+  have i3 : |s3| ≤ Φe.err := by apply Φe.herr; apply hkr
   have i2 : |s2| ≤ Φm (-1-2*fix.ε) - Φm (-1) := by
     apply Lemma71 (by norm_num : -1 < (0 : ℝ)) hk hkr
     exact krnd_bound fix _ _
@@ -207,10 +186,10 @@ theorem Theorem72_case2
       (hx : x ≤ -Δa) :                   /- The result is valid for all x ∈ (-oo, -Δa] -/
     |Φm x - Prnd2 fix Δa Φe x| ≤ fix.ε + Φm (-1 - 2 * fix.ε) - Φm (-1) + Φe.err := by
   apply bound_case2 fix ha Φe (by linarith : x < 0)
-  · linarith [k_bound' ha hx]
+  · unfold k; linarith [k_bound' ha hx]
   · have ineq1 := (abs_le.mp (krnd_bound fix Δa x)).1
     have ineq2 := k_bound' ha hx
-    linarith
+    unfold krnd k at *; linarith
 
 end Cotrans2
 
