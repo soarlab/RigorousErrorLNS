@@ -169,8 +169,9 @@ variable {Δa : ℝ}
 variable (ha : 0 < Δa)
 include ha
 
-lemma bound_case2 (Φe : FunApprox Φm (Set.Iic (-1))) (hx : x < 0) (hk : kval Δa x ≤ -1) (hkr : krnd fix Δa x ≤ -1) :
-    |Φm x - Cotrans₂ fix Φe Δa x| ≤ fix.ε + Φm (-1 - 2 * fix.ε) - Φm (-1) + Φe.err := by
+lemma bound_case2 (hc : c < 0) (Φe : FunApprox Φm (Set.Iic c))
+    (hx : x < 0) (hk : kval Δa x ≤ c) (hkr : krnd fix Δa x ≤ c) :
+    |Φm x - Cotrans₂ fix Φe Δa x| ≤ fix.ε + Φm (c - 2 * fix.ε) - Φm c + Φe.err := by
   rw [cotransformation ha hx]
   set s1 := Φm (ind Δa x) - fix.rnd (Φm (ind Δa x) )
   set s2 := Φm (kval Δa x) - Φm (krnd fix Δa x)
@@ -182,8 +183,8 @@ lemma bound_case2 (Φe : FunApprox Φm (Set.Iic (-1))) (hx : x < 0) (hk : kval �
   have i02 : |s1 + s2| ≤ |s1| + |s2| := by apply abs_add
   have i1 : |s1| ≤ fix.ε := by apply fix.hrnd
   have i3 : |s3| ≤ Φe.err := by apply Φe.herr; apply hkr
-  have i2 : |s2| ≤ Φm (-1-2*fix.ε) - Φm (-1) := by
-    apply Lemma71 (by norm_num : -1 < (0 : ℝ)) hk hkr
+  have i2 : |s2| ≤ Φm (c - 2 * fix.ε) - Φm c := by
+    apply Lemma71 hc hk hkr
     exact krnd_fix_bound fix _ _
   linarith
 
@@ -192,7 +193,7 @@ theorem Theorem72_case2
     (hΔa : 4 * fix.ε ≤ Δa)             /- Δa should be large enough -/
     (hx : x ≤ -Δa) :                   /- The result is valid for all x ∈ (-oo, -Δa] -/
     |Φm x - Cotrans₂ fix Φe Δa x| ≤ fix.ε + Φm (-1 - 2 * fix.ε) - Φm (-1) + Φe.err := by
-  apply bound_case2 fix ha Φe (by linarith : x < 0)
+  apply bound_case2 fix ha (by norm_num : -1 < (0 : ℝ)) Φe (by linarith : x < 0)
   · exact k_bound'' ha hx
   · linarith [krnd_bound fix ha hx]
 
@@ -204,7 +205,7 @@ end Cotrans2
 section Contrans3
 
 variable (fix : FixedPoint)
-variable (Φe : FunApprox Φm (Set.Iic (-1)))
+variable (Φe : FunApprox Φm s)
 variable (Δa Δb : ℝ)
 
 def rb x := ind Δa (rem Δb x)
@@ -230,11 +231,12 @@ def Cotrans₃ x := fix.rnd (Φm (ind Δb x)) + Φe (k2rnd fix Φe Δa Δb x)
 lemma cotrans3 (hb : 0 < Δb) (hx : x < 0) : Φm x = Φm (ind Δb x) +  Φm (k₂ Δb x) :=
   by rw [cotransformation hb hx, k₂]
 
-lemma bound_case3 (ha : 0 < Δa) (hb : 0 < Δb) (hx : x < 0)
-    (hk1 : k₁ Δa Δb x ≤ -1) (hk1r : k1rnd fix Δa Δb x ≤ -1)
-    (hk2 : k₂ Δb x ≤ -1) (hk2r : k2rnd fix Φe Δa Δb x ≤ -1) :
-    let Ek2 := 2 * fix.ε +  Φm (-1 - 2 * fix.ε) - Φm (-1) + Φe.err
-    |Φm x - Cotrans₃ fix Φe Δa Δb x| ≤ fix.ε + Φm (-1 - Ek2) - Φm (-1) + Φe.err := by
+lemma bound_case3 (hc : c < 0) (Φe : FunApprox Φm (Set.Iic c))
+    (ha : 0 < Δa) (hb : 0 < Δb) (hx : x < 0)
+    (hk1 : k₁ Δa Δb x ≤ c) (hk1r : k1rnd fix Δa Δb x ≤ c)
+    (hk2 : k₂ Δb x ≤ c) (hk2r : k2rnd fix Φe Δa Δb x ≤ c) :
+    let Ek2 := 2 * fix.ε +  Φm (c - 2 * fix.ε) - Φm c + Φe.err
+    |Φm x - Cotrans₃ fix Φe Δa Δb x| ≤ fix.ε + Φm (c - Ek2) - Φm c + Φe.err := by
   intro Ek2
   rw [cotrans3 _ hb hx]
   set s1 := Φm (ind Δb x) - fix.rnd (Φm (ind Δb x))
@@ -247,8 +249,8 @@ lemma bound_case3 (ha : 0 < Δa) (hb : 0 < Δb) (hx : x < 0)
   have i02 : |s1 + s2| ≤ |s1| + |s2| := by apply abs_add
   have i1 : |s1| ≤ fix.ε := by apply fix.hrnd
   have i3 : |s3| ≤ Φe.err := by apply Φe.herr; apply hk2r
-  have i2 : |s2| ≤ Φm (-1 - Ek2) - Φm (-1) := by
-    apply Lemma71 (by norm_num) hk2 hk2r
+  have i2 : |s2| ≤ Φm (c - Ek2) - Φm c := by
+    apply Lemma71 hc hk2 hk2r
     set a1 := Φm (rb Δa Δb x) - fix.rnd (Φm (rb Δa Δb x))
     set a2 := fix.rnd (Φm (ind Δb x)) - Φm (ind Δb x)
     set a3 := Φm (k₁ Δa Δb x) - Φm (k1rnd fix Δa Δb x)
@@ -262,8 +264,8 @@ lemma bound_case3 (ha : 0 < Δa) (hb : 0 < Δb) (hx : x < 0)
     have i1 : |a1| ≤ fix.ε := by apply fix.hrnd
     have i2 : |a2| ≤ fix.ε := by apply fix.hrnd_sym
     have i4 : |a4| ≤ Φe.err := by apply Φe.herr; apply hk1r
-    have i3 : |a3| ≤  Φm (-1 - 2 * fix.ε) - Φm (-1) := by
-      apply Lemma71 (by norm_num) hk1 hk1r
+    have i3 : |a3| ≤  Φm (c - 2 * fix.ε) - Φm c := by
+      apply Lemma71 hc hk1 hk1r
       apply krnd_fix_bound
     unfold Ek2; linarith
   linarith
@@ -275,7 +277,7 @@ theorem Theorem72_case3
     (hx : x ≤ -Δb) :                   /- The result is valid for all x ∈ (-oo, -Δb] -/
     let Ek2 := 2 * fix.ε +  Φm (-1 - 2 * fix.ε) - Φm (-1) + Φe.err
     |Φm x - Cotrans₃ fix Φe Δa Δb x| ≤ fix.ε + Φm (-1 - Ek2) - Φm (-1) + Φe.err := by
-  apply bound_case3 fix Φe Δa Δb ha (by linarith) (by linarith)
+  apply bound_case3 fix _ _ (by norm_num : -1 < (0 : ℝ)) Φe ha (by linarith) (by linarith)
   · apply k_bound'' ha hrem
   · unfold k1rnd; linarith [krnd_bound fix ha hrem]
   · apply k_bound'' hb hx
