@@ -23,6 +23,8 @@ lemma div_one_imp_le_one {Δ : ℝ} (hdn : ∃ n : ℕ, 1 = n * Δ) : Δ ≤ 1 :
     · contrapose hdn; simp
     · simp only [le_add_iff_nonneg_left, zero_le]
 
+/- Properties of Iₓ and Rₓ -/
+
 lemma i_sub_r_eq_x (Δ x : ℝ) : Iₓ Δ x - Rₓ Δ x = x := by
   simp only [Iₓ, Rₓ, sub_sub_cancel]
 
@@ -82,3 +84,32 @@ lemma ix_monotone (hd : 0 < Δ) : Monotone (Iₓ Δ) := by
   rw [mul_le_mul_right hd, Int.cast_le]
   apply Int.ceil_le_ceil
   exact (div_le_div_right hd).mpr hab
+
+/- Properties of ind and rem -/
+
+lemma ind_sub_rem (Δ x : ℝ) : ind Δ x - rem Δ x = x := by unfold rem; linarith
+
+lemma ind_alt : ind Δ x = Iₓ Δ x - Δ := by unfold ind Iₓ; linarith
+
+lemma rem_alt : rem Δ x = Rₓ Δ x - Δ := by unfold rem Rₓ; rw [ind_alt, sub_right_comm]
+
+lemma rem_lt_zero (hd : 0 < Δ) : rem Δ x < 0 := by
+  rw [rem_alt]; linarith [rx_lt_delta hd x]
+
+lemma rem_ge_neg_delta (hd : 0 < Δ) : -Δ ≤ rem Δ x := by
+  rw [rem_alt]; linarith [rx_nonneg hd x]
+
+lemma ind_lt_x (hd : 0 < Δ) : ind Δ x < x := by
+  rw [ind_alt]
+  nth_rewrite 2 [←i_sub_r_eq_x Δ x]
+  rw [sub_lt_sub_iff_left]
+  exact rx_lt_delta hd x
+
+lemma ind_lt_zero (hd : 0 < Δ) (hx : x < 0) : ind Δ x < 0 := lt_trans (ind_lt_x hd) hx
+
+lemma ind_le_two_delta (hd : 0 < Δ) (hx : x ≤ -Δ) : ind Δ x ≤ -2 * Δ := by
+  rw [ind_alt, sub_le_iff_le_add]; ring_nf
+  have : -Δ = ((-1) : ℤ) * Δ := by
+    simp only [Int.reduceNeg, Int.cast_neg, Int.cast_one, neg_mul, one_mul]
+  rw [this, ←ix_eq_n_delta, ←this]
+  exact ix_monotone hd hx

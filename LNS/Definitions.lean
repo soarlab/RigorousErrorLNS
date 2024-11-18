@@ -135,3 +135,52 @@ def ΦECp_fix (Δ ΔP c : ℝ) (x : ℝ) := EECp fix Δ ΔP c (Iₓ Δ x) (Rₓ 
 def ΦECm_fix (Δ ΔP c : ℝ) (x : ℝ) := EECm fix Δ ΔP c (Iₓ Δ x) (Rₓ Δ x)
 
 end ErrorCorrection
+
+/-
+  Cotransformations
+-/
+
+section Contrasformation
+
+variable (fix : FixedPoint)
+variable {s : Set ℝ}
+/- An approximation of Φm on a set s (all main results are proved for s = (-∞, -1]) -/
+variable (Φe : FunApprox Φm s)
+
+def ind (Δ : ℝ) (x : ℝ) := (⌈x / Δ⌉ - 1) * Δ
+
+def rem (Δ : ℝ) (x : ℝ) := ind Δ x - x
+
+def kval (Δ : ℝ) (x : ℝ) := x - Φm (ind Δ x) + Φm (rem Δ x)
+
+def krnd (Δ : ℝ) (x : ℝ) := x - fix.rnd (Φm (ind Δ x)) + fix.rnd (Φm (rem Δ x))
+
+/- Case 2: x ∈ [-Δb, -Δa) -/
+
+def Cotrans₂ (Δa : ℝ) (x : ℝ) := fix.rnd (Φm (ind Δa x)) + Φe (krnd fix Δa x)
+
+/- Case 3: x ∈ (-1, -Δb) -/
+
+def rb (Δa Δb : ℝ) (x : ℝ) := ind Δa (rem Δb x)
+
+def ra (Δa Δb : ℝ) (x : ℝ) := rem Δa (rem Δb x)
+
+def k₁ (Δa Δb : ℝ) (x : ℝ) := kval Δa (rem Δb x)
+
+def k₂ (Δb : ℝ) (x : ℝ) := kval Δb x
+
+def k1rnd (Δa Δb : ℝ) (x : ℝ) := krnd fix Δa (rem Δb x)
+
+def k2rnd (Δa Δb : ℝ) (x : ℝ) := x + fix.rnd (Φm (rb Δa Δb x)) + Φe (k1rnd fix Δa Δb x) - fix.rnd (Φm (ind Δb x))
+
+def Cotrans₃ (Δa Δb : ℝ) (x : ℝ) := fix.rnd (Φm (ind Δb x)) + Φe (k2rnd fix Φe Δa Δb x)
+
+/- A general definition -/
+
+def Cotrans (Δa Δb : ℝ) (x : ℝ) :=
+  if -Δa ≤ x then fix.rnd (Φm x)
+  else if -Δb ≤ x then Cotrans₂ fix Φe Δa x
+  else if -Δa ≤ rem Δb x then Cotrans₂ fix Φe Δb x
+  else Cotrans₃ fix Φe Δa Δb x
+
+end Contrasformation
