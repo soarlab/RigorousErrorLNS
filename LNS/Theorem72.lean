@@ -226,6 +226,16 @@ theorem Theorem72_case2
   · exact k_bound'' ha hx
   · linarith [krnd_bound fix ha hx]
 
+/- A simplified error bound -/
+theorem Theorem72_case2'
+    (Φe : FunApprox Φm (Set.Iic (-1))) /- An approximation of Φm on (-oo, -1] -/
+    (hΔa : 4 * fix.ε ≤ Δa)             /- Δa should be large enough -/
+    (hx : x ≤ -Δa) :                   /- The result is valid for all x ∈ (-oo, -Δa] -/
+    |Φm x - Cotrans₂ fix Φe Δa x| ≤ 3 * fix.ε + Φe.err := by
+  apply le_trans (Theorem72_case2 fix ha Φe hΔa hx)
+  have ineq := phi_sub_phi_bound' (by linarith [fix.eps_nonneg] : 0 ≤ 2 * fix.ε)
+  linarith
+
 end Cotrans2
 
 /- Case 3 -/
@@ -304,13 +314,17 @@ lemma bound_case3 (hc : c < 0) (Φe : FunApprox Φm (Set.Iic c))
     exact k2rnd_fix_bound fix _ _ hc Φe ha hb hk1 hk1r
   linarith
 
+/- Note: If rem Δb x ∈ (-Δa, 0) then use Contrans₂ fix Δb x
+   since Φm (rem Δb x) can be computed directly from
+   a table defined for all values in (-Δa, 0) -/
+
 theorem Theorem72_case3
     (Φe : FunApprox Φm (Set.Iic (-1)))  /- An approximation of Φm on (-oo, -1] -/
     (ha : 0 < Δa) (hb : 0 < Δb) (hrem : rem Δb x ≤ -Δa)
     (hΔa : 4 * fix.ε ≤ Δa)              /- Δa should be large enough -/
     (hΔb : 8 * fix.ε + 2 * Φe.err ≤ Δb) /- Δb should be large enough -/
     (hx : x ≤ -Δb) :                    /- The result is valid for all x ∈ (-oo, -Δb] -/
-    let Ek2 := 2 * fix.ε +  Φm (-1 - 2 * fix.ε) - Φm (-1) + Φe.err
+    let Ek2 := 2 * fix.ε + Φm (-1 - 2 * fix.ε) - Φm (-1) + Φe.err
     |Φm x - Cotrans₃ fix Φe Δa Δb x| ≤ fix.ε + Φm (-1 - Ek2) - Φm (-1) + Φe.err := by
   have hk1 : k₁ Δa Δb x ≤ -1 := by apply k_bound'' ha hrem
   have hk1r : k1rnd fix Δa Δb x ≤ -1 := by unfold k1rnd; linarith [krnd_bound fix ha hrem]
@@ -322,4 +336,34 @@ theorem Theorem72_case3
   unfold k₂ at ineq1
   linarith
 
+/- A simplified error bound -/
+theorem Theorem72_case3'
+    (Φe : FunApprox Φm (Set.Iic (-1)))  /- An approximation of Φm on (-oo, -1] -/
+    (ha : 0 < Δa) (hb : 0 < Δb) (hrem : rem Δb x ≤ -Δa)
+    (hΔa : 4 * fix.ε ≤ Δa)              /- Δa should be large enough -/
+    (hΔb : 8 * fix.ε + 2 * Φe.err ≤ Δb) /- Δb should be large enough -/
+    (hx : x ≤ -Δb) :                    /- The result is valid for all x ∈ (-oo, -Δb] -/
+    |Φm x - Cotrans₃ fix Φe Δa Δb x| ≤ 5 * fix.ε + 2 * Φe.err := by
+  have hk1 : k₁ Δa Δb x ≤ -1 := by apply k_bound'' ha hrem
+  have hk1r : k1rnd fix Δa Δb x ≤ -1 := by unfold k1rnd; linarith [krnd_bound fix ha hrem]
+  apply le_trans (Theorem72_case3 fix _ _ Φe ha hb hrem hΔa hΔb hx)
+  have ineq1 : 0 ≤ 2 * fix.ε + Φm (-1 - 2 * fix.ε) - Φm (-1) + Φe.err := by
+    apply (le_trans (abs_nonneg $ k₂ Δb x - k2rnd fix Φe Δa Δb x))
+    exact k2rnd_fix_bound fix _ _ neg_one_lt_zero Φe ha hb hk1 hk1r
+  have ineq2 := phi_sub_phi_bound' ineq1
+  have ineq3 := phi_sub_phi_bound' (by linarith [fix.eps_nonneg] : 0 ≤ 2 * fix.ε)
+  linarith
+
 end Contrans3
+
+section Cotrans
+
+variable (fix : FixedPoint) (Φe : FunApprox Φm (Set.Iic (-1)))
+
+def Cotrans Δa Δb x :=
+  if -Δa ≤ x then fix.rnd (Φm x)
+  else if -Δb ≤ x then Cotrans₂ fix Φe Δa x
+  else if -Δa ≤ rem Δb x then Cotrans₂ fix Φe Δb x
+  else Cotrans₃ fix Φe Δa Δb x
+
+end Cotrans
