@@ -366,4 +366,22 @@ def Cotrans Δa Δb x :=
   else if -Δa ≤ rem Δb x then Cotrans₂ fix Φe Δb x
   else Cotrans₃ fix Φe Δa Δb x
 
+theorem Theorem72
+    (ha : 0 < Δa) (hb : 0 < Δb)
+    (hΔa : 4 * fix.ε ≤ Δa)                /- Δa should be large enough -/
+    (hΔb : 8 * fix.ε + 2 * Φe.err ≤ Δb) : /- Δb should be large enough -/
+    |Φm x - Cotrans fix Φe Δa Δb x| ≤ 5 * fix.ε + 2 * Φe.err := by
+  have hε := fix.eps_nonneg
+  have herr : 0 ≤ Φe.err := by
+    apply le_trans (abs_nonneg _) (Φe.herr (-1) _)
+    simp only [Set.mem_Iic, le_refl]
+  unfold Cotrans
+  split_ifs with hax hbx hrem
+  · linarith [fix.hrnd (Φm x)]
+  · linarith [Theorem72_case2' fix ha Φe hΔa (by linarith : x ≤ -Δa)]
+  · have ineq : 4 * fix.ε ≤ Δb := by linarith
+    have := Theorem72_case2' fix hb Φe ineq (by linarith : x ≤ -Δb)
+    linarith
+  · apply Theorem72_case3' fix _ _ Φe ha hb (by linarith) hΔa hΔb (by linarith)
+
 end Cotrans
