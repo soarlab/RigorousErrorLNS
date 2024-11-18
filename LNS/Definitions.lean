@@ -17,6 +17,8 @@ structure FixedPoint where
 lemma FixedPoint.hrnd_sym (fix : FixedPoint) : ∀ x : ℝ, |fix.rnd x - x| ≤ fix.ε := by
   intro x; rw [abs_sub_comm]; exact fix.hrnd x
 
+lemma FixedPoint.eps_nonneg (fix : FixedPoint) : 0 ≤ fix.ε := le_trans (abs_nonneg _) (fix.hrnd 0)
+
 /- FunApprox f s models an approximation of a function f on s -/
 structure FunApprox (f : ℝ → ℝ) (s : Set ℝ) where
   fe : ℝ → ℝ
