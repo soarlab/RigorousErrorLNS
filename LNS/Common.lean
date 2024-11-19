@@ -5,6 +5,16 @@ import Mathlib.Analysis.SpecialFunctions.Log.Base
 import Mathlib.Analysis.SpecialFunctions.Log.Deriv
 import Mathlib.Analysis.SpecialFunctions.Pow.Deriv
 
+attribute [fun_prop] Differentiable.rpow
+attribute [fun_prop] Differentiable.exp
+attribute [fun_prop] Differentiable.div
+attribute [fun_prop] DifferentiableOn.rpow
+attribute [fun_prop] DifferentiableOn.exp
+attribute [fun_prop] DifferentiableOn.div
+
+attribute [fun_prop] ContinuousOn.div_const
+attribute [fun_prop] ContinuousOn.rpow
+attribute [fun_prop] ContinuousOn.div
 
 -- TODO: generalize, simplify and add to Mathlib
 
@@ -19,14 +29,13 @@ lemma DifferentiableAt.comp_linear {a b x : ℝ} {f : ℝ → ℝ} (ha : a ≠ 0
     DifferentiableAt ℝ (fun x => f (a * x + b)) x ↔ DifferentiableAt ℝ f (a * x + b) := by
   constructor <;> intro df
   · have : f = (fun x => f (a * x + b)) ∘ (fun x => (x - b) / a) := by
-      ext y; congr; field_simp;
+      ext y; congr; field_simp
     rw [this]
-    apply DifferentiableAt.comp;
+    apply DifferentiableAt.comp
     · simp only [add_sub_cancel_right]; field_simp
       exact df
     · simp only [differentiableAt_id', differentiableAt_const, sub, div_const]
-  · rw [← Function.comp]
-    apply DifferentiableAt.comp
+  · apply DifferentiableAt.comp
     · exact df
     · simp only [differentiableAt_add_const_iff]
       exact DifferentiableAt.const_mul differentiableAt_id' _
@@ -35,7 +44,7 @@ lemma deriv_comp_linear {a b x : ℝ} {f : ℝ → ℝ} :
     deriv (fun x => f (a * x + b)) x = a * deriv f (a * x + b) := by
   by_cases ha : a = 0; simp [ha]
   by_cases df : DifferentiableAt ℝ f (a * x + b)
-  · rw [← Function.comp, deriv.comp, deriv_add_const, deriv_const_mul, deriv_id'', mul_comm, mul_one]
+  · rw [← Function.comp_def, deriv_comp, deriv_add_const, deriv_const_mul, deriv_id'', mul_comm, mul_one]
     · exact differentiableAt_id'
     · exact df
     · apply DifferentiableAt.add_const
@@ -49,95 +58,31 @@ lemma DifferentiableAt.comp_const_sub {a x : ℝ} {f : ℝ → ℝ} :
   have : ∀ x, a - x = (-1) * x + a := by intro; ring
   simp only [this, DifferentiableAt.comp_linear (by norm_num : -1 ≠ (0 : ℝ))]
 
-
 lemma DifferentiableAt.comp_sub_const {a x : ℝ} {f : ℝ → ℝ} :
     DifferentiableAt ℝ (fun x => f (x - a)) x ↔ DifferentiableAt ℝ f (x - a) := by
   have : ∀ x, x - a = 1 * x + -a := by intro; ring
   simp only [this, DifferentiableAt.comp_linear (by norm_num : 1 ≠ (0 : ℝ))]
 
-
-
-/-
-  MONOTONIC/ANTITONIC LEMMAS
--/
-
-lemma antitoneOn_of_deriv_nonneg_Ici0 {f: ℝ → ℝ} (h0: DifferentiableOn ℝ f (Set.Ici 0))
-    (h2: ∀ x, x ≥ 0 → (deriv f) x ≤  0) : AntitoneOn f (Set.Ici 0) :=by
-  apply antitoneOn_of_deriv_nonpos (convex_Ici 0)
-  apply DifferentiableOn.continuousOn h0
-  apply DifferentiableOn.mono h0
-  any_goals simp;
-  intro y hy; exact h2 y (le_of_lt hy)
-
-lemma monotoneOn_of_deriv_nonneg_Ici0 {f: ℝ → ℝ} (h0: DifferentiableOn ℝ f (Set.Ici 0))
-    (h2: ∀ x, x ≥ 0 → (deriv f) x ≥  0) : MonotoneOn f (Set.Ici 0) :=by
-  apply monotoneOn_of_deriv_nonneg (convex_Ici 0)
-  apply DifferentiableOn.continuousOn h0
-  apply DifferentiableOn.mono h0
-  any_goals simp;
-  intro y hy; exact h2 y (le_of_lt hy)
-
-lemma monotoneOn_of_deriv_nonneg_Iic0 {f: ℝ → ℝ} (h0: DifferentiableOn ℝ f (Set.Iic 0))
-    (h2: ∀ x, x ≤  0 → (deriv f) x ≥  0) : MonotoneOn f (Set.Iic 0) :=by
-  apply monotoneOn_of_deriv_nonneg (convex_Iic 0)
-  apply DifferentiableOn.continuousOn h0
-  apply DifferentiableOn.mono h0
-  any_goals simp;
-  intro y hy; exact h2 y (le_of_lt hy)
-
-lemma monotoneOn_of_deriv_nonneg_Iio0 {f: ℝ → ℝ} (h0: DifferentiableOn ℝ f (Set.Iio 0))
-    (h2: ∀ x, x <  0 → (deriv f) x ≥  0) : MonotoneOn f (Set.Iio 0) :=by
-  apply monotoneOn_of_deriv_nonneg (convex_Iio 0)
-  apply DifferentiableOn.continuousOn h0
-  apply DifferentiableOn.mono h0
-  any_goals simp;
-  intro y hy; exact h2 y hy
-
-lemma strictMonoOn_of_deriv_pos_Ici0 {f: ℝ → ℝ} (h0: ContinuousOn f (Set.Ici a))
-    (h2: ∀ x, x > a → (deriv f) x >  0) : StrictMonoOn f (Set.Ici a) :=by
-  apply strictMonoOn_of_deriv_pos (convex_Ici a) h0
-  simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi]
-  intro y hy; exact h2 y hy
-
-lemma nonpos_of_deriv_nonpos_Ici0 (h0: DifferentiableOn ℝ f (Set.Ici 0))
-    (h1: f (0:ℝ)  = (0:ℝ) ) (h2: ∀ x, x ≥ 0 → (deriv f) x ≤ 0) : x ≥ 0 →  f x ≤ 0 :=by
-  intro h; rw[← h1]
-  apply antitoneOn_of_deriv_nonneg_Ici0 h0 h2
-  any_goals simp;
-  any_goals assumption
-
-lemma nonneg_of_deriv_nonneg_Ici0 (h0: DifferentiableOn ℝ f (Set.Ici 0))
-    (h1: f (0:ℝ)  = (0:ℝ) ) (h2: ∀ x, x ≥ 0 → (deriv f) x ≥  0) : x ≥ 0 →  f x ≥  0 :=by
-  intro h; rw[← h1]
-  apply monotoneOn_of_deriv_nonneg_Ici0 h0 h2
-  any_goals simp
-  any_goals assumption
-
-lemma pos_of_deriv_pos_Ici (h0: ContinuousOn f (Set.Ici a))
-    (h1: f (a:ℝ)  = (0:ℝ) ) (h2: ∀ x, x > a → (deriv f) x >  0) : x > a →  f x >  0 :=by
-  intro h; rw[← h1]
-  apply strictMonoOn_of_deriv_pos_Ici0 h0 h2
-  simp only [Set.mem_Ici, le_refl]; simp only [Set.mem_Ici]; linarith; assumption
-
-lemma nonneg_of_deriv_nonpos_Iic0 (h0: DifferentiableOn ℝ f (Set.Iic 0))
-    (h1: f (0:ℝ)  ≥ (0:ℝ) ) (h2: ∀ x, x ≤  0 → (deriv f) x ≤  0) : x ≤ 0 →  f x ≥  0 :=by
-  intro h;
-  have : f x ≥ f 0:=by
-    apply antitoneOn_of_deriv_nonpos (convex_Iic 0)
-    apply DifferentiableOn.continuousOn h0
-    apply DifferentiableOn.mono h0
-    any_goals simp;
-    any_goals assumption
-    intro y hy; exact h2 y (le_of_lt hy)
-  linarith
-
-
-
-section Derivatives
-
-/- Special derivatives -/
+section Diff
 
 open Real
+
+lemma deriv_EqOn_open {f1 f2 : ℝ → ℝ} (hs : IsOpen s) (h : Set.EqOn f1 f2 s) (hx : x ∈ s) :
+    deriv f1 x = deriv f2 x := by
+  apply Filter.EventuallyEq.deriv_eq
+  apply Filter.eventuallyEq_of_mem _ h
+  exact IsOpen.mem_nhds hs hx
+
+lemma deriv_EqOn_Iio {f1 f2: ℝ → ℝ} (h: Set.EqOn f1 f2 (Set.Iio (a:ℝ))) (hx: x ∈ Set.Iio (a:ℝ)) :
+    deriv f1 x = deriv f2 x := deriv_EqOn_open isOpen_Iio h hx
+
+lemma deriv_EqOn_Ioi {f1 f2: ℝ → ℝ} (h: Set.EqOn f1 f2 (Set.Ioi (a:ℝ))) (hx: x ∈ (Set.Ioi (a:ℝ))) :
+    deriv f1 x = deriv f2 x := deriv_EqOn_open isOpen_Ioi h hx
+
+lemma deriv_EqOn_Ioo {f1 f2: ℝ → ℝ} (h: Set.EqOn f1 f2 (Set.Ioo (a:ℝ) (b:ℝ))) (hx: x ∈ (Set.Ioo (a:ℝ) (b:ℝ))) :
+    deriv f1 x = deriv f2 x := deriv_EqOn_open isOpen_Ioo h hx
+
+/- Special derivatives -/
 
 -- lemma HasDerivAt.const_rpow {f : ℝ → ℝ} {f' a : ℝ} (ha : 0 < a) (hf : HasDerivAt f f' x) :
 --     HasDerivAt (fun x => a ^ f x) (f' * a ^ f x * Real.log a) x := by
@@ -149,8 +94,28 @@ lemma HasDerivAt.const_rpow {f : ℝ → ℝ} {f' a : ℝ} (ha : 0 < a) (hf : Ha
   rw [(by norm_num; ring : (Real.log a * f') * a ^ f x = 0 * f x * a ^ (f x - 1) + f' * a ^ f x * Real.log a)]
   exact HasDerivAt.rpow (hasDerivAt_const x a) hf ha
 
+variable {E : Type*} [NormedAddCommGroup E] [NormedSpace ℝ E] {f : E → ℝ} {x : E} {f' : E →L[ℝ] ℝ}
+  {s : Set E}
 
-end Derivatives
+theorem DifferentiableWithinAt.logb (b : ℝ) (hf : DifferentiableWithinAt ℝ f s x) (hx : f x ≠ 0) :
+    DifferentiableWithinAt ℝ (fun x => logb b (f x)) s x := by
+  unfold Real.logb
+  fun_prop (disch := assumption)
+
+@[fun_prop]
+theorem DifferentiableAt.logb (b : ℝ) (hf : DifferentiableAt ℝ f x) (hx : f x ≠ 0) :
+    DifferentiableAt ℝ (fun x => logb b (f x)) x := by
+  unfold Real.logb
+  fun_prop (disch := assumption)
+
+@[fun_prop]
+theorem DifferentiableOn.logb (b : ℝ) (hf : DifferentiableOn ℝ f s) (hx : ∀ x ∈ s, f x ≠ 0) :
+    DifferentiableOn ℝ (fun x => logb b (f x)) s := fun x h => (hf x h).logb b (hx _ h)
+
+theorem Differentiable.logb (hf : Differentiable ℝ f) (hx : ∀ x, f x ≠ 0) :
+    Differentiable ℝ fun x => logb b (f x) := fun x => (hf x).logb b (hx x)
+
+end Diff
 
 /- Some special limits -/
 
@@ -160,7 +125,7 @@ open Real Filter Topology
 
 lemma tendsto_x_mul_inv_x : Tendsto (fun x : ℝ => x * x⁻¹) (𝓝[≠] 0) (𝓝 1) := by
   field_simp; apply tendsto_nhds_of_eventually_eq; apply eventually_nhdsWithin_of_forall
-  simp only [Set.mem_compl_iff, Set.mem_singleton_iff];
+  simp only [Set.mem_compl_iff, Set.mem_singleton_iff]
   intro x hx
   field_simp
 
@@ -210,11 +175,11 @@ section LinearOrderedField
 variable {k : Type*} [LinearOrderedField k] [FloorRing k] {b : k}
 
 lemma ceil_div_mul_sub_lt {a b : k} (hb : 0 < b) : ⌈a / b⌉ * b - a < b := by
-  rw [sub_lt_iff_lt_add, ←lt_div_iff hb, same_add_div (ne_of_gt hb), add_comm]
+  rw [sub_lt_iff_lt_add, ←lt_div_iff₀ hb, same_add_div (ne_of_gt hb), add_comm]
   exact ceil_lt_add_one _
 
 lemma ceil_div_mul_sub_nonneg {a b : k} (hb : 0 < b) : 0 ≤ ⌈a / b⌉ * b - a := by
-  rw [sub_nonneg, ← div_le_iff hb]
+  rw [sub_nonneg, ← div_le_iff₀ hb]
   exact le_ceil _
 
 end LinearOrderedField

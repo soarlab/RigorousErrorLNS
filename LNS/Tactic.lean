@@ -76,7 +76,7 @@ lemma expr_hasDerivAt (e : RExpr) (x : ℝ) :
     (sideConditions e x).Forall id → HasDerivAt (toFun e) (toFun (exprDeriv e) x) x := by
   induction e with
   | Var =>
-    simp [toFun, sideConditions];
+    simp [toFun, sideConditions]
     exact hasDerivAt_id' x
   | Const c =>
     simp [toFun, sideConditions]
@@ -208,7 +208,7 @@ syntax "deriv_EQ " term: tactic
 
 macro_rules
 | `(tactic| deriv_EQ $t:term) =>
-    `(tactic| get_deriv $t:term; simp; simp_all; ext x; try field_simp; ring_nf)
+    `(tactic| get_deriv $t:term; simp; try norm_num; simp_all; ext x; try field_simp; ring_nf)
 
 syntax "diff_fun " term: tactic
 
