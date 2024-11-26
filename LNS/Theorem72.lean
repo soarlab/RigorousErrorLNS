@@ -152,16 +152,28 @@ lemma krnd_bound (fix : FixedPoint) {Δ x : ℝ} (hd : 0 < Δ) (hx : x ≤ -Δ) 
   have ineq2 := k_bound' hd hx
   linarith
 
+lemma krnd_fix_bound_dir (fix : FixedPointDir) (Δ x : ℝ) : |kval Δ x - krnd fix Δ x| ≤ fix.ε := by
+  set a1 := Φm (ind Δ x) - fix.rnd (Φm (ind Δ x))
+  set a2 := Φm (rem Δ x) - fix.rnd (Φm (rem Δ x))
+  have eq : kval Δ x - krnd fix Δ x = a2 - a1 := by unfold kval krnd; ring_nf
+  rw [eq]
+  apply fix.abs_rnd_sub_rnd
+
+lemma krnd_bound_dir (fix : FixedPointDir) {Δ x : ℝ} (hd : 0 < Δ) (hx : x ≤ -Δ) :
+    krnd fix Δ x ≤ -Δ / 2 - 1 + fix.ε := by
+  have ineq1 := (abs_le.mp (krnd_fix_bound_dir fix Δ x)).1
+  have ineq2 := k_bound' hd hx
+  linarith
+
 /- Case 2 -/
 
 section Cotrans2
 
-variable (fix : FixedPoint)
-
-lemma bound_case2
+lemma bound_case2 (fix : FixedPoint)
     (hc : c < 0) (Φe : FunApprox Φm (Set.Iic c))
-    (ha : 0 < Δa) (hx : x < 0) (hk : kval Δa x ≤ c) (hkr : krnd fix Δa x ≤ c) :
-    |Φm x - Cotrans₂ fix Φe Δa x| ≤ fix.ε + Φm (c - 2 * fix.ε) - Φm c + Φe.err := by
+    (ha : 0 < Δa) (hx : x < 0) (hk : kval Δa x ≤ c)
+    (hkr : krnd fix Δa x ≤ c) (hkr2 : |kval Δa x - krnd fix Δa x| ≤ kε):
+    |Φm x - Cotrans₂ fix Φe Δa x| ≤ fix.ε + Φm (c - kε) - Φm c + Φe.err := by
   rw [cotransformation ha hx]
   set s1 := Φm (ind Δa x) - fix.rnd (Φm (ind Δa x) )
   set s2 := Φm (kval Δa x) - Φm (krnd fix Δa x)
@@ -173,12 +185,10 @@ lemma bound_case2
   have i02 : |s1 + s2| ≤ |s1| + |s2| := by apply abs_add
   have i1 : |s1| ≤ fix.ε := by apply fix.hrnd
   have i3 : |s3| ≤ Φe.err := by apply Φe.herr; apply hkr
-  have i2 : |s2| ≤ Φm (c - 2 * fix.ε) - Φm c := by
-    apply Lemma71 hc hk hkr
-    exact krnd_fix_bound fix _ _
+  have i2 : |s2| ≤ Φm (c - kε) - Φm c := Lemma71 hc hk hkr hkr2
   linarith
 
-theorem Theorem72_case2
+theorem Theorem72_case2 (fix : FixedPoint)
     (Φe : FunApprox Φm (Set.Iic (-1))) /- An approximation of Φm on (-∞, -1] -/
     (ha : 0 < Δa)
     (hΔa : 4 * fix.ε ≤ Δa)             /- Δa should be large enough -/
@@ -187,9 +197,10 @@ theorem Theorem72_case2
   apply bound_case2 fix neg_one_lt_zero Φe ha (by linarith : x < 0)
   · exact k_bound'' ha hx
   · linarith [krnd_bound fix ha hx]
+  · exact krnd_fix_bound fix _ _
 
 /- A simplified error bound -/
-theorem Theorem72_case2'
+theorem Theorem72_case2' (fix : FixedPoint)
     (Φe : FunApprox Φm (Set.Iic (-1))) /- An approximation of Φm on (-∞, -1] -/
     (ha : 0 < Δa)
     (hΔa : 4 * fix.ε ≤ Δa)             /- Δa should be large enough -/
@@ -197,6 +208,28 @@ theorem Theorem72_case2'
     |Φm x - Cotrans₂ fix Φe Δa x| ≤ 3 * fix.ε + Φe.err := by
   apply le_trans (Theorem72_case2 fix Φe ha hΔa hx)
   have ineq := phi_sub_phi_bound' (by linarith [fix.eps_nonneg] : 0 ≤ 2 * fix.ε)
+  linarith
+
+theorem Theorem72_case2_dir (fix : FixedPointDir)
+    (Φe : FunApprox Φm (Set.Iic (-1))) /- An approximation of Φm on (-∞, -1] -/
+    (ha : 0 < Δa)
+    (hΔa : 2 * fix.ε ≤ Δa)             /- Δa should be large enough -/
+    (hx : x ≤ -Δa) :                   /- The result is valid for all x ∈ (-∞, -Δa] -/
+    |Φm x - Cotrans₂ fix Φe Δa x| ≤ fix.ε + Φm (-1 - fix.ε) - Φm (-1) + Φe.err := by
+  apply bound_case2 fix neg_one_lt_zero Φe ha (by linarith : x < 0)
+  · exact k_bound'' ha hx
+  · linarith [krnd_bound_dir fix ha hx]
+  · exact krnd_fix_bound_dir fix _ _
+
+/- A simplified error bound (directed rounding) -/
+theorem Theorem72_case2_dir' (fix : FixedPointDir)
+    (Φe : FunApprox Φm (Set.Iic (-1))) /- An approximation of Φm on (-∞, -1] -/
+    (ha : 0 < Δa)
+    (hΔa : 2 * fix.ε ≤ Δa)             /- Δa should be large enough -/
+    (hx : x ≤ -Δa) :                   /- The result is valid for all x ∈ (-∞, -Δa] -/
+    |Φm x - Cotrans₂ fix Φe Δa x| ≤ 2 * fix.ε + Φe.err := by
+  apply le_trans (Theorem72_case2_dir fix Φe ha hΔa hx)
+  have ineq := phi_sub_phi_bound' fix.eps_nonneg
   linarith
 
 end Cotrans2
