@@ -1,5 +1,6 @@
 import LNS.Definitions
 import LNS.BasicIxRx
+import LNS.BasicRounding
 import LNS.Lemma51
 import LNS.Lemma52
 
@@ -25,11 +26,35 @@ theorem Theorem53_Ep (fix : FixedPoint) {i r Δ : ℝ} (hi : i ≤ 0) (hr1 : 0 �
     apply mul_le_mul (le_of_lt hr2) i21; simp; linarith
   have i0 : |Ep_fix fix i r| ≤ |Ep i r| + |s1| + |s2| + |s3| := by
     have i01 : |Ep_fix fix i r| ≤ |Ep i r + s1 + s2| + |s3| := by rw [e1]; apply abs_add
-    have i02 : |Ep i r + s1 + s2|  ≤    |Ep i r + s1| + |s2| := by apply abs_add
-    have i03 : |Ep i r + s1|  ≤ |Ep i r| + |s1| := by apply abs_add
+    have i02 : |Ep i r + s1 + s2| ≤ |Ep i r + s1| + |s2| := by apply abs_add
+    have i03 : |Ep i r + s1| ≤ |Ep i r| + |s1| := by apply abs_add
     linarith
   have i01 : |Ep i r| < Ep 0 Δ := by exact Lemma51 hi hr1 hr2
   linarith
+
+theorem Theorem53_Ep_dir (fix : FixedPointDir) {i r Δ : ℝ} (hi : i ≤ 0) (hr1 : 0 ≤ r) (hr2 : r < Δ) :
+    |Ep_fix fix i r| < (Ep 0 Δ) + (1 + Δ) * fix.ε := by
+  set s1 := (Φp i - fix.rnd (Φp i))
+  set s2 := r * (fix.rnd (deriv Φp i) - deriv Φp i)
+  set s3 := r * fix.rnd (deriv Φp i) - fix.rnd (r * fix.rnd (deriv Φp i))
+  have e1 : Ep_fix fix i r = Ep i r + s2 + (s1 - s3) := by unfold Ep_fix Ep; ring_nf
+  have i1 : |s1| ≤ fix.ε := fix.hrnd _
+  have i3 : |s3| ≤ fix.ε := fix.hrnd _
+  have i2 : |s2| ≤ Δ * fix.ε := by
+    have e1 : |s2| = |r| * |(fix.rnd (deriv Φp i) - deriv Φp i)| := by apply abs_mul
+    have e2 : |(fix.rnd (deriv Φp i) - deriv Φp i)| = |(deriv Φp i) - fix.rnd (deriv Φp i)| := by apply abs_sub_comm
+    have e3 : |r| = r := by apply abs_of_nonneg; linarith
+    rw [e1, e2, e3]
+    have i21 : |deriv Φp i - fix.rnd (deriv Φp i)| ≤ fix.ε := by apply fix.hrnd
+    apply mul_le_mul (le_of_lt hr2) i21; simp; linarith
+  have i0 : |Ep_fix fix i r| ≤ |Ep i r| + |s2| + |s1 - s3| := by
+    have i01 : |Ep_fix fix i r| ≤ |Ep i r + s2| + |s1 - s3| := by rw [e1]; apply abs_add
+    have i02 : |Ep i r + s2| ≤ |Ep i r| + |s2| := by apply abs_add
+    linarith
+  have i13 : |s1 - s3| ≤ fix.ε := fix.abs_rnd_sub_rnd _ _
+  have i01 : |Ep i r| < Ep 0 Δ := by exact Lemma51 hi hr1 hr2
+  linarith
+
 
 theorem Theorem53_Em (fix : FixedPoint) {i₀ i r Δ : ℝ} (hi₀ : i₀ < 0) (hi : i ≤ i₀) (hr1 : 0 ≤ r) (hr2 : r < Δ) :
     |Em_fix fix i r| < (Em i₀ Δ) + (2 + Δ) * fix.ε := by
