@@ -81,6 +81,14 @@ theorem Cotransformation (fix : FixedPoint)
     |Φm x - Cotrans fix Φe Δa Δb x| ≤ 5 * fix.ε + 2 * Φe.err :=
   Theorem72 fix Φe ha hb hΔa hΔb
 
+theorem Cotransformation_dir (fix : FixedPointDir)
+    (Φe : FunApprox Φm (Set.Iic (-1)))
+    (ha : 0 < Δa) (hb : 0 < Δb)
+    (hΔa : 2 * fix.ε ≤ Δa)                /- Δa should be large enough -/
+    (hΔb : 4 * fix.ε + 2 * Φe.err ≤ Δb) : /- Δb should be large enough -/
+    |Φm x - Cotrans fix Φe Δa Δb x| ≤ 3 * fix.ε + 2 * Φe.err :=
+  Theorem72_dir fix Φe ha hb hΔa hΔb
+
 /- All theorems depend on standard axioms only: [propext, Classical.choice, Quot.sound]-/
 
 #print axioms TaylorApprox_Φp
@@ -96,3 +104,4 @@ theorem Cotransformation (fix : FixedPoint)
 #print axioms Cotrans_case2
 #print axioms Cotrans_case3
 #print axioms Cotransformation
+#print axioms Cotransformation_dir
