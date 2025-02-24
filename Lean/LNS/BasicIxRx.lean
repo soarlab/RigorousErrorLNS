@@ -83,7 +83,7 @@ lemma ix_monotone (hd : 0 < Δ) : Monotone (Iₓ Δ) := by
   unfold Iₓ; intro a b hab; simp only
   rw [mul_le_mul_right hd, Int.cast_le]
   apply Int.ceil_le_ceil
-  exact (div_le_div_right hd).mpr hab
+  exact (div_le_div_iff_of_pos_right hd).mpr hab
 
 /- Properties of ind and rem -/
 

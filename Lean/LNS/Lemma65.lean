@@ -17,7 +17,7 @@ private lemma deriv_Km (ha : a ∈ Set.Ioo 0 1) : Set.EqOn (deriv (Km a))
   unfold Km
   get_deriv (fun b ↦ -a * a * log (1 - a) + a * a * log (b - a) + a * b - a + b * log (1 - a) + b * log b - b * log (b - a))
       within (Set.Ici 1)
-  simp only [Set.mem_Ici, List.Forall, toFun, ne_eq, id_eq]
+  simp
   simp only [Set.mem_Ioo] at ha
   intro x hx; split_ands <;> linarith
   simp only [toFun] at h
@@ -34,7 +34,7 @@ private lemma deriv2_Km (ha : a ∈ Set.Ioo 0 1) : Set.EqOn (deriv (deriv (Km a)
     simp only [Set.Ioi_subset_Ici_iff, le_refl]
   intro b hb; rw [deriv_EqOn_Ioi e hb]
   get_deriv (fun b=> (a*a)/(b-a) + a - b/(b-a) + log b + log (1-a) - log (b-a) + (1:ℝ)) within (Set.Ioi 1)
-  simp only [Set.mem_Ioi, List.Forall, toFun, ne_eq, id_eq, and_self_left]
+  simp
   simp only [Set.mem_Ioo, Set.mem_Ioi] at ha hb
   intro x hx; split_ands <;> linarith
   simp only [toFun] at h
@@ -134,7 +134,7 @@ lemma deriv_Fm_div_pos (ha : a ∈ Set.Ioo 0 1) (hb : 1 < b) (hc : b < c) :
   unfold Gm at ie
   have i1 : deriv (Fm b) a > 0 := by apply deriv_Fm_a_pos ha hb
   have i2 : deriv (Fm c) a > 0 := by apply deriv_Fm_a_pos ha; linarith
-  simp only [div_lt_div_iff i1 i2] at ie
+  simp only [div_lt_div_iff₀ i1 i2] at ie
   rw [deriv_div]
   apply div_pos; linarith
   apply pow_pos (Fm_pos ha (by linarith))
@@ -174,8 +174,7 @@ lemma Lemma65_strictMono (hr1 : 0 < r) (hr2 : r < Δ) :
   apply deriv_Fm_div_pos (i1 x hx) (i2 r hr1)
   apply rpow_lt_rpow_of_exponent_lt (by simp only [Nat.one_lt_ofNat]) hr2
   get_deriv (fun i ↦ 2 ^ i)
-  simp only [List.Forall, toFun, gt_iff_lt, Nat.ofNat_pos, id_eq, implies_true]
-  simp only [toFun, zero_mul, one_mul, zero_add] at h
+  simp; simp at h
   simp only [h, Nat.ofNat_pos, rpow_pos_of_pos, mul_pos_iff_of_pos_left, Nat.one_lt_ofNat, log_pos]
   apply DifferentiableAt.div
   apply differentiable_Fm_a (i1 x hx) (le_of_lt (i2 r hr1))

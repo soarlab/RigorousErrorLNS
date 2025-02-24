@@ -60,13 +60,13 @@ private lemma aux_eq4 (hi : i < 0) (hr : 0 ≤ r) :
 lemma U_pos (hx : 1 < x) : 0 < U x := by
   have eq : U 1 = 0 := by norm_num [U]
   rw [← eq]
-  apply strictMonoOn_of_deriv_pos (convex_Ici 1) _ _ (le_refl 1) (le_of_lt hx) hx
+  apply strictMonoOn_of_deriv_pos (convex_Ici 1) _ _ Set.left_mem_Ici (le_of_lt hx) hx
   · have : ∀ x ∈ Set.Ici (1:ℝ) , x ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intros; linarith
     unfold U; fun_prop (disch := assumption)
   simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi]
   intro x hx; unfold U
   get_deriv (fun {X} ↦ 1 / X + log X - 1) at x
-  simp only [List.Forall, toFun, ne_eq, id_eq, and_self]; linarith
+  simp [List.Forall]; linarith
   simp only [toFun] at h
   rw [HasDerivAt.deriv h]
   field_simp; apply lt_of_sub_pos; rw [(by ring: x ^ 2 - x = x*(x-1))]
@@ -76,8 +76,7 @@ lemma deriv_Fp_a (hb : 0 < b) :
     Set.EqOn (deriv (Fp b)) (fun a => (a+1)/(a+b) - 1 - log (a+1) + log (a+b)) (Set.Ioi 0) := by
   unfold Fp
   get_deriv (fun a ↦ -(a + 1) * log (a + 1) + (a + 1) * log (a + b) - log b) within (Set.Ioi 0)
-  simp only [Set.mem_Ioi, List.Forall, toFun, ne_eq, id_eq, and_imp]
-  intro x hx
+  simp; intro x hx
   constructor; linarith; constructor; linarith; linarith
   simp only [toFun] at h
   intro a ha
@@ -92,7 +91,7 @@ lemma deriv_Fp_b (ha : 0 < a) (hb : 0 < b) :
     deriv (fun b ↦ Fp b a) b = a * (b - 1) / (b * (a + b)) := by
   unfold Fp
   get_deriv (fun b ↦ -(a + 1) * log (a + 1) + (a + 1) * log (a + b) - log b) within (Set.Ioi 0)
-  simp only [Set.mem_Ioi, List.Forall, toFun, ne_eq, id_eq]
+  simp
   intro x hx; split_ands <;> linarith
   simp only [toFun] at h
   rw [h.right b hb]
@@ -109,7 +108,7 @@ lemma deriv_Fp_a_b (ha : 0 < a) (hb : 0 < b) :
     rw [deriv_Fp_a hx ha]
   rw [deriv_EqOn_Ioi e hb]
   get_deriv (fun b ↦ (a + 1) / (a + b) - 1 - log (a + 1) + log (a + b)) within (Set.Ioi 0)
-  simp only [Set.mem_Ioi, List.Forall, toFun, ne_eq, id_eq]
+  simp
   intro x hx; split_ands <;> linarith
   simp only [toFun] at h
   rw [h.right b hb]
@@ -123,7 +122,7 @@ lemma differentiable_Fp_a_b (ha : 0 < a) (hb : 0 < b) :
     unfold Set.EqOn; intro x hx; simp only
     rw [deriv_Fp_a hx ha]
   get_deriv (fun b ↦ (a + 1) / (a + b) - 1 - log (a + 1) + log (a + b)) within (Set.Ioi 0)
-  simp only [Set.mem_Ioi, List.Forall, toFun, ne_eq, id_eq]
+  simp
   intro x hx; split_ands <;> linarith
   simp only [toFun] at h
   apply DifferentiableOn.differentiableAt (DifferentiableOn.congr h.left e)
@@ -186,8 +185,8 @@ lemma deriv_Fm_a (hb : 1 ≤ b) :
     Set.EqOn (deriv (Fm b)) (fun a => (1 - a) / (b - a) - 1 - log (1 - a) + log (b-a)) (Set.Ioo 0 1) := by
   unfold Fm
   get_deriv (fun a ↦ (1 - a) * log (1 - a) - (1 - a) * log (b - a) + log b) within (Set.Ioo 0 1)
-  simp only [Set.mem_Ioc, List.Forall, toFun, ne_eq, id_eq, and_imp]
-  intro x hx; simp only [Set.mem_Ioo] at hx
+  simp
+  intro x hx hx1
   constructor; linarith; constructor; linarith; linarith
   simp only [toFun] at h
   intro a ha
@@ -204,7 +203,7 @@ lemma deriv_Fm_b (ha : a ∈ Set.Ioo 0 1) (hb : 1 ≤ b) : deriv (fun b ↦ Fm b
   unfold Fm
   simp only [Set.mem_Ioo] at ha hb
   get_deriv (fun b ↦ (1 - a) * log (1 - a) - (1 - a) * log (b - a) + log b) within (Set.Ici 1)
-  simp only [Set.mem_Ici, List.Forall, toFun, ne_eq, id_eq]
+  simp
   intro x hx; split_ands <;> linarith
   simp only [toFun] at h
   rw [h.right b hb]
@@ -223,8 +222,7 @@ lemma deriv_Fm_a_b (ha : a ∈ Set.Ioo 0 1) (hb : 1 < b) :
     exact le_of_lt hx
   rw [deriv_EqOn_Ioi e hb]
   get_deriv (fun b ↦ (1 - a) / (b - a) - 1 - log (1 - a) + log (b - a)) within (Set.Ioi 1)
-  simp only [Set.mem_Ioi, List.Forall, toFun, ne_eq, id_eq]
-  simp only [Set.mem_Ioo, Set.mem_Ioi] at ha hb
+  simp; simp at ha hb
   intro x hx; split_ands <;> linarith
   simp only [toFun] at h
   rw [h.right b hb]
@@ -240,8 +238,7 @@ lemma differentiable_Fm_a_b (ha : a ∈ Set.Ioo 0 1) (hb : 1 < b) :
     rw [deriv_Fm_a _ ha]
     simp_all only [Set.mem_Ioo, Set.mem_Ioi, Set.mem_Ici]; linarith
   get_deriv (fun b => (1-a)/(b-a) - 1 - log (1-a) + log (b-a)) within (Set.Ioi 1)
-  simp only [Set.mem_Ioi, List.Forall, toFun, ne_eq, id_eq]
-  simp only [Set.mem_Ioo, Set.mem_Ioi] at ha hb
+  simp; simp at ha hb
   intro x hx; split_ands <;> linarith
   simp only [toFun] at h
   apply DifferentiableOn.differentiableAt (DifferentiableOn.congr h.left e)

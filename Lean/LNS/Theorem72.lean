@@ -17,7 +17,7 @@ lemma phi_sub_phi_bound (he : 0 < e) : Φm (-1 - e) - Φm (-1) < e := by
   set f := fun x => x - Φm (-1 - x)
   suffices h : f 0 < f e by simp [f] at h; linarith
   have : ∀ x ∈ Set.Ici (0 : ℝ), -1 - x < 0 := by simp only [Set.mem_Ici]; intro x hx; linarith
-  apply strictMonoOn_of_deriv_pos (convex_Ici 0) _ _ (le_refl 0) (le_of_lt he) he
+  apply strictMonoOn_of_deriv_pos (convex_Ici 0) _ _ Set.left_mem_Ici (le_of_lt he) he
   · unfold f; fun_prop (disch := assumption)
   simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi, f]
   intro x hx
@@ -67,7 +67,8 @@ lemma cotransformation (hd : 0 < Δ) (hx : x < 0) : Φm x = Φm (ind Δ x) + Φm
     unfold kval Φm; rw [rpow_add, rpow_sub, rpow_logb, rpow_logb]; field_simp
     any_goals linarith
   rw [eq]; field_simp [(by linarith : 1 - b ≠ 0)]; ring_nf
-  have eq : (2:ℝ) ^ x * a = b := by rw [← rpow_add zero_lt_two]; unfold rem; simp
+  have eq : (2:ℝ) ^ x * a = b := by
+    rw [← rpow_add zero_lt_two]; unfold rem; simp [b]
   rw [eq]; ring
 
 private def f_aux (x : ℝ) := x - Φm x
@@ -109,7 +110,7 @@ private lemma k_bound_ineq (hd : 0 < d) : -d - Φp (-d) ≤ -d / 2 - 1 := by
   intro x hx
   rw [deriv_add (by fun_prop) (by fun_prop), deriv_comp_neg, deriv_Φp]
   simp only [deriv_div_const, deriv_id'', le_neg_add_iff_add_le, add_zero]
-  rw [div_le_div_iff (one_plus_two_pow_pos (-x)) (by norm_num)]
+  rw [div_le_div_iff₀ (one_plus_two_pow_pos (-x)) (by norm_num)]
   apply (by intros; linarith : forall a : ℝ, a ≤ 1 → a * 2 ≤ 1 * (1 + a))
   exact rpow_le_one_of_one_le_of_nonpos one_le_two (by linarith)
 

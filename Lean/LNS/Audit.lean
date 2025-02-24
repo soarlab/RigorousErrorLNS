@@ -1,7 +1,7 @@
 /- This file contains all main results -/
 
 import LNS.Definitions
-import LNS.Theorem53
+import LNS.ErrTaylor
 import LNS.Theorem68
 import LNS.Theorem72
 
@@ -10,36 +10,36 @@ open LNS
 /- First order Taylor approximations -/
 
 theorem TaylorApprox_Φp (fix : FixedPoint) {x Δ : ℝ} (hd : 0 < Δ) (hx : x ≤ 0) :
-    |Φp x - ΦTp_fix fix Δ x| < Ep 0 Δ + (2 + Δ) * fix.ε := Theorem53_ΦTp fix hd hx
+    |Φp x - ΦTp_fix fix Δ x| < Ep 0 Δ + (2 + Δ) * fix.ε := ΦTp_err_bound fix hd hx
 
 theorem TaylorApprox_Φm (fix : FixedPoint) {x Δ : ℝ}
     (hdn : ∃ n : ℕ, 1 = n * Δ) (hx : x ≤ -1) :
-    |Φm x - ΦTm_fix fix Δ x| < Em (-1) Δ + (2 + Δ) * fix.ε := Theorem53_ΦTm' fix hdn hx
+    |Φm x - ΦTm_fix fix Δ x| < Em (-1) Δ + (2 + Δ) * fix.ε := ΦTm_err_bound' fix hdn hx
 
 theorem TaylorApprox_Φp_dir (fix : FixedPointDir) {x Δ : ℝ} (hd : 0 < Δ) (hx : x ≤ 0) :
-    |Φp x - ΦTp_fix fix Δ x| < Ep 0 Δ + (1 + Δ) * fix.ε := Theorem53_ΦTp_dir fix hd hx
+    |Φp x - ΦTp_fix fix Δ x| < Ep 0 Δ + (1 + Δ) * fix.ε := ΦTp_err_bound_dir fix hd hx
 
 theorem TaylorApprox_Φm_dir (fix : FixedPointDir) {x Δ : ℝ}
     (hdn : ∃ n : ℕ, 1 = n * Δ) (hx : x ≤ -1) :
-    |Φm x - ΦTm_fix fix Δ x| < Em (-1) Δ + (1 + Δ) * fix.ε := Theorem53_ΦTm_dir' fix hdn hx
+    |Φm x - ΦTm_fix fix Δ x| < Em (-1) Δ + (1 + Δ) * fix.ε := ΦTm_err_bound_dir' fix hdn hx
 
 theorem TaylorApprox_Φp' (fix : FixedPoint) {x Δ : ℝ} (hd : 0 < Δ) (hx : x ≤ 0) :
     |Φp x - ΦTp_fix fix Δ x| < (Real.log 2 / 8) * Δ ^ 2 + (2 + Δ) * fix.ε := by
-  linarith [Theorem53_ΦTp fix hd hx, Ep_bound hd]
+  linarith [ΦTp_err_bound fix hd hx, Ep_bound_alt hd]
 
 theorem TaylorApprox_Φm' (fix : FixedPoint) {x Δ : ℝ}
     (hdn : ∃ n : ℕ, 1 = n * Δ) (hx : x ≤ -1) :
     |Φm x - ΦTm_fix fix Δ x| < Real.log 2 * Δ ^ 2 + (2 + Δ) * fix.ε := by
-  linarith [Theorem53_ΦTm' fix hdn hx, Em_bound (div_one_imp_pos hdn)]
+  linarith [ΦTm_err_bound' fix hdn hx, Em_bound_alt (div_one_imp_pos hdn)]
 
 theorem TaylorApprox_Φp_dir' (fix : FixedPointDir) {x Δ : ℝ} (hd : 0 < Δ) (hx : x ≤ 0) :
     |Φp x - ΦTp_fix fix Δ x| < (Real.log 2 / 8) * Δ ^ 2 + (1 + Δ) * fix.ε := by
-  linarith [Theorem53_ΦTp_dir fix hd hx, Ep_bound hd]
+  linarith [ΦTp_err_bound_dir fix hd hx, Ep_bound_alt hd]
 
 theorem TaylorApprox_Φm_dir' (fix : FixedPointDir) {x Δ : ℝ}
     (hdn : ∃ n : ℕ, 1 = n * Δ) (hx : x ≤ -1) :
     |Φm x - ΦTm_fix fix Δ x| < Real.log 2 * Δ ^ 2 + (1 + Δ) * fix.ε := by
-  linarith [Theorem53_ΦTm_dir' fix hdn hx, Em_bound (div_one_imp_pos hdn)]
+  linarith [ΦTm_err_bound_dir' fix hdn hx, Em_bound_alt (div_one_imp_pos hdn)]
 
 /- Error correction approximations -/
 

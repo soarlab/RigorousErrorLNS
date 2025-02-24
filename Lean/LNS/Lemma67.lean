@@ -16,15 +16,15 @@ private def Wtm c Δ t r := Wm c Δ r t
 private lemma monoWm1 (hd : 0 < Δ) (hc : c < 0) (h1 : ΔP ≤ r) (htp : t ≤ ΔP) :
     (Wm c Δ) r t ≤  (Wm c Δ) r ΔP := by
   have ep : Em c Δ > 0 := Em_r_pos hc hd
-  unfold Wm; rw [div_le_div_right ep]; apply sub_le_sub_left
+  unfold Wm; rw [div_le_div_iff_of_pos_right ep]; apply sub_le_sub_left
   apply Em_r_monotoneOn hc (by simp; linarith) (by simp; linarith) (by linarith)
 
 private lemma monoWm2 (hd : 0 < Δ) (hc : c < 0) (ht : 0 ≤ t) (htr : t ≤ r) (htd : r ≤ Δ) :
     (Wm c Δ) r t ≤ (Wm c Δ) Δ t := by
   have hc0 : c ∈ Set.Iio 0 := by simp only [Set.mem_Iio]; linarith
   have ep : Em c Δ > 0 := Em_r_pos hc hd
-  unfold Wm; rw [div_le_div_right ep]
-  have ec2 : (fun y ↦ Em c (y - t)) = (fun y=> Em c y) ∘ (fun y=>y-t) := by ext y; simp only [Function.comp_apply]
+  unfold Wm; rw [div_le_div_iff_of_pos_right ep]
+  have ec2 : (fun y ↦ Em c (y - t)) = (fun y => Em c y) ∘ (fun y => y - t) := by ext y; simp only [Function.comp_apply]
   have mt : Set.MapsTo (fun y ↦ y - t) (Set.Ioi t) (Set.Ioi 0) := by
     unfold Set.MapsTo; intro x hx; simp only [Set.mem_Ioi] at hx; simp only [Set.mem_Ioi, sub_nonneg, hx]; linarith
   have diff : DifferentiableOn ℝ (fun x => Em c x - Em c (x - t))  (Set.Ioi t) := by

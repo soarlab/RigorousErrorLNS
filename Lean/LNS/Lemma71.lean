@@ -34,7 +34,7 @@ private lemma F_x_StrictMono (ht : 0 < t) : StrictMonoOn (fun x => F x t) (Set.I
   rw [deriv_sub (by fun_prop (disch := assumption)) (by fun_prop (disch := assumption))]
   rw [deriv_comp_sub_const, deriv_Φm hxt, deriv_Φm hx]
   simp only [sub_pos, gt_iff_lt, neg_div, neg_lt_neg_iff]
-  apply div_lt_div
+  apply div_lt_div₀
   · exact rpow_lt_rpow_of_exponent_lt one_lt_two (by linarith : x - t < x)
   · rw [sub_le_sub_iff_left]
     exact rpow_le_rpow_of_exponent_le one_le_two (by linarith : x - t ≤ x)

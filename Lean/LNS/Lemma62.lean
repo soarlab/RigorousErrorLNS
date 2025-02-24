@@ -17,7 +17,7 @@ private lemma deriv_K (ha : 0 < a) : Set.EqOn (deriv (K a))
   unfold K
   get_deriv (fun b ↦ a * a * log (a + b) - a * a * log (a + 1) - a * b + a + b * log b + b * log (a + 1) - b * log (a + b))
       within (Set.Ioi 0)
-  simp only [Set.mem_Ioi, List.Forall, toFun, ne_eq, id_eq]
+  simp
   intro x hx; split_ands <;> linarith
   simp only [toFun] at h
   intro b hb
@@ -36,7 +36,7 @@ private lemma deriv2_K (ha : 0 < a) : Set.EqOn (deriv (deriv (K a)))
   intro b hb; rw [deriv_EqOn_Ioi e hb]
   simp only [Set.mem_Ioi] at hb
   get_deriv (fun b ↦ a * a / (a + b) - a - b / (a + b) + log b + log (a + 1) - log (a + b) + 1) within (Set.Ioi 0)
-  simp only [Set.mem_Ioi, List.Forall, toFun, ne_eq, id_eq, and_self_left]
+  simp
   intro x hx; split_ands <;> linarith
   simp only [toFun] at h
   rw [h.right b hb]
@@ -133,7 +133,7 @@ lemma deriv_Fp_div_pos (ha : 0 < a) (hb : 1 < b) (hc : b < c) :
   unfold Gp at ie
   have i1 : deriv (Fp b) a > 0 := by apply deriv_Fp_a_pos ha hb
   have i2 : deriv (Fp c) a > 0 := by apply deriv_Fp_a_pos ha; linarith
-  simp only [gt_iff_lt, div_lt_div_iff i2 i1] at ie
+  simp only [gt_iff_lt, div_lt_div_iff₀ i2 i1] at ie
   rw [deriv_div]
   apply div_neg_of_neg_of_pos; linarith
   apply pow_pos (Fp_pos ha (by linarith : c > 1))
@@ -163,8 +163,8 @@ lemma Lemma62_strictAntiOn (hr1 : 0 < r) (hr2 : r < Δ) : StrictAntiOn (fun i =>
   apply deriv_Fp_div_pos (i1 x) (i2 r hr1)
   apply rpow_lt_rpow_of_exponent_lt (by simp only [Nat.one_lt_ofNat]) hr2
   get_deriv (fun i ↦ 2 ^ i)
-  simp only [List.Forall, toFun, gt_iff_lt, Nat.ofNat_pos, id_eq, implies_true]
-  simp only [toFun, zero_mul, one_mul, zero_add] at h
+  simp
+  simp at h
   simp only [h, Nat.ofNat_pos, rpow_pos_of_pos, mul_pos_iff_of_pos_left, Nat.one_lt_ofNat, log_pos]
   apply DifferentiableAt.div
   apply differentiable_Fp_a (i1 x) (i1 r)

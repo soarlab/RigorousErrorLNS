@@ -24,7 +24,7 @@ private def dQp_Range_YX (y x : ℝ) := (y * (x - 1))/ (x * x * (x + 1) * (B y +
 lemma V_pos (hx : 1 < x) : 0 < V x := by
   have eq : V 1 = 0 := by unfold V; norm_num
   rw [← eq]
-  apply strictMonoOn_of_deriv_pos (convex_Ici 1) _ _ (le_refl 1) (le_of_lt hx) hx
+  apply strictMonoOn_of_deriv_pos (convex_Ici 1) _ _ Set.left_mem_Ici (le_of_lt hx) hx
   · unfold V
     have : ∀ x ∈ Set.Ici (1:ℝ) , x + 1 ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intros; linarith
     have : ∀ x ∈ Set.Ici (1:ℝ) , x ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intros; linarith
@@ -32,7 +32,7 @@ lemma V_pos (hx : 1 < x) : 0 < V x := by
   unfold V; simp only [Set.nonempty_Iio, interior_Ici', Set.mem_Ioi]
   intro x hx
   get_deriv (fun {X} ↦ 2 * log (X + 1) - log X - 2 * log 2) at x
-  simp only [List.Forall, toFun, ne_eq, id_eq, OfNat.ofNat_ne_zero, not_false_eq_true, and_true]
+  simp
   constructor <;> linarith
   simp only [toFun] at h
   rw [HasDerivAt.deriv h]
@@ -41,7 +41,7 @@ lemma V_pos (hx : 1 < x) : 0 < V x := by
 lemma deriv_C (hy : 1 < y) : deriv C y = 2 / (y * (y + 1) ^ 2) := by
   unfold C
   get_deriv (fun {Y} ↦ -2 * Y / (Y + 1) + 2 * log Y - 2 * log (Y + 1) + 2 * log 2 + 1) at y
-  simp only [List.Forall, toFun, ne_eq, id_eq, OfNat.ofNat_ne_zero, not_false_eq_true, and_true]
+  simp
   split_ands <;> linarith
   simp only [toFun] at h
   rw [HasDerivAt.deriv h]
@@ -50,7 +50,7 @@ lemma deriv_C (hy : 1 < y) : deriv C y = 2 / (y * (y + 1) ^ 2) := by
 lemma C_pos (hy : 1 < y) : 0 < C y := by
   have eq : C 1 = 0 := by unfold C; norm_num
   rw [← eq]
-  apply strictMonoOn_of_deriv_pos (convex_Ici 1) _ _ (le_refl 1) (le_of_lt hy) hy
+  apply strictMonoOn_of_deriv_pos (convex_Ici 1) _ _ Set.left_mem_Ici (le_of_lt hy) hy
   · unfold C
     have : ∀ x ∈ Set.Ici (1:ℝ) , x + 1 ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intros; linarith
     have : ∀ x ∈ Set.Ici (1:ℝ) , x ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intros; linarith
@@ -61,7 +61,7 @@ lemma C_pos (hy : 1 < y) : 0 < C y := by
 lemma deriv_A (hy : 1 < y) : deriv A y = C y := by
   unfold A C
   get_deriv (fun {Y} ↦ -2 * Y * (log (Y + 1) - log Y - log 2) - Y + 1) at y
-  simp only [List.Forall, toFun, ne_eq, id_eq, OfNat.ofNat_ne_zero, not_false_eq_true, and_true]
+  simp
   constructor <;> linarith
   simp only [toFun] at h
   rw [HasDerivAt.deriv h]
@@ -70,7 +70,7 @@ lemma deriv_A (hy : 1 < y) : deriv A y = C y := by
 lemma A_pos (hy : 1 < y) : 0 < A y := by
   have eq : A 1 = 0 := by unfold A; norm_num
   rw [← eq]
-  apply strictMonoOn_of_deriv_pos (convex_Ici 1) _ _ (le_refl 1) (le_of_lt hy) hy
+  apply strictMonoOn_of_deriv_pos (convex_Ici 1) _ _ Set.left_mem_Ici (le_of_lt hy) hy
   · unfold A
     have : ∀ x ∈ Set.Ici (1:ℝ) , x + 1 ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intros; linarith
     have : ∀ x ∈ Set.Ici (1:ℝ) , x ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intros; linarith
@@ -89,7 +89,7 @@ private def dR (y:ℝ) := 2 * log y - 2 * log (y + 1) - 1 + 2 * log 2 + 1 / y
 private lemma deriv_R (hy : 1 < y) : deriv R y = dR y := by
   unfold R A B dR
   get_deriv (fun Y ↦ -2 * Y * (log (Y + 1) - log Y - log 2) - Y + 1 - Y * (2 * log (Y + 1) - log Y - 2 * log 2) / Y) at y
-  simp only [List.Forall, toFun, ne_eq, id_eq]
+  simp
   split_ands <;> linarith
   simp only [toFun] at h
   rw [HasDerivAt.deriv h]; field_simp; ring_nf
@@ -97,7 +97,7 @@ private lemma deriv_R (hy : 1 < y) : deriv R y = dR y := by
 private lemma deriv_dR (hy : 1 < y) : deriv dR y = (y - 1) / (y ^ 2 * (y + 1)) := by
   unfold dR
   get_deriv (fun Y ↦ 2 * log Y - 2 * log (Y + 1) - 1 + 2 * log 2 + 1 / Y) at y
-  simp only [List.Forall, toFun, ne_eq, id_eq, OfNat.ofNat_ne_zero, not_false_eq_true, true_and]
+  simp
   split_ands <;> linarith
   simp only [toFun] at h
   rw [HasDerivAt.deriv h]; field_simp; ring_nf
@@ -105,7 +105,7 @@ private lemma deriv_dR (hy : 1 < y) : deriv dR y = (y - 1) / (y ^ 2 * (y + 1)) :
 private lemma dR_pos (hy : 1 < y) : 0 < dR y := by
   have eq : dR 1 = 0 := by unfold dR; norm_num; ring
   rw [← eq]
-  apply strictMonoOn_of_deriv_pos (convex_Ici 1) _ _ (le_refl 1) (le_of_lt hy) hy
+  apply strictMonoOn_of_deriv_pos (convex_Ici 1) _ _ Set.left_mem_Ici (le_of_lt hy) hy
   · unfold dR
     have : ∀ x ∈ Set.Ici (1:ℝ) , x + 1 ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intros; linarith
     have : ∀ x ∈ Set.Ici (1:ℝ) , x ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intros; linarith
@@ -118,7 +118,7 @@ private lemma dR_pos (hy : 1 < y) : 0 < dR y := by
 private lemma R_pos (hy : 1 < y) : 0 < R y := by
   have eq : R 1 = 0 := by unfold R A B; norm_num
   rw [← eq]
-  apply strictMonoOn_of_deriv_pos (convex_Ici 1) _ _ (le_refl 1) (le_of_lt hy) hy
+  apply strictMonoOn_of_deriv_pos (convex_Ici 1) _ _ Set.left_mem_Ici (le_of_lt hy) hy
   · unfold R A B
     have : ∀ x ∈ Set.Ici (1:ℝ) , x + 1 ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intros; linarith
     have : ∀ x ∈ Set.Ici (1:ℝ) , x ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intros; linarith
@@ -141,8 +141,7 @@ def M (y:ℝ) := (B y - A y) / y
 private lemma deriv_M (hy : 1 < y) : deriv M y = (y - 1) ^ 2 / (y ^ 2 * (y + 1)) := by
   unfold M A B
   get_deriv (fun {Y} ↦ (Y * (2 * log (Y + 1) - log Y - 2 * log 2) - (-2 * Y * (log (Y + 1) - log Y - log 2) - Y + 1)) / Y) at y
-  simp only [List.Forall, toFun, ne_eq, id_eq, OfNat.ofNat_ne_zero, not_false_eq_true, and_true,
-    true_and]
+  simp
   split_ands <;> linarith
   simp only [toFun] at h
   rw [HasDerivAt.deriv h]; field_simp; ring_nf
@@ -150,7 +149,7 @@ private lemma deriv_M (hy : 1 < y) : deriv M y = (y - 1) ^ 2 / (y ^ 2 * (y + 1))
 private lemma M_pos (hy : 1 < y) : 0 < M y := by
   have eq : M 1 = 0 := by unfold M A B; norm_num
   rw [← eq]
-  apply strictMonoOn_of_deriv_pos (convex_Ici 1) _ _ (le_refl 1) (le_of_lt hy) hy
+  apply strictMonoOn_of_deriv_pos (convex_Ici 1) _ _ Set.left_mem_Ici (le_of_lt hy) hy
   · unfold M A B
     have : ∀ x ∈ Set.Ici (1:ℝ) , x + 1 ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intros; linarith
     have : ∀ x ∈ Set.Ici (1:ℝ) , x ≠ 0 := by simp only [Set.mem_Ici, ne_eq]; intros; linarith
@@ -175,14 +174,11 @@ private lemma deriv_Qp_Range_YX (hy: 1 < y) : Set.EqOn (deriv (Qp_Range_YX y)) (
   intro X hX; unfold Qp_Range_YX Qp_hi_YX Qp_lo_YX U V
   get_deriv (fun X ↦ (1 / X + log X - 1) / (1 / y + log y - 1) -
         (2 * log (X + 1) - log X - 2 * log 2) / (2 * log (y + 1) - log y - 2 * log 2)) within (Set.Ioi 0)
-  simp only [Set.mem_Ioi, List.Forall, toFun, one_div, ne_eq, id_eq, OfNat.ofNat_ne_zero,
-    not_false_eq_true, and_true, true_and, and_self_left]
+  simp
   intro x hx; rw [(by simp only [one_div] : y⁻¹ = 1 / y)]
   split_ands <;> try linarith
   simp only [toFun] at h
-  rw [h.right X hX]
-  simp only [zero_mul, mul_one, zero_sub, Nat.cast_ofNat, rpow_two, one_div, sub_zero, mul_zero,
-    sub_self, zero_div, add_zero, zero_add]
+  rw [h.right X hX]; simp
   simp only [Set.mem_Ioi] at hX
   simp only [← one_div]
   have : X ^ 2 * X * y * (1 + log y * y - y) ^ 2 >0 := by

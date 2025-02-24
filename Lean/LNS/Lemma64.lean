@@ -15,7 +15,7 @@ private def Wtp c Δ t r := Wp c Δ r t
 private lemma monoWp1 (hd : 0 < Δ) (h1 : ΔP ≤ r) (htp : t ≤ ΔP) :
     (Wp c Δ) r t ≤ (Wp c Δ) r ΔP := by
   have ep : Ep c Δ > 0 := by apply Ep_r_pos; linarith
-  unfold Wp; rw [div_le_div_right ep]; apply sub_le_sub_left
+  unfold Wp; rw [div_le_div_iff_of_pos_right ep]; apply sub_le_sub_left
   apply Ep_r_monotoneOn
   simp only [Set.mem_Ici, sub_nonneg]; linarith
   simp only [Set.mem_Ici, sub_nonneg]; linarith
@@ -24,7 +24,7 @@ private lemma monoWp1 (hd : 0 < Δ) (h1 : ΔP ≤ r) (htp : t ≤ ΔP) :
 private lemma monoWp2 (hd : 0 < Δ) (ht : 0 ≤ t) (htr : t ≤ r) (htd : r ≤ Δ):
     (Wp c Δ) r t ≤  (Wp c Δ) Δ t := by
   have ep : Ep c Δ > 0 := by apply Ep_r_pos; linarith
-  unfold Wp; rw [div_le_div_right ep]
+  unfold Wp; rw [div_le_div_iff_of_pos_right ep]
   have ec2 : (fun y ↦ Ep c (y - t)) = (fun y => Ep c y) ∘ (fun y => y-t) := by ext y; simp only [Function.comp_apply]
   have diff : DifferentiableOn ℝ (fun x => Ep c x - Ep c (x - t)) (Set.Ici t) := by fun_prop
   have : MonotoneOn (fun x => Ep c x - Ep c (x - t)) (Set.Ici t) := by

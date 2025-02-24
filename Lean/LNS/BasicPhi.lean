@@ -48,7 +48,7 @@ lemma continuous_Φp : Continuous Φp := differentiable_Φp.continuous
 
 lemma deriv_Φp : deriv Φp = fun (x : ℝ) => (2 : ℝ) ^ x / (1 + (2 : ℝ) ^ x) := by
   unfold Φp logb
-  deriv_EQ fun x ↦ log (1 + 2 ^ x) / log 2
+  deriv_EQ (fun x ↦ log (1 + 2 ^ x) / log 2)
 
 lemma deriv2_Φp : deriv (deriv Φp) = fun x => (2 : ℝ) ^ x * log 2 / (1 + (2 : ℝ) ^ x) ^ 2 := by
   simp only [deriv_Φp]
@@ -103,9 +103,7 @@ lemma continuous_Φm : ContinuousOn Φm (Set.Iio 0) := differentiable_Φm.contin
 lemma deriv_Φm : Set.EqOn (deriv Φm) (fun x=> -(2 : ℝ) ^ x / (1 - (2 : ℝ) ^ x)) (Set.Iio (0 : ℝ)) := by
   unfold Φm logb
   get_deriv (fun x ↦ log (1 - 2 ^ x) / log 2) within (Set.Iio (0:ℝ))
-  · simp only [Set.mem_Iio, List.Forall, toFun, ne_eq, log_eq_zero, OfNat.ofNat_ne_zero,
-      OfNat.ofNat_ne_one, or_self, not_false_eq_true, id_eq, gt_iff_lt, Nat.ofNat_pos,
-      and_self, and_true, true_and, (by norm_num : (2 : ℝ) ≠ -1)]
+  · simp [List.Forall, (by norm_num : (2 : ℝ) ≠ -1)]
     exact one_minus_two_pow_ne_zero2
   simp only [toFun, Set.mem_Iio, deriv_div_const, zero_mul, one_mul, zero_add, zero_sub, zero_div,
     mul_zero, sub_zero, Nat.cast_ofNat, rpow_two] at h
@@ -118,7 +116,7 @@ lemma deriv2_Φm : Set.EqOn (deriv (deriv Φm)) (fun x => -(log 2 * (2 : ℝ) ^ 
   intro x hx
   rw [deriv_EqOn_Iio deriv_Φm hx]
   get_deriv (fun x ↦ -2 ^ x / (1 - 2 ^ x)) within (Set.Iio (0:ℝ))
-  simp only [Set.mem_Iio, List.Forall, toFun, ne_eq, id_eq, gt_iff_lt, Nat.ofNat_pos, and_self, and_true]
+  simp
   exact one_minus_two_pow_ne_zero2
   simp only [toFun, zero_mul, one_mul, zero_add, neg_mul, zero_sub, mul_neg, neg_neg,
     Nat.cast_ofNat, rpow_two] at h

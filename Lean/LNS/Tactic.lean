@@ -41,6 +41,7 @@ def toFun : RExpr → ℝ → ℝ
   -- | .Expb b a => fun x => b ^ toFun a x
   | .Pow a b => fun x => toFun a x ^ toFun b x
 
+@[simp]
 def exprDeriv : RExpr → RExpr
   | .Var => .Const 1
   | .Const _ => .Const 0
@@ -56,6 +57,7 @@ def exprDeriv : RExpr → RExpr
   -- | .Pow a e => .Mul (.Mul (exprDeriv a) (.Const e)) (.Pow a (e - 1))
   | .Pow a b => exprDeriv a * b * a ^ (b - .Const 1) + exprDeriv b * a ^ b * .Log a
 
+@[simp]
 def sideConditions (e : RExpr) (x : ℝ) : List Prop :=
   match e with
   | .Var => []

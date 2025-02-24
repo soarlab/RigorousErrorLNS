@@ -33,7 +33,7 @@ lemma deriv_Fm_tendsto (hr : 0 ≤ r) :
   have : (2:ℝ) ^ r ≥ 1 := by apply one_le_rpow (by simp only [Nat.one_le_ofNat]) hr
   have : deriv (Fm (2 ^ r)) =ᶠ[(𝓝[>] 0)] (fun a => (1-a)/(2 ^ r-a) - 1 - log (1-a) + log (2 ^ r-a)) := by
     apply Filter.eventuallyEq_of_mem _ (deriv_Fm_a this)
-    exact Ioo_mem_nhdsWithin_Ioi' (by norm_num)
+    exact Ioo_mem_nhdsGT (by norm_num)
   rw [Filter.tendsto_congr' this]
   have : 2 ^ (-r) + r * log 2 - 1 = (fun a => (1-a)/(2 ^ r-a) - 1 - log (1-a) + log (2 ^ r-a)) 0 := by
     simp only [zero_add, one_div, log_one, sub_zero]
