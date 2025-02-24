@@ -9,7 +9,7 @@ All proof files are located in the [LNS](LNS) directory.
 #### Main definitions and results
 
 [`Definitions.lean`](LNS/Definitions.lean) All definitions which are used in the main results.  
-[`Audit.lean`](LNS/Audit.lean) All main results in one file. See [`Theorem53.lean`](LNS/Theorem53.lean), [`Theorem68.lean`](LNS/Theorem68.lean) and [`Theorem72.lean`](LNS/Theorem72.lean) for other important results.
+[`Audit.lean`](LNS/Audit.lean) All main results in one file. See [`ErrTaylor.lean`](LNS/ErrTaylor.lean), [`Theorem68.lean`](LNS/Theorem68.lean) and [`Cotransformation.lean`](LNS/Cotransformation.lean) for other important results.
 
 #### General results
 
@@ -21,11 +21,8 @@ All proof files are located in the [LNS](LNS) directory.
 
 #### Formal proofs of error bounds of first-order Taylor approximations
 
-[`BasicErrTaylor.lean`](LNS/BasicErrTaylor.lean) Basic properties of first-order Taylor error functions `Ep` and `Em`.  
-[`Lemma51.lean`](LNS/Lemma51.lean) An error bound of first-order Taylor approximation of `Φ⁺` (`Ep`).  
-[`Lemma52.lean`](LNS/Lemma52.lean) An error bound of first-order Taylor 
-approximation of `Φ⁻` (`Em`).  
-[`Theorem53.lean`](LNS/Theorem53.lean) Total error bounds of rounded first-order Taylor approximations of `Φ⁺` and `Φ⁻`.
+[`BasicErrTaylor.lean`](LNS/BasicErrTaylor.lean) Basic properties of first-order Taylor error functions `Ep` and `Em` and their error bounds.  
+[`ErrTaylor.lean`](LNS/ErrTaylor.lean) Total error bounds of rounded first-order Taylor approximations of `Φ⁺` and `Φ⁻`.
 
 #### Formal proofs of the error correction technique
 
@@ -39,10 +36,10 @@ approximation of `Φ⁻` (`Em`).
 [`Lemma67.lean`](LNS/Lemma67.lean) An error bound of the index error of `Qm`.  
 [`Theorem68.lean`](LNS/Theorem68.lean) Total error bounds of rounded error correction approximations of `Φ⁺` and `Φ⁻`.
 
-#### Formal proofs of the co-transformation technique
+#### Formal proofs of the cotransformation technique
 
-[`Lemma71.lean`](LNS/Lemma71.lean) An auxiliary bound of `|Φ⁻(x) - Φ⁻(y)|`.  
-[`Theorem72.lean`](LNS/Theorem72.lean) Total error bounds of rounded co-transformation approximations of `Φ⁻`.
+[`BasicCotrans.lean`](LNS/BasicCotrans.lean) Basic properties of the cotransformation technique.  
+[`Cotransformation.lean`](LNS/Cotransformation.lean) Total error bounds of rounded cotransformation approximations of `Φ⁻`.
 
 
 
