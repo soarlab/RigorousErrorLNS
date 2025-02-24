@@ -3,7 +3,7 @@
 import LNS.Definitions
 import LNS.ErrTaylor
 import LNS.Theorem68
-import LNS.Theorem72
+import LNS.Cotransformation
 
 open LNS
 
@@ -61,7 +61,7 @@ theorem Cotrans_case2 (fix : FixedPoint)
     (hΔa : 4 * fix.ε ≤ Δa)             /- Δa should be large enough -/
     (hx : x ≤ -Δa) :                   /- The result is valid for all x ∈ (-∞, -Δa] -/
     |Φm x - Cotrans₂ fix Φe Δa x| ≤ fix.ε + Φm (-1 - 2 * fix.ε) - Φm (-1) + Φe.err :=
-  Theorem72_case2 fix Φe ha hΔa hx
+  cotransformation_case2 fix Φe ha hΔa hx
 
 theorem Cotrans_case3 (fix : FixedPoint)
     (Φe : FunApprox Φm (Set.Iic (-1)))  /- An approximation of Φm on (-∞, -1] -/
@@ -71,7 +71,7 @@ theorem Cotrans_case3 (fix : FixedPoint)
     (hx : x ≤ -Δb) :                    /- The result is valid for all x ∈ (-∞, -Δb] -/
     let Ek2 := 2 * fix.ε + Φm (-1 - 2 * fix.ε) - Φm (-1) + Φe.err
     |Φm x - Cotrans₃ fix Φe Δa Δb x| ≤ fix.ε + Φm (-1 - Ek2) - Φm (-1) + Φe.err :=
-  Theorem72_case3 fix Φe ha hb hrem hΔa hΔb hx
+  cotransformation_case3 fix Φe ha hb hrem hΔa hΔb hx
 
 theorem Cotransformation (fix : FixedPoint)
     (Φe : FunApprox Φm (Set.Iic (-1)))
@@ -80,7 +80,7 @@ theorem Cotransformation (fix : FixedPoint)
     (hΔb : 8 * fix.ε + 2 * Φe.err ≤ Δb) : /- Δb should be large enough -/
     let Ek2 := 2 * fix.ε + Φm (-1 - 2 * fix.ε) - Φm (-1) + Φe.err
     |Φm x - Cotrans fix Φe Δa Δb x| ≤ fix.ε + Φm (-1 - Ek2) - Φm (-1) + Φe.err :=
-  Theorem72 fix Φe ha hb hΔa hΔb
+  cotransformation_err_bound fix Φe ha hb hΔa hΔb
 
 theorem Cotransformation_dir (fix : FixedPointDir)
     (Φe : FunApprox Φm (Set.Iic (-1)))
@@ -89,7 +89,7 @@ theorem Cotransformation_dir (fix : FixedPointDir)
     (hΔb : 4 * fix.ε + 2 * Φe.err ≤ Δb) : /- Δb should be large enough -/
     let Ek2 := fix.ε + Φm (-1 - fix.ε) - Φm (-1) + Φe.err
     |Φm x - Cotrans fix Φe Δa Δb x| ≤ fix.ε + Φm (-1 - Ek2) - Φm (-1) + Φe.err :=
-  Theorem72_dir fix Φe ha hb hΔa hΔb
+  cotransformation_err_bound_dir fix Φe ha hb hΔa hΔb
 
 theorem Cotransformation' (fix : FixedPoint)
     (Φe : FunApprox Φm (Set.Iic (-1)))
@@ -97,7 +97,7 @@ theorem Cotransformation' (fix : FixedPoint)
     (hΔa : 4 * fix.ε ≤ Δa)                /- Δa should be large enough -/
     (hΔb : 8 * fix.ε + 2 * Φe.err ≤ Δb) : /- Δb should be large enough -/
     |Φm x - Cotrans fix Φe Δa Δb x| ≤ 5 * fix.ε + 2 * Φe.err :=
-  Theorem72' fix Φe ha hb hΔa hΔb
+  cotransformation_err_bound' fix Φe ha hb hΔa hΔb
 
 theorem Cotransformation_dir' (fix : FixedPointDir)
     (Φe : FunApprox Φm (Set.Iic (-1)))
@@ -105,7 +105,7 @@ theorem Cotransformation_dir' (fix : FixedPointDir)
     (hΔa : 2 * fix.ε ≤ Δa)                /- Δa should be large enough -/
     (hΔb : 4 * fix.ε + 2 * Φe.err ≤ Δb) : /- Δb should be large enough -/
     |Φm x - Cotrans fix Φe Δa Δb x| ≤ 3 * fix.ε + 2 * Φe.err :=
-  Theorem72_dir' fix Φe ha hb hΔa hΔb
+  cotransformation_err_bound_dir' fix Φe ha hb hΔa hΔb
 
 /- All theorems depend on standard axioms only: [propext, Classical.choice, Quot.sound]-/
 
