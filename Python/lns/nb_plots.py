@@ -8,6 +8,57 @@ import cotrans_errors as ce
 
 # %%
 
+delta = 2 ** -0
+prec = 2 ** -10
+xs = np.arange(-6 * delta, 0, prec)
+exact = phi_add(xs)
+approx = taylor_add(delta, xs)
+error = exact - approx
+
+# %%
+
+linewidth = 2.5
+fontsize = 20
+
+plt.rcParams["font.family"] = "serif"
+plt.rcParams["mathtext.fontset"] = "dejavuserif"
+
+fig, ax = plt.subplots(figsize=(14, 7))
+
+# The main plot
+ax.plot(xs, error, color='blue', linewidth=linewidth, label=r'$E_T(x) = \Phi^+(x) - \hat{\Phi}^+_T(x)$')
+
+# Red dots
+x_points = [-delta + 1e-10, -2 * delta + 1e-10, -3 * delta + 1e-10]
+y_points = [phi_add(x) - taylor_add(delta, x) for x in x_points]
+labels = [r'$E_\Delta(0)$', r'$E_{\Delta}(-\Delta)$', r'$E_{\Delta}(-2\Delta)$']
+ax.scatter(x_points, y_points, color='red', s=100, linewidth=2)  # s is the size of the dots
+for (x, y, label) in zip(x_points, y_points, labels):
+    plt.text(x, y + 0.004, label, fontsize=fontsize, ha='center')  # ha controls horizontal alignment
+
+# Spines and ticks
+ax.spines[["right", "bottom"]].set_position(("data", 0))
+ax.spines[["right", "bottom"]].set_linewidth(2)
+ax.spines[["top", "left"]].set_visible(False)
+ax.plot(1, 0, ">k", transform=ax.get_yaxis_transform(), clip_on=False)
+ax.plot(0, 1, "^k", transform=ax.get_xaxis_transform(), clip_on=False)
+
+ax.yaxis.tick_right()
+ax.tick_params(axis='both', width=2)  # Set tick width for both axes
+plt.xticks(
+    ticks=[-d * delta for d in range(1, 7)], 
+    labels=[fr'${-d if d != 1 else "-"}\Delta$' for d in range(1, 7)],
+    fontsize=fontsize
+)
+plt.yticks([n * 0.01 for n in range(2, 9, 2)], fontsize=fontsize)
+
+ax.legend(loc='upper left', fontsize=fontsize + 5, frameon=False)
+plt.savefig('images/taylor_add_error.pdf', bbox_inches='tight', format='pdf')
+
+
+
+# %%
+
 # Test cases (p, d) with prec = 2**p, delta = 2**d
 test_cases: list[tuple[int, int]] = [
     (-8, -3),
@@ -142,7 +193,7 @@ deltas = [*range(-15, -5)]
 xy = []
 xy.append((deltas, r'Taylor $\Phi^+$', [te.get_add_error(2 ** prec, 2 ** d, rounding_mode) for d in deltas]))
 xy.append((deltas, r'Taylor $\Phi^-$', [te.get_sub_error(2 ** prec, 2 ** d, rounding_mode) for d in deltas]))
-xy.append((deltas, r'Co-transformation', [ce.cotrans_error(2 ** prec, rounding_mode, da=da, db=db, delta=2 ** d) for d in deltas]))
+xy.append((deltas, r'Cotransformation', [ce.cotrans_error(2 ** prec, rounding_mode, da=da, db=db, delta=2 ** d) for d in deltas]))
 
 # %%
 fig = plt.figure(figsize = (14, 10))
@@ -157,7 +208,7 @@ plt.xticks(deltas, fontsize=fontsize)
 plt.yticks(range(-23, -11), fontsize=fontsize)
 plt.legend(loc='upper left', fontsize=fontsize + 5)
 # plt.savefig('images/taylor_add_sub_cotrans2.png', bbox_inches='tight')
-plt.savefig('images/taylor_add_sub_cotrans2.pdf', bbox_inches='tight', format='pdf')
+plt.savefig('images/taylor_add_sub_cotrans.pdf', bbox_inches='tight', format='pdf')
 
 
 # %%
