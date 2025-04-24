@@ -129,41 +129,29 @@ lemma contrasformation_arnold {a b : ℝ} (ha : a < 0) (hb : b < 0) :
   rw [rpow_add zero_lt_two]
   ring
 
--- lemma contrasformation_coleman {a b : ℝ} (ha : 0 < a) (hb : b < 0) :
---     Φm (b - a) = Φm b + Φm (b - a - Φm b + Φm a) := by
---   nth_rw 3 [show ∀ x, Φm x = logb 2 (1 - 2 ^ x) from fun _ => rfl]
---   rw [rpow_sub zero_lt_two, rpow_add, @two_rpow_Φm (-a) (by linarith), two_rpow_Φm hb]
---   have ha1 := @one_sub_two_pow_pos (-a) (by linarith)
---   have hb1 := one_sub_two_pow_pos hb
---   unfold Φm
---   rw [← logb_mul (by positivity) (by sorry)]
---   congr
---   rw [rpow_sub zero_lt_two]
---   field_simp [rpow_neg, ← one_div]
---   ring_nf
---   sorry
-
+lemma contrasformation_coleman {a b : ℝ} (ha : a < 0) (hb : b < 0) (hab : b - a < 0):
+    Φm (b - a) = Φm b + Φm (b - a - Φm b + Φm a) := by
+  nth_rw 3 [show ∀ x, Φm x = logb 2 (1 - 2 ^ x) from fun _ => rfl]
+  rw [rpow_add zero_lt_two, two_rpow_Φm ha, rpow_sub zero_lt_two, two_rpow_Φm hb]
+  have hb1 := one_sub_two_pow_pos hb
+  unfold Φm
+  rw [← logb_mul (by positivity)]
+  swap
+  · field_simp
+    rw [mul_sub, ← rpow_add zero_lt_two, show b - a + a = b by ring]
+    ring_nf
+    exact one_minus_two_pow_ne_zero2 _ hab
+  congr
+  field_simp [rpow_sub]
+  ring
 
 lemma cotransformation (hd : 0 < Δ) (hx : x < 0) : Φm x = Φm (ind Δ x) + Φm (kval Δ x) := by
-  unfold Φm
-  have ineq : ∀ {y : ℝ}, y < 0 → (2:ℝ) ^ y < 1 := by
-    intro y hy; exact rpow_lt_one_of_one_lt_of_neg one_lt_two hy
-  have i0 : (2:ℝ) ^ x < 1 := ineq hx
-  have i1 : (2:ℝ) ^ ind Δ x < 1 := ineq (ind_lt_zero hd hx)
-  have i2 : (2:ℝ) ^ kval Δ x < 1 := ineq (k_neg hd hx)
-  have i3 : (2:ℝ) ^ rem Δ x < 1 := ineq (rem_lt_zero hd)
-  unfold logb; field_simp
-  apply Real.exp_eq_exp.mp
-  rw [exp_log (by linarith), exp_add, exp_log (by linarith), exp_log (by linarith)]
-  set a := (2:ℝ) ^ rem Δ x
-  set b := (2:ℝ) ^ ind Δ x
-  have eq : 2 ^ kval Δ x = 2 ^ x * (1 - a) / (1 - b) := by
-    unfold kval Φm; rw [rpow_add, rpow_sub, rpow_logb, rpow_logb]; field_simp
-    any_goals linarith
-  rw [eq]; field_simp [(by linarith : 1 - b ≠ 0)]; ring_nf
-  have eq : (2:ℝ) ^ x * a = b := by
-    rw [← rpow_add zero_lt_two]; unfold rem; simp [b]
-  rw [eq]; ring
+  simp_rw [kval]
+  nth_rw 1 3 [← ind_sub_rem Δ x, contrasformation_coleman]
+  · exact rem_lt_zero hd
+  · exact ind_lt_zero hd hx
+  · rw [ind_sub_rem]
+    exact hx
 
 private def f_aux (x : ℝ) := x - Φm x
 
