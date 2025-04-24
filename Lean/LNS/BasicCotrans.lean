@@ -116,6 +116,34 @@ lemma k_neg (hd : 0 < Δ) (hx : x < 0) : kval Δ x < 0 := by
     rw [ind_sub_rem]; exact hx
   unfold kval; linarith
 
+lemma contrasformation_arnold {a b : ℝ} (ha : a < 0) (hb : b < 0) :
+    Φm (b + a) = Φm b + Φp (b + Φm a - Φm b) := by
+  unfold Φp
+  rw [rpow_sub zero_lt_two, rpow_add zero_lt_two, two_rpow_Φm ha, two_rpow_Φm hb]
+  have ha1 := one_sub_two_pow_pos ha
+  have hb1 := one_sub_two_pow_pos hb
+  unfold Φm
+  rw [← logb_mul (by positivity) (by positivity)]
+  congr
+  field_simp
+  rw [rpow_add zero_lt_two]
+  ring
+
+-- lemma contrasformation_coleman {a b : ℝ} (ha : 0 < a) (hb : b < 0) :
+--     Φm (b - a) = Φm b + Φm (b - a - Φm b + Φm a) := by
+--   nth_rw 3 [show ∀ x, Φm x = logb 2 (1 - 2 ^ x) from fun _ => rfl]
+--   rw [rpow_sub zero_lt_two, rpow_add, @two_rpow_Φm (-a) (by linarith), two_rpow_Φm hb]
+--   have ha1 := @one_sub_two_pow_pos (-a) (by linarith)
+--   have hb1 := one_sub_two_pow_pos hb
+--   unfold Φm
+--   rw [← logb_mul (by positivity) (by sorry)]
+--   congr
+--   rw [rpow_sub zero_lt_two]
+--   field_simp [rpow_neg, ← one_div]
+--   ring_nf
+--   sorry
+
+
 lemma cotransformation (hd : 0 < Δ) (hx : x < 0) : Φm x = Φm (ind Δ x) + Φm (kval Δ x) := by
   unfold Φm
   have ineq : ∀ {y : ℝ}, y < 0 → (2:ℝ) ^ y < 1 := by
