@@ -9,11 +9,13 @@ This work was supported in part by NSF Awards 2403379 and 2346394 and Department
 
 For citing this work, please use
 
+```
 @inproceedings{nguyen2025rigorous,
   author    = {Thanh Nguyen and Alexey Solovyev and Ganesh Gopalakrishnan and Mark Arnold},
   title     = {Rigorous Error Analysis for Logarithmic Number Systems},
   booktitle = {Proceedings of the 32nd IEEE International Symposium on Computer Arithmetic (ARITH)},
   year      = {2025},
   address   = {El Paso, TX, USA},
-  month     = may
+  month     = {May}
 }
+```
