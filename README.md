@@ -1,4 +1,4 @@
-This is the repo for our work in ARITH 2025 entitled Rigorous Error Analysis for Logarithmic Number Systems by Thanh Son Nguyen (as part of his Ph.D. work at Utah), Dr. Alexey Solovyev, Ganesh Gopalakrishnan (Professor, and Thanh's official advisor), and Prof. Mark G. Arnold (an expert in LNS). 
+This is the repo for our work in ARITH 2025 entitled [Rigorous Error Analysis for Logarithmic Number Systems](https://www.arith2025.org/proceedings/215900a125.pdf) by Thanh Son Nguyen (as part of his Ph.D. work at Utah), Dr. Alexey Solovyev, Ganesh Gopalakrishnan (Professor, and Thanh's official advisor), and Prof. Mark G. Arnold (an expert in LNS). 
 Thanh and Ganesh sincerely thank Dr. Alexey Solovyev and Prof. Mark Arnold for their help at all junctures; this work would not have been possible without that.
 
 All questions may kindly be directed to Prof. Ganesh Gopalakrishnan at ganesh@cs.utah.edu (website https://www.cs.utah.edu/~ganesh).
